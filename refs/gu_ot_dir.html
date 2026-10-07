@@ -1,0 +1,161 @@
+﻿<html>
+<TITLE>Optimal Mass Transportation Map</TITLE>
+<body>
+    <hr />
+    <h3>Optimal Mass Transportation Map</h3>
+    Optimal mass transportation map transforms one measure to the other in the most economic way. It has broad applications in computer graphics,
+    computer vision, medical imaging and geometric modeling.
+
+    In 2013, We developed a variational theoretic framework for semi-discrete optimal mass transportation, which converts solving the optimal mass transportation
+    problem to the optimization of a convex energy, furthermore it gives the explicit geometric interpretation
+    to the convex energy, and the geometric interpretation to the Hessian matrix.  This theoretic article can be found <a href="http://arxiv.org/pdf/1302.5472.pdf"> here </a>. The talk slides given in IPAM UCLA on Feburaray 12, 2016 can be found <a href="IPAM_OMT.pdf">here</a>. 
+    <hr />
+    <h3> Surface Area-Preserving Parameterization</h3>
+    Given a simply connected surface, we first map it onto a planar convex domain using conformal parameterization. We treat the area-distortion factor induced by the conformal mapping as
+    one probability measure. Then we compute an optimal mass transportation map from this measure to the canonical Euclidean measure. The composition of the conformal parameterization and the inverse of the optimal transportation map
+    gives an area-preserving parameterization of the input surface.
+
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span7">
+                <div class="hero-unit-jerome">
+                    <h4>Binary Code</h4>
+                    <p>
+                        The bindary code <a href="omt-binary.rar">omt2d.exe</a> computes the area-preserving mapping. The following is the command line usage :
+
+                        <table>
+                            <tr>
+                                <td>omt2d.exe</td>
+                                <td> -input &ltinputfile&gt [option],</td>
+                                <td> the following options are supported:</td>
+                            </tr>
+                            <tr><td></td> <td> -output &ltoutputfile&gt</td> <td> the output file name </td></tr>
+                            <tr><td></td> <td> -threshold number </td> <td> default value is 1e-4  </td></tr>
+                            <tr>
+                                <td></td>
+                                <td> -animate [on|off]  </td>
+                                <td> show the compute steps in animate, the default value is 'on'</td>
+                            </tr>
+                            <tr><td></td> <td> -help  </td> <td> show the help message!</td></tr>
+                        </table>
+                        <br />
+                        Examples: omt2d.exe -input alex.off -output alex_omt.off -threshold 1e-8<br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+            <hr />
+            <table border="0" cellspacing="0">
+                <tr>
+                    <td>
+                        <div align="center">
+                            <img src="figures/gargoyle_1_small.png" alt="input surface" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div align="center">
+                            <img src="figures/gargoyle_2_small.png" alt="input surface" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div align="center">
+                            <img src="figures/budaha_small.png" alt="input surface" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+    <hr />
+    <h3> Volume-Preserving Parameterization</h3>
+    Given a simply connected solid with a single boundary surface, we first map it onto the unit solid ball using volumetric harmonic map. We treat the volume-distortion factor induced by the harmonic mapping as
+    a probability measure. Then we compute an optimal mass transportation map from this measure to the canonical Euclidean measure on the unit ball. The composition of the harmonic parameterization and the inverse of the optimal transportation map
+    gives a volume-preserving parameterization of the input volume.
+
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span7">
+                <div class="hero-unit-jerome">
+                    <h4>Binary Code</h4>
+                    <p>
+                        The binary code <a href="omt-binary.rar">omt3d.exe</a> computes the volume-preserving mapping. The following is the command line usage :
+                        <table>
+                            <tr>
+                                <td>omt3d.exe</td>
+                                <td> -input &ltinputfile&gt [option],</td>
+                                <td> the following options are supported:</td>
+                            </tr>
+                            <tr><td></td> <td> -output &ltoutputfile&gt</td> <td> the output file name </td></tr>
+                            <tr><td></td> <td> -threshold number </td> <td> default value is 1e-4  </td></tr>
+                            <tr>
+                                <td></td>
+                                <td> -project [true|false]  </td>
+                                <td> project the boundary point to unit sphere(or cube), default it ture.</td>
+                            <tr><td></td> <td> -clip [cube|sphere]</td> <td> set the clip boundary, default is cube </td></tr>
+                            </tr>
+                            <tr><td></td> <td> -help  </td> <td> show the help message!</td></tr>
+                        </table>
+                        <br />
+                        Examples: omt3d.exe -input lion_h.t -output lion_omt.tet6 -clip cube <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <hr />
+
+            <table>
+
+                <tr>
+                    <td>
+                        <div align="center">
+                            <img src="figures/bunny_small_1.png" alt="input surface" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div align="center">
+                            <img src="figures/bunny_small_2.png" alt="input surface" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div align="center">
+                            <img src="figures/volume_buddaha_small.png" alt="input surface" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div align="center">
+                            <img src="figures/volume_buddaha_small_2.png" alt="input surface" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div align="center">
+                            <img src="figures/david_small_1.png" alt="input surface" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div align="center">
+                            <img src="figures/david_small_2.png" alt="input surface" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+</body>
+</html>

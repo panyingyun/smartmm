@@ -1,0 +1,1 @@
+..\bin\omt2d -input skull.off -output skull_omt.off -threshold 1e-6

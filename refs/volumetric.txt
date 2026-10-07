@@ -1,0 +1,347 @@
+
+===== page 1 =====
+COMMUNICATIONS IN INFORMATION AND SYSTEMS c⃝ 2004 International Press
+V ol. 3, No. 3, pp. 191-202, March 2004 004
+VOLUMETRIC HARMONIC MAP∗
+Y ALIN W ANG†, XIANFENG GU ‡, AND SHING-TUNG Y AU§
+Abstract. We develop two different techniques to study volume mapping problem in Computer Graphics and
+Medical Imaging fields. The first one is to find a harmonic map from a 3 manifold to a 3D solid sphere and the
+second is a sphere carving algorithm which calculates the simplicial decomposition of volume adapted to surfaces.
+We derive the 3D harmonic energy equation and it can be easily extended to higher dimensions. We use a textrehedral
+mesh to represent the volume data. We demonstrate our method on various solid 3D models. We suggest that 3D
+harmonic mapping of volume can provide a canonical coordinate system for feature identification and registration
+for computer animation and medical imaging.
+1. Introduction. With the rapid development of imaging technology, there has been an
+explosive growth of three-dimensional (3D) image data collected from all kinds of physical
+sensors. The technique to process and analyze these image data becomes important. In this
+paper, we develop two different techniques to study volume mapping problem in Computer
+Graphics and Medical Imaging fields. One of our techniques is to compute a harmonic map
+from a 3 manifold to a 3D solid sphere. To the best of knowledge, it is the first work to practi-
+cally compute 3D harmonic map between 3D volumes. The other technique is to calculate the
+simplicial decomposition of volume adapted to surfaces. Compared with existed Finite Ele-
+ment Method (FEM) mesh generation, our new technique emphasizes geometry and topology
+sanity maintenance.
+The functional space on a manifold is determined by the manifold geometric character-
+istics. The harmonic spectrum can reflect many global geometric information of the mani-
+fold. Some applications on computer graphics and medical imaging fields, such as volume
+registration, shape analysis, etc. can be carried out by examining the behavior of special dif-
+ferential operators on it. In the literature, some researchers used harmonic map for surface
+matching [1] and the construction of conformal map for genus zero surfaces [2, 3]. For 3D
+brain volume transformation research, Gee [4] studied brain volume matching with a gener-
+alized elastic matching method within a probabilistic framework. The approach can resolve
+issues that are less naturally addressed in a continuum mechanical setting. Ferrant et al. [5]
+presented an algorithm for non-rigid registration of 3D MR intraoperative image sequences
+showing brain shift. The 3D anatomic deformation field, in which surfaces are embedded, is
+then inferred from the displacements at the boundary surfaces using a biomechanical finite
+element model for the constituent objects.
+In 2D case, a harmonic map between two convex planar regions is diffeomorphic if and
+only if the restriction on the boundary is diffeomorphic. 3D harmonic map is much more
+∗Received on December 8, 2003; accepted for publication on January 29, 2004.
+†Mathematics Department, UCLA, Los Angeles, CA 90095, Email: ylwang@math.ucla.edu
+‡CISE, University of Florida, Gainesville, FL 32611, E-mail: gu@cise.ufl.edu
+§Mathematics Department, Harvard University, Cambridge, MA 02138, E-mail: yau@math.harvard.edu
+191
+===== page 2 =====
+192 Y ALIN W ANG, XIANFENG GU, AND SHING-TUNG Y AU
+complicated. In this paper, we construct a harmonic map in R3 with a heat flow method.
+First we conformally map the boundary of the 3D volume to a sphere, then minimizes the
+volumetric harmonic energy while keeping the surface fixed. We also show how the interior
+of the volume changes when we apply a M ¨obius transformation on the surfaces. To the best
+of our knowledge, this is the first work on volumetric harmonic map. This work is also quite
+general and can easily be generalized to higher-dimensional cases.
+In the last decade, the techniques of 3D cameras, Computed Tomography (CT) and Mag-
+netic Resonance Imaging (MRI) developed rapidly. Computer visualization and engineering
+calculation require certain kinds of mesh extracted from these scanned volume data. Although
+there are many researches on the mesh generation [6, 7], the existed methods usually do not
+pay enough attention to geometry and topology checking. Thus the resulting mesh structure
+cannot be directly used for geometry analysis computation. We developed a sphere carving
+algorithm to calculate the simplicial decomposition of volume adapted to surfaces. From the
+volume data, our algorithm can build tetrahedral mesh with desired geometry and topology
+characteristics.
+The remainder of the paper is organized as follows. In Section 2, we give the defini-
+tions of harmonic energy and a detailed description of our algorithm. Section 3 reports our
+sphere carving algorithm. Section 4 shows our experiments on various 3D solid models. We
+conclude the paper with the discussion of future research directions in Section 5.
+2. Volumetric Harmonic Mapping Algorithm.
+2.1. Definitions. Suppose K is a simplicial complex, and f : |K| →R3, which embeds
+|K| in R3; then (K, f ) is called a mesh. Given a genus zero tetrahedral mesh M, our goal is to
+compute its harmonic map to a sphere inR3.
+DEFINITION 1. All piecewise linear functions defined on K form a linear space, denoted
+by CPL(K)
+DEFINITION 2. Suppose a set of string constants k(u,v) are assigned, then the inner
+product on CPL is defined as the quadratic form:
+(1) < f ,g >= 1
+2 ∑
+{u,v}∈K
+k(u,v)( f (u) - f (v))(g(u) - g(v)).
+The energy is defined as the norm on CPL
+DEFINITION 3. Suppose f ∈ CPL, the string energy is defined as:
+(2) E( f ) =< f , f >= ∑
+{u,v}∈K
+k(u,v)|| f (u) - f (v)||2.
+By changing the string constants k(u,v) in the energy formula, we can define different
+string energies.
+Below is our derivation of harmonic energy in 3 dimensional space.
+===== page 3 =====
+VOLUMETRIC HARMONIC MAP 193
+FIG. 1. Illustrates a tetrahedron.
+As shown in Figure 1, we define
+⃗si = Area(Face i)⃗ni,i = 1,2,3,4,
+where ⃗ni is the normal on Face i. Due to (⃗si) = -∑ j̸=i < ⃗s j,⃗ni >, and ⃗ni,i = 1,2,3,4 can
+uniquely determine a frame in the space, we have
+4
+∑
+i=1
+⃗si = 0
+and
+<⃗si,⃗si >= -∑
+i̸= j
+<⃗si,⃗s j >,i = 1,2,3,4.
+For a random point⃗r inside the tetrahedron, its barycentric coordinate is
+⃗r =
+4
+∑
+i=1
+( λ i⃗pi),
+λ i = 1
+3
+<⃗r,⃗si >
+V ,
+(3)
+where V is the volume of tetrahedron. For a function defined on the tetrahedron,
+f (⃗r) =
+4
+∑
+i=1
+λ i f (⃗pi) =
+4
+∑
+i=1
+1
+3
+<⃗r,⃗si >
+V .
+Thus we have ∇ f = 1
+3V ∑ 4
+i=1⃗si fi. Let I = {1,2,3,4}, the harmonic energy for the tetrahedron
+===== page 4 =====
+194 Y ALIN W ANG, XIANFENG GU, AND SHING-TUNG Y AU
+can be computed as
+E( f ) = V
+2 < ∇ f ,∇ f >= 1
+18V <
+4
+∑
+i=1
+⃗si fi,
+4
+∑
+i=1
+⃗si fi >
+= 1
+18V (
+4
+∑
+i=1
+<⃗si,⃗si > f 2
+i + 2∑
+i̸= j
+<⃗si,⃗s j > fi f j)
+= -∑
+i̸= j
+<⃗si,⃗s j >
+18V ( fi - f j)2
+= ∑
+i̸= j,p̸=q
+{p,q}=I\{i, j}
+lpq
+cot( θ pq)
+12 ( fi - f j)2.
+(4)
+The last equation in Equation 4 holds due to
+<⃗si,⃗s j >
+V = - |⃗si| 1
+2lpqhq cos( θ pq)
+1
+3 |⃗si|hq sin( θ pq) = -3
+2lpq cot( θ pq),
+where lpq and hq are the edge length and height length in triangle q, as shown in Figure 1.
+The proof is general and it can be easily generalized to higher dimensional cases.
+DEFINITION 4. Suppose for edge {u,v}, it is shared by n tetrahedra thus it is against to
+n dihedral angles, θ i, i = 1, . . . ,n. Define the parameters
+(5) ku,v = 1
+12
+n
+∑
+i=1
+li cot( θ i)
+where li is the length of edge to which edge {u,v} is against in the domain manifold M. The
+string energy obtained is called the harmonic energy.
+DEFINITION 5. The piecewise Laplacian is the linear operator Δ PL : CPL → CPL on the
+space of piecewise linear functions on K, defined by the formula
+(6) Δ PL( f ) = ∑
+{u,v}∈K
+k(u,v)( f (v) - f (u)).
+If f minimizes the string energy, then f satisfies the condition Δ PL( f ) = 0. Suppose
+M1,M2 are two meshes and the map ⃗f : M1 → M2 is a map from M1 to R3.
+DEFINITION 6. For a map ⃗f : M1 → R3, ⃗f = ( f0, f1, f2), we define the energy as the
+norm of ⃗f :
+(7) E(⃗f ) = ||⃗f ||2 =
+3
+∑
+i=0
+|| fi||2.
+The Laplacian is defined in a similar way.
+DEFINITION 7. For a map ⃗f : M1 → R3 , the piecewise Laplacian of ⃗f is
+(8) Δ PL⃗f = (Δ PL f0,Δ PL f1,Δ PL f2).
+===== page 5 =====
+VOLUMETRIC HARMONIC MAP 195
+A map ⃗f : M1 → M2 is harmonic, if and only if it only has a normal component, and the
+tangential component is zero.
+Δ PL(⃗f ) = (Δ PL⃗f )⊥.(9)
+2.2. Steepest Descent Method. Suppose we would like to compute a mapping⃗f : M1 →
+M2 such that ⃗f minimizes a string energy E(⃗f ). This can be solved easily by the steepest
+descent algorithm:
+(10) d⃗f (t)
+dt = -Δ ⃗f (t)
+⃗f (M1) is constrained to be on M2, so -Δ ⃗f is a section of M2's tangent bundle.
+Based on the above definitions and algorithm, our volumetric harmonic brain mapping
+algorithm is given below.
+ALGORITHM 1. Volumetric Harmonic Mapping
+Input (mesh M,step length δ t, energy difference threshold δ E),
+output(⃗h : M → D3), where⃗h is a harmonic map.
+1. Compute the surface structure, ∂ M, of the mesh M. Compute its conformal mapping
+to the surface of a sphere, ⃗g : ∂ M → S2 [2, 3];
+2. For each boundary vertex, v,v ∈ ∂ M, let ⃗h(v) = ⃗g(v); for each interior vertex ,
+v,v ∈ M\ ∂ M, let⃗h(v) = (0,0,0), compute the harmonic energy E0;
+3. For each interior vertex,v ∈ M\ ∂ M, compute its derivative D⃗h;
+4. Update⃗h(v) by δ ⃗h(v) = -D⃗h(t) δ t;
+5. Compute the harmonic energy E;
+6. If E - E0 < δ E, return⃗h. Otherwise, assign E to E0 and repeat steps 3 through 6.
+3. Sphere Carving Algorithm. Methods to tetrahedralize volume data are well studied
+for FEM research. However, the methods to tetrahedralize volume with complicated geo-
+metric structure such as the brain are somewhat rare in the literature, although they are used
+occasionally for surgical simulation, or mapping intraoperative brain change. In our current
+experiments, we apply a sphere carving algorithm to volume data tetrahedralization problem.
+At the beginning, the algorithm constructs a large sphere that contains all the volume data.
+For non-genus case, we cut open the sphere to make it have desired genus number. Then the
+algorithm keeps removing the outside tetrahedra while maintaining the surface genus num-
+ber. The input image to this algorithm is binary 3D volumetric image. Figure 2(a) shows
+a few sections from a binary brain volume. Our goal is to build a tetrahedral volume while
+maintaining a surface with desired genus number. In the case of brain volume construction,
+we take a sequence of brain MRI images. First it builds a large sphere tetrahedral mesh which
+totally encloses the brain 3D volume. Then it keeps removing the tetrahedra outside of the
+brain volume while maintaining a genus zero surface. It outputs a brain tetrahedral mesh with
+a genus zero boundary.
+===== page 6 =====
+196 Y ALIN W ANG, XIANFENG GU, AND SHING-TUNG Y AU
+(a) (b)
+FIG. 2 . (a) are some binary brain images, where white pixels are inside brain and black pixels are outside
+brain. (b) is a cube consisted of 5 tetrahedra. Our volume tetrhedralization method read in binary images and
+output tetrahedral structure in the space.
+The algorithm is given below.
+ALGORITHM 2. Sphere Carving Algorithm
+Input (a sequence of volume images and a desired surface genus number),
+Output (a tetrahedral mesh whose surface has the desired genus number).
+1. Build a solid sphere tetrahedral mesh consisted of tetrahedra, such that the sphere
+totally enclose the 3D data. Let the boundary of the solid sphere be S;
+2. Put all the tetrahedra which share faces with S in a queue Q, the elements in Q is
+sorted by the sharing face number, the first in the queue is the one which shares the
+most number of faces with S;
+3. Exit if Q is empty, otherwise pop out the first tetrahedron,t, from Q;
+4. If t is not inside the object and the new surface after removing it still has genus 0,
+then remove the tetrahedron from the mesh and go to Step 2; otherwise go to step 3.
+4. Experiments. In our experiments, we use tetrahedra to represent the volume data.
+We tested our algorithm on both synthetic and brain volume data. Our synthetic data is a
+cube consisting of many tetrahedra. Figure 3(a) shows the surface of a solid cube and (b)
+shows the cube in wireframe mode. We used the volumetric harmonic mapping algorithm
+to map it onto a solid sphere. Figure 3(c) shows the surface of a solid sphere onto which it
+harmonically mapped. Figure 3(d) shows the solid sphere in wireframe mode.
+We also performed some experiments to study the harmonic map obtained. As shown in
+Figure 4, we assign a random color to each vertex of the cube model. We then removed some
+tetrahedra from the cube. We also remove these tetrahedra from the sphere. Since the cube
+has a convex surface, this shows that the mapping is a smooth bijection, i.e. diffeomorphism.
+Figure 5 shows another experiment. We started with a different surface condition (different
+conformal map on the surface via M ¨obius transformation). The harmonic map changes. We
+===== page 7 =====
+VOLUMETRIC HARMONIC MAP 197
+embedded the bunny in the resulting using its barycentric coordinate. As expected, the bunny
+was severely distorted, showing that the adjusted boundary mapping is propagated to the
+interior as well.
+To reduce memory requirements in the implementation, we use a multi-resolution
+method to represent the volume data. An example of surface genus zero volume is a brain
+volume. A coarse-scale brain model (which could be further refined) is shown in Figure 6(a)
+and (b). The volumetric brain harmonic mapping result is shown in Figure 6(c) and (d). We
+show this result at coarse scale to visualize the solution grid, but it can be further refined to
+capture greater geometric detail.
+Figure 8 illustrates a volumetric harmonic map on a prostate model. A volumetric
+prostate model is built from a sequence of MRI images. As shown in Figure 7, the boundary
+of prostate in each image is hand-drawn by physicians in yellow line. With our sphere carv-
+ing algorithm, we get volumetric prostate model 8(a) and (b). The harmonic map results are
+shown in Figure 8 (c) and (d).
+(a) (b)
+(c) (d)
+FIG. 3. (a) and (b) are the volumetric data surface of a cube and its harmornic mapping to a sphere; (c) and
+(d) are the volumetric data represented in wireframe mode and its harmonic mapping to a sphere.
+5. Conclusion and Future Work. This paper introduces a volumetric harmonic map
+method. First we map the volumetric boundary conformally onto a sphere. Then with this
+boundary condition, we compute its harmonic map in the object interior with a heat flow
+method. Our work is general enough to be easily generalized to higher dimensional cases, or
+to other organ systems than brain, e.g. for representing cardiac motion. To apply this algo-
+rithm on brain mapping problem, we developed a novel algorithm to calculate the simplicial
+===== page 8 =====
+198 Y ALIN W ANG, XIANFENG GU, AND SHING-TUNG Y AU
+(a) (b)
+FIG. 4 . Illustrates the internal geometry after we removed the same tetrahedra from the solid sphere. This
+illustrates how the bijection maps simply connected regions to simply connected regions of the sphere, and points in
+the two coordinate systems can be associated.
+decomposition of volume adapted to surface. Our experimental results on both synthetic and
+brain MRI image data are promising.
+Since the exterior brain surface is highly convoluted, computation of 3D harmonic maps
+is difficult. In the future, we will study the necessary and sufficient conditions for a 3D
+harmonic map to be diffeomorphic. We will also use non-structured tetrahedral mesh to
+represent brain volumetric data and test our algorithm on it.
+REFERENCES
+[1] D. Z HANG AND M. H EBERT , Harmonic maps and their applications in surface matching. In:IEEE Proceed-
+ings of Computer Vision and Pattern Recognition, volume 2, pages 524-530, 1999.
+[2] X. G U, Y. WANG , T. C HAN , P. M. T HOMPSON , AND S.-T. Y AU, Genus zero surface conformal mapping
+and its application to brain surface mapping , In: Information Processing in Medical Imaging, pages
+172-184, Ambleside, UK, July 2003.
+[3] Y. WANG , X. G U, T. CHAN , P. M. THOMPSON , AND S.-T. YAU, Intrinsic brain surface conformal mapping
+using a variational method, In: SPIE International Symposium on Medical Imaging, 2004.
+[4] J. C. G EE, On matching brain volumes, Pattern Recognition, 32(1999), pp. 99-111.
+[5] M. F ERRANT , S.K. W ARFIELD , A. N ABAVI, F.A. J OLESZ , AND R. K IKINIS , Registration of 3d intraoper-
+ative MR images of the brain using a finite element biomechanical model , In: MICCAI, pages 19-28,
+2000.
+[6] W. E. L ORENSEN AND H. E. C LINE , Marching cubes: A high resolution 3d surface construction algorithm,
+In: Proceedings of SIGGRAPH 1987, pages 163-169, 1987.
+[7] Y. ZHANG , C. B AJAJ , AND B.-S. S OHN , Adaptive and quality 3d meshing from imaging data, In: Proceed-
+ings of 8th ACM Symposium on Solid Modeling and Applications, pages 286-291, Seattle, W A, June
+2003.
+===== page 9 =====
+VOLUMETRIC HARMONIC MAP 199
+(a) (b)
+(c) (d)
+(e) (f)
+FIG. 5. Illustrates the internal volume change when the surface mapping of a cube changes following a m¨obius
+transformation. (a) and (b) are volumetric view and surface view of a cube volumetric image in a sphere. A bunny
+is barycentric embedded into the sphere. (c),(d),(e),and (f) show some snapshots when we rotate the sphere. We can
+find the distortion on the bunny model which is due to the m¨obius transformation of the cube image on the sphere.
+===== page 10 =====
+200 Y ALIN W ANG, XIANFENG GU, AND SHING-TUNG Y AU
+(a) (b)
+(c) (d)
+FIG. 6 . Illustrates volumetric brain harmonic mapping. (a) is the volumetric brain surface; (b) is the brain
+volume in wireframe mode; (c) is the surface of the brain volumetric harmonic map into a sphere; (d) is brain
+volumetric harmonic map into a sphere in wireframe mode.
+FIG. 7 . Illustrates the images data used to build volumetric prostate model. They are a sequence of MRI
+images. The prostate boundaries (yellow line) are hand-drawn by physicians.
+===== page 11 =====
+VOLUMETRIC HARMONIC MAP 201
+(a) (b)
+(c) (d)
+FIG. 8 . Illustrates volumetric prostate harmonic mapping. (a) is the volumetric prostate surface; (b) is the
+prostate volume in wireframe mode; (c) is the surface of the prostate volumetric harmonic map into a sphere; (d) is
+prostate volumetric harmonic map into a sphere in wireframe mode.
+===== page 12 =====
+202 Y ALIN W ANG, XIANFENG GU, AND SHING-TUNG Y AU

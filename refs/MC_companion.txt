@@ -1,0 +1,216 @@
+
+===== page 1 =====
+Computer-AidedDesign78(2016)188-198
+Contents lists available at ScienceDirect
+Computer-AidedDesign
+journal homepage: www.elsevier.com/locate/cad
+Measurecontrollablevolumetricmeshparameterization
+✩
+KehuaSu a,WeiChen b,NaLei c,d,∗,LiCui e,JianJiang b,XianfengDavidGu b
+aStateKeyLaboratoryofSoftwareEngineering,WuhanUniversity,Wuhan,430072,China
+bComputerScienceDepartment,StonyBrookUniversity,NY,11794,USA
+cSchoolofSoftware,DalianUniversityofTechnology,Dalian,116620,China
+dYauMathematicsScienceCenter,TsinghuaUniversity,Beijing,100084,China
+eSchoolofMathematicalScience,BeijingNormalUniversity,Beijing,100875,China
+a r t i c l e i n f o
+Keywords:
+Parameterization
+Volume
+Controllable
+Optimalmasstransportation
+a b s t r a c t
+Volumetricparameterizationisafundamentalprobleminsolidandphysicalmodeling.Inpractice,itis
+highlydesirabletocontrolthevolumesoftheregionsofinterestintheparameterdomain.Thiswork
+introducesanovelvolumetricparameterizationmethod,whichallowsuserstoprescribethetarget
+volumetricmeasureoftheinputsolid.
+Givenasimplyconnectedtetrahedralmeshwithasingleboundarysurface,wefirstcomputea
+volumetricharmonicmaptoparameterizethesolidontotheunitsolidball;thenwecomputeanoptimal
+masstransportationmapfromtheunitsolidballwiththepush-forwardvolumeelementinducedbythe
+harmonicmapontotheparameterdomainwiththeuserprescribedvolumetricmeasure.Thecomposition
+ofthevolumetricharmonicmapandtheoptimalmasstransportationmapgivesameasurecontrollable
+volumetricparameterization.Furthermore,thismethodcanhandlesolidswithemptyvoidsinside.
+Themethodhassolidtheoreticfoundation,andisbasedonconventionalalgorithmsincomputational
+geometry,andeasytoimplement.Theexperimentalresultsdemonstratetheefficiencyandefficacyofthe
+proposedmethod.
+©2016ElsevierLtd.Allrightsreserved.
+1. Introduction
+Insolidandphysicalmodeling,volumetricparameterization
+playsafundamentalrole,itconvertsunstructuredtetrahedron
+meshtoSplinesurfaces/solids.
+Volumetric parameterization is essential for applications in
+many engineering and medicine fields, such as Spline fitting
+in Computer Aided Design (CAD) [1], simulation in Computer
+AidedEngineering(CAE),volumetricmeshingindigitalgeometry
+processing[2],volumetrictexturemappinginComputerGraphics,
+volumetricmedicalimageregistrationinmedicalimaging[3]and
+soon.
+Volumetric mesh parameterization refers to the process of
+mappingatetrahedralmeshontoacanonicaldomaininthree
+✩ ThispaperhasbeenrecommendedforacceptancebyScottSchaeferandCharlie
+C.L.Wang.
+∗ Correspondingauthorat:SchoolofSoftware,DalianUniversityofTechnology,
+Dalian,116620,China.
+E-mailaddresses: skhemailg@gmail.com(K.Su),wei.chen.sbu@gmail.com
+(W.Chen),nalei@outlook.com(N.Lei),licui@bnu.edu.cn(L.Cui),
+jianjiang@cs.stonybrook.edu(J.Jiang),gu@cs.stonybrook.edu(X.D.Gu).
+dimensionalEuclideanspace R3.Themappingisrequiredtobe
+homeomorphicandminimizesgeometricdistortions.Inpractice,
+the user prefers to allocate greater volumes in the parameter
+domainfortheregionsofinterest;orthesolidconsistsofdifferent
+materials, in order to meet the accuracy requirements in the
+simulation/analysisprocess,differentmaterialsneedtoallocate
+theknotswithdifferentresolutions,thereforedifferentparametric
+volumes.Theserequirementsmotivateourmeasurecontrollable
+volumetricparameterization.
+Ourmethodgivesusersthefreedomtoassignatargetmeasure
+totheinputsolid.Equivalently,theusercanprescribeapositive
+Jacobianfunctiononthewholetargetdomain.Sothattheusercan
+enlargesomeregionsandshrinktheothers,whichisvaluablefor
+Splinefittingpurpose.Theregionswithcomplicatedgeometriesor
+materialscanbemappedtolargeregionsintheparameterdomain,
+andobtainmoreknotsandcontrolpointsforSplines.Thishelps
+improvetherobustnessandaccuracyforthedownstreamsimula-
+tion/analysis.Asaspecialcase,ourmethodcanmakethewholepa-
+rameterizationtobevolume-preserving,thisisadvantageousfor
+manyapplicationsinmedicalimagingandvisualization.Volume-
+preserving parameterization preserves the volumetric element,
+namelytheJacobianofthemappingisequalto1everywhere.
+http://dx.doi.org/10.1016/j.cad.2016.04.007
+0010-4485/©2016ElsevierLtd.Allrightsreserved.
+===== page 2 =====
+K.Suetal./Computer-AidedDesign78(2016)188-198 189
+Inthiswork,weproposetouseoptimalmasstransportation
+frameworktoachievethisgoal.Givenaconvexdomain Ωinthe
+Euclideanspacewithtwodifferentmeasures(volumeelements) µ
+and ν,aMeasurePreservingMap isanautomorphismofthedomain
+itself ϕ : Ω → Ω,andpreservesthemeasure.Namely,forany
+BorelsetB ⊂ Ω,thefollowingequalityholds
+
+ϕ-1(B)
+dµ =
+
+B
+dν.
+TheQuadraticTransportationCost ofthemap ϕisgivenby
+C(ϕ) :=
+
+Ω
+|p - ϕ(p)|2dµ(p).
+TheOptimalMassTransportationMap isthemeasure-preserving
+mapwiththeleastquadratictransportationcost.Optimalmass
+transportationguaranteestheexistenceandtheuniquenessofthe
+map.
+AccordingtoBrenier'stheorem,theoptimaltransportationmap
+isthegradientmapofaconvexfunctiondefinedonthedomain.
+Theproblemoffindingtheoptimaltransportationmapboilsdown
+tofindingtheconvexfunction.Inpractice,thetargetmeasureis
+approximatedbydiscretemeasures(Diracmeasures),theconvex
+functionisapproximatedbytheupperenvelopeofafamilyof
+hyper-planesin R4,thenormalsoftheplanesarefixedbutthe
+heights(intercepts)areunknown.Theheightscanbeobtainedby
+optimizingaconvexenergyusingNewton'smethod.
+Inourcurrentwork,foragivensimplyconnectedtetrahedral
+mesh with a single boundary surface, we first map it onto
+the unit solid ball using a harmonic map; then we compute
+an optimal mass transportation map of the unit ball from the
+user prescribed volume element to the canonical Euclidean
+volumeelement.Thecompositionoftheharmonicmapandthe
+optimalmasstransportationmapgivesthemeasure-controllable
+parameterizationoftheinitialtetrahedralmesh.Furthermore,this
+methodcanhandlesolidswithemptyvoidsinside.
+Contributions.Thisworkproposesanovelalgorithmtocompute
+volumetric parameterization with a prescribed measure for a
+simplyconnectedtetrahedralmeshwithasingleboundarysurface,
+furthermorethemethodiscapableofhandlingsolidswithvoids
+inside.Thealgorithmisbasedontherecentlydevelopeddiscrete
+optimalmasstransportationtheory[4],whichisrigorousandeasy
+toimplement.Thisworkmainlyfocusesonthealgorithmicdesign
+andimplementation.
+2. Previous works
+The literature for parameterization is vast, so a thorough
+surveyisbeyondthescopeofthecurrentwork.Inthefollowing,
+we only briefly review the most related works in volumetric
+parameterizationandoptimalmasstransportation.
+2.1. Volumetricparameterization
+There are mainly three kinds of methods for volumetric
+parameterization.
+Themostwidelyusedmethodisharmonicmapping,whose
+basicideaistoreducethediscreteharmonicenergybyavariational
+procedure.ThismethodwasfirstproposedbyWangetal.in[3].
+Theymappedagenus-zerovolumetoasolidsphere,andlaterthey
+usedthismethodonbrainmapping[5].Theharmonicmapping
+between two solid models was computed with a meshless
+approach by Li et al. [6]. Martin et al. constructed trivariate
+splineforcylindricalvolumesbycomputingharmonicvolumetric
+parameterization in [7]. Xu et al. [8] designed a bi-harmonic
+mapapplyingamultiplefundamentalsolutionssystemforfast
+computation.UsingGreen'sfunctions,Xiaetal.[9]parameterized
+star-shapedvolumes.Theyshowedthattheconstructedmapis
+bijectiveandsmoothexceptatuniquecriticalpoint.Theyalso
+proposedanalgorithmtodecomposeavolumeintothedirect
+productofatwo-dimensional(2D)surfaceandaone-dimensional
+(1D)curveandthentracedtheintegralcurvealongtheharmonic
+function in [10]. In 2014, by combining harmonic map and
+streamline approach, Gupta et al. [11] presented an approach
+for the problem of volumetric parameterization of a general
+nonconvex (genus-0) domain to its topologically equivalent
+convexdomain.
+Many mappings are constructed by means of generalized
+barycentriccoordinateswithclosedformexpressions[12].The
+mean-valuecoordinatesmethodwasextendedfromsurface[13]
+tovolumebyJuetal.[14]andFloateretal.[15]bycomputing
+theinterpolationofvolumetricdata.Lipmanetal.[16]proposed
+Greencoordinateswhichleadtomappingswithshape-preserving
+property.
+Another kind of popular method is to find a mapping
+minimizingaspecificenergy.Chaoetal.[17]minimizedtheso-
+calledARAP(as-rigid-as-possible)deformationenergy,whichis
+asimplegeometricmodelmeasuringdistancefromtheJacobian
+of the mapping to an isometry. Frame field driven methods
+usetheenergymeasuringdifferencebetweentheJacobianand
+the guidance frame field [18-20] and compute the volumetric
+parameterization in a variational way. In 2015, by deriving
+a 3D version of stretch-distortion energy and incorporating
+fixedboundaryconditions,Jinetal.[21]extendedthestretch-
+minimizingmethodtovolumetricparameterization.
+2.2. Optimalmasstransportation
+Monge raised the classicalOptimal Mass Transport Problem
+that concerns determining the optimal way, with minimal
+transportation cost, to move a pile of soil from one place
+to another [22]. Kantorovich [23] has proved the existence
+and uniqueness of the optimal transport plan based on linear
+programming.Monge-Kantorovichoptimizationhasbeenusedin
+numerousfieldsfromphysics,econometricstocomputerscience
+includingdatacompressionandimageprocessing[24].Recently,
+researchershaverealizedthatoptimaltransportcouldprovidea
+powerfultoolinimageprocessing,ifonecouldreduceitshigh
+computational cost [25,26]. However, it has one fundamental
+disadvantagethatthenumberofvariablesis O(k2),where kisthe
+numberofdiscretesamples,whichisunacceptabletocomputer
+visionandmedicalimagingapplicationssinceahighresolution3D
+surfacenormallyincludesuptohundredsofthousandsofvertices.
+AnalternativeMonge-Brenieroptimizationschemecansignif-
+icantlyreducethenumberofvariablestobeoptimized.Inlate
+1980s,Brenier[27]developedadifferentapproachforaspecial
+classofoptimaltransportproblems,wherethecostfunctionisa
+quadraticdistance.Brenier'stheoryshowsthattheoptimaltrans-
+portmapisthegradientmapofaspecialconvexfunction.Assume
+thetargetdomainisdiscretizedto ksamples,theMonge-Brenier's
+approachreducestheunknownvariablesfrom O(k2)toO(k),which
+greatlyreducesthecomputationcost,andimprovestheefficiency.
+Inourframework,wetakeMonge-Brenier'sapproach.However,
+our work is based on the newly discovered variational princi-
+ple[4]whichistheunderspinningofMonge-Brenier'sapproach.
+Ourframeworkisgeneralandworkswithanyvalidmeasures, µ
+and ν,definedontwosurfaces.Withinthescopeofthispaper,
+weonlyconsidertheareainducedmeasures.Recently,Suetal.
+appliedBrenier'sapproachforshapematchingandcomparison
+incomputervisionfield[28].Similarmethodhasbeenusedfor
+surfacearea-preservingparameterizationingraphics/visualization
+fieldbyKaufmanetal.in[29],whichfocusesontheoptimalmass
+===== page 3 =====
+Download English Version:
+https://daneshyari.com/en/article/440675
+Download Persian Version:
+https://daneshyari.com/article/440675
+Daneshyari.com

@@ -1,0 +1,1931 @@
+
+===== page 1 =====
+TetGen
+A Quality Tetrahedral Mesh Generator and
+3D Delaunay Triangulator
+Version 1.6
+User's Manual
+August, 2020
+Hang Si
+Hang.Si@wias-berlin.de
+http://www.tetgen.org
+c⃝2002 - 2020
+===== page 2 =====
+ii
+===== page 3 =====
+Abstract
+TetGen is a program to generate tetrahedral meshes from 3d poly-
+hedral domains. Its goal is to generate good quality tetrahedral meshes
+suitable for various applications in scientific computing. It can be used
+as either a standalone program or a library component integrated into
+other software.
+The purpose of this document is to give a brief explanation of
+the kind of tetrahedralizations and meshing problems handled by Tet-
+Gen and to give fairly detailed documentation about the usage of the
+program. Readers will learn how to create tetrahedral meshes using
+input files from the command line. Furthermore, the programming
+interface for calling TetGen from other programs is explained.
+keywords: tetrahedral mesh generation, Delaunay tetrahedraliza-
+tion, weighted Delaunay triangulation, constrained Delaunay tetra-
+hedralization, mesh quality, mesh refinement, mesh adaption, mesh
+coarsening
+AMS Classification: 65M50, 65N50
+iii
+===== page 4 =====
+iv
+===== page 5 =====
+Contents
+Contents v
+1 Introduction 1
+1.1 Triangulations of Point Sets . . . . . . . . . . . . . . . . . . . 2
+1.1.1 Delaunay Triangulations, Voronoi Diagrams . . . . . . 2
+1.1.2 Weighted Delaunay Triangulations, Power Diagrams . . 4
+1.1.3 Algorithms . . . . . . . . . . . . . . . . . . . . . . . . 6
+1.2 Tetrahedral Meshes of 3d Spaces . . . . . . . . . . . . . . . . . 7
+1.2.1 Piecewise Linear Complexes (PLCs) . . . . . . . . . . . 7
+1.2.2 Steiner Points . . . . . . . . . . . . . . . . . . . . . . . 9
+1.2.3 Boundary Conformity . . . . . . . . . . . . . . . . . . 10
+1.2.4 Constrained Delaunay Tetrahedralizations . . . . . . . 11
+1.2.5 Mesh Quality, Tetrahedron Shape Measures . . . . . . 12
+1.2.6 Mesh Adaptation, Mesh Sizing Functions . . . . . . . . 13
+1.2.7 Mesh Optimization . . . . . . . . . . . . . . . . . . . . 15
+1.2.8 Algorithms . . . . . . . . . . . . . . . . . . . . . . . . 15
+1.3 Description of the Meshing Process . . . . . . . . . . . . . . . 17
+2 General Information 19
+2.1 Language, Platforms . . . . . . . . . . . . . . . . . . . . . . . 19
+2.2 Memory requirement . . . . . . . . . . . . . . . . . . . . . . . 19
+2.3 CPU time estimation . . . . . . . . . . . . . . . . . . . . . . . 20
+2.4 Performance . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+2.5 Errors . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+3 Getting Started 23
+3.1 Compilation . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+3.1.1 Using make . . . . . . . . . . . . . . . . . . . . . . . . 23
+3.1.2 Using cmake . . . . . . . . . . . . . . . . . . . . . . . . 24
+3.1.3 Remarks on Using Shewchuk's Robust Predicates . . . 25
+3.1.4 Using CGAL's Robust Predicates . . . . . . . . . . . . 26
+3.2 A Short Tutorial . . . . . . . . . . . . . . . . . . . . . . . . . 27
+3.3 Visualization . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+3.3.1 Medit . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+3.3.2 Paraview . . . . . . . . . . . . . . . . . . . . . . . . . 31
+v
+===== page 6 =====
+4 Using TetGen 32
+4.1 Command Line Syntax . . . . . . . . . . . . . . . . . . . . . . 32
+4.2 Command Line Switches . . . . . . . . . . . . . . . . . . . . . 32
+4.2.1 Delaunay and weighted Delaunay tetrahedralizations . 34
+4.2.2 Constrained tetrahedralizations and boundary recov-
+ery (-p, -Y) . . . . . . . . . . . . . . . . . . . . . . . . 37
+4.2.3 Quality mesh generation (-q) . . . . . . . . . . . . . . . 40
+4.2.4 Adaptive mesh generation (-a, -m) . . . . . . . . . . . 42
+4.2.5 Reconstructing a tetrahedral mesh (-r) . . . . . . . . . 43
+4.2.6 Mesh optimization (-O) . . . . . . . . . . . . . . . . . 45
+4.2.7 Mesh coarsening (-R) . . . . . . . . . . . . . . . . . . . 46
+4.2.8 Inserting additional points (-i) . . . . . . . . . . . . . . 46
+4.2.9 Assigning region attributes (-A) . . . . . . . . . . . . . 47
+4.2.10 Mesh output switches (-f, -e, -n, -z, -o2) . . . . . . . . 47
+4.2.11 Mesh statistics (-V) . . . . . . . . . . . . . . . . . . . . 48
+4.2.12 Memory allocation (-x) . . . . . . . . . . . . . . . . . . 50
+4.2.13 Miscellaneous . . . . . . . . . . . . . . . . . . . . . . . 50
+5 File Formats 52
+5.1 Useful Things to Know . . . . . . . . . . . . . . . . . . . . . . 52
+5.1.1 A Boundary Description of PLCs . . . . . . . . . . . . 52
+5.1.2 Boundary Markers . . . . . . . . . . . . . . . . . . . . 53
+5.2 TetGen's File Formats . . . . . . . . . . . . . . . . . . . . . . 53
+5.2.1 .node files . . . . . . . . . . . . . . . . . . . . . . . . . 54
+5.2.2 .poly files . . . . . . . . . . . . . . . . . . . . . . . . . 56
+5.2.3 .smesh files . . . . . . . . . . . . . . . . . . . . . . . . 59
+5.2.4 .ele files . . . . . . . . . . . . . . . . . . . . . . . . . . 60
+5.2.5 .face files . . . . . . . . . . . . . . . . . . . . . . . . . . 62
+5.2.6 .edge files . . . . . . . . . . . . . . . . . . . . . . . . . 63
+5.2.7 .vol files . . . . . . . . . . . . . . . . . . . . . . . . . . 64
+5.2.8 .mtr files . . . . . . . . . . . . . . . . . . . . . . . . . . 64
+5.2.9 .neigh files . . . . . . . . . . . . . . . . . . . . . . . . . 66
+5.2.10 .v.node, .v.edge, .v.face, .v.cell . . . . . . . . . . . . . . 67
+5.3 Supported File Formats . . . . . . . . . . . . . . . . . . . . . 68
+5.3.1 .off files . . . . . . . . . . . . . . . . . . . . . . . . . . 68
+5.3.2 .ply files . . . . . . . . . . . . . . . . . . . . . . . . . . 69
+5.3.3 .stl files . . . . . . . . . . . . . . . . . . . . . . . . . . 69
+5.3.4 .mesh files . . . . . . . . . . . . . . . . . . . . . . . . . 70
+5.4 File Format Examples . . . . . . . . . . . . . . . . . . . . . . 70
+5.4.1 A PLC with Two Boundary Markers . . . . . . . . . . 70
+5.4.2 A PLC with Two Sub-regions (Materials) . . . . . . . 73
+vi
+===== page 7 =====
+5.4.3 A PLC with Two Sub-regions and Two Holes . . . . . 75
+6 Calling TetGen from Another Program 78
+6.1 The Header File . . . . . . . . . . . . . . . . . . . . . . . . . . 78
+6.2 The Calling Convention . . . . . . . . . . . . . . . . . . . . . 78
+6.3 The tetgenio Data Type . . . . . . . . . . . . . . . . . . . . 79
+6.4 Description of Arrays . . . . . . . . . . . . . . . . . . . . . . . 80
+6.4.1 Memory Management . . . . . . . . . . . . . . . . . . . 82
+6.4.2 The facet Data Structure . . . . . . . . . . . . . . . . 83
+6.5 An Example . . . . . . . . . . . . . . . . . . . . . . . . . . . . 84
+A Basic Definitions 89
+A.1 Simplices, Simplicial Complexes . . . . . . . . . . . . . . . . . 89
+A.2 Polyhedra and Faces . . . . . . . . . . . . . . . . . . . . . . . 90
+A.3 CSG and B-Rep Models of 3d Domains . . . . . . . . . . . . . 90
+B List of Error Codes and Messages 91
+References 92
+vii
+===== page 8 =====
+1
+1 Introduction
+TetGen is a tetrahedral mesh generator. It creates 3d triangulations of poly-
+hedral domains. It generates meshes with well-shaped elements whose sizes
+are adapted to the geometric features or user-provided sizing functions. It
+has applications in various applications in scientific computing, such as com-
+puter graphics (CG), computer-aided design (CAD), geometry processing
+(parametrizations and computer animation), and physical simulations (finite
+element analysis).
+For a set of 3d (weighted) points, TetGen generates the Delaunay and
+weighted Delaunay tetrahedralization as well as their duals, the Voronoi dia-
+gram and power diagram. For a 3d polyhedral domain, TetGen generates the
+constrained Delaunay tetrahedralization and an isotropic adaptive tetrahe-
+dral mesh of it. Domain boundaries (edges and faces) are respected and can
+be preserved in the resulting mesh. The shapes of resulting tetrahedra can
+be provably good for a large class of inputs. One of its main applications is to
+simulate physical phenomena by numerical methods, such as finite element
+and finite volume methods. A good quality mesh is essential to achieve high
+accuracy and efficiency of the simulations.
+The algorithms of TetGen are Delaunay-based. They can preserve arbi-
+trary complex geometry and topology. TetGen uses a constrained Delaunay
+refinement algorithm which guarantees termination and good mesh quality.
+The robustness of TetGen is enhanced by using advanced technologies devel-
+oped in computational geometry. A technical paper describing the algorithms
+and technologies used in TetGen is available [24].
+TetGen is an outcome of a long-term research project supported by Weier-
+strass Institute for Applied Analysis and Stochastics (WIAS). It is continu-
+ously developed and improved.
+TetGen is written inC++. It uses standard C/C++ library. It is easy to com-
+pile and runs on all major 32-bit and 64-bit computer systems. The source
+code of TetGen is freely available at http://www.tetgen.org. It is dis-
+tributed under the the terms of the GNU Affero General Public License
+(AGPL) (v 3.0 or later) or a commercial license provided by WIAS.
+The remainder of this section is to give a brief description of the triangu-
+lation and meshing problems considered in TetGen, and an overview of the
+implemented algorithms. For basic usage of TetGen, most of the information
+are not necessary to know, but Sections 1.2.1 and 1.2.5 contain some neces-
+sary guidelines to create correct inputs and to generate quality tetrahedral
+meshes.
+===== page 9 =====
+2 1 INTRODUCTION
+a Delaunay triangle
+a Delaunay edge
+circumcircle circumcircle
+circumcircle circumcircle
+circumcircles
+Figure 1: Left: Every Delaunay simplex has an empty circumcircle. Right:
+The Delaunay triangulation of a 2d point set.
+1.1 Triangulations of Point Sets
+Triangulations are basic geometric structures. A triangulation of a set V of
+points in Rd is ad-dimensional simplicial complexS whose vertex set is a sub-
+set of or equal toV . The underlying space ofS is the convex hull ofV . Given
+a point set, there are many triangulations of it. Among them, the Delaunay
+triangulation is of the most interested one. The dual of Delaunay triangu-
+lation is the Voronoi diagram of the point set. Delaunay triangulations and
+Voronoi diagrams have many nice mathematical properties [1, 12, 7]. They
+are extensively used in many applications.
+1.1.1 Delaunay Triangulations, Voronoi Diagrams
+Let V be a set of points in Rd, σ be a k-simplex (0≤k≤d) whose vertices
+are in V . A circumsphere of σ is a sphere that passes through all vertices of
+σ. If k =d,σ has a unique circumsphere, otherwise, there are infinitely many
+circumspheres ofσ. We say that σ is Delaunay if there exists a circumsphere
+of σ such that no vertex of V lies inside it, see Figure 1 Left.
+A Delaunay triangulation D of V is a simplicial complex such that all
+simplices are Delaunay, and the underlying space of D is the convex hull of
+V [6]. Figure 1 right illustrates a 2d Delaunay triangulation. A 3d Delaunay
+triangulation is also called a Delaunay tetrahedralization.
+We say thatV is in general position if nod+2 points inV lie on a common
+sphere. Otherwise, we say that V is in special position (or V is degenerate).
+A Delaunay triangulation of V is unique if V is in general position. Degen-
+eracies can be removed by applying an arbitrary small perturbation onto the
+coordinates of points in V .
+===== page 10 =====
+1.1 Triangulations of Point Sets 3
+Figure 2: A Voronoi region (Top-Left) and the Voronoi diagram (Top-Right)
+of a two-dimensional point set. Three dual edges of the Voronoi edges
+(Bottom-Left) and the dual diagram (Bottom-Right). If the point set is
+in general position, then this dual diagram is the Delaunay triangulation of
+this point set.
+The dual of the Delaunay triangulation is the Voronoi diagram (see Fig-
+ure 2). For any vertex p∈V , the Voronoi cell of p is the set of points whose
+distance to p not greater than to any other vertex of V , i.e. it is the set
+cell(p) ={x∈ Rd ;∥x- p∥≤∥ x- q∥,∀q∈V}, where∥·∥ stands for the
+Euclidean distance. The Voronoi diagram of V is a subdivision of Rd into
+Voronoi cells (some of which may be unbounded) and their faces [27]. It is a
+d-dimensional polyhedral complex. If the point set V is in general position,
+there is a one-to-one correspondence between the k-simplices of the Delau-
+nay triangulation and the (d-k)-polyhedra of the Voronoi diagram, where
+0≤k≤d. In R3, the vertices of the Voronoi diagram are the circumcenters
+of the tetrahedra of the Delaunay tetrahedralization.
+There is a nice relation between a Delaunay triangulation in Rd and a
+convex hull in Rd+1. For any point p = (p0,p 1,··· ,pd-1)∈ Rd, define its
+lifted point p+ = (p0,p 1,··· ,pd-1,pd)∈ Rd+1, where pd = p2
+0 +··· +p2
+d-1.
+For any point set V ⊂ Rd, define V + ={p+ ; p∈ V}⊂ Rd+1 be the lifted
+point set of V . All points in V + lie on a paraboloid in Rd+1 (see Figure 3
+left). The convex hull of V + is a (d + 1)-dimensional convex polytope P .
+A lower face of P is a face of P which is on the downside of P (visible by
+points in V ). The Delaunay triangulation of V is the projection of the set of
+===== page 11 =====
+4 1 INTRODUCTION
+Lifting and Projection
+Delaunay triangulation of S ⇢ R
+d
+can be obtained by first lifting every vertex
+x=( x1,x2,··· ,xd)i n S into a vertex x
+0
+=( x1,x2,··· ,xd,xd+1 )i n R
+d+1
+by letting
+the last coordinates (its "height") be
+xd+1 := kxk
+2
+= x
+2
+1 + x
+2
+2 + ··· + x
+2
+d,
+then taking the orthogonal projection of the convex hull of new point set S
+0
+⇢ R
+d+1
+.
+P'
+P
+z
+x/1.0e-01
+This fact shows that the Delaunay triangulation is one of special subdivisions of
+convex polytopes ,w h i c hh a v ear i c ht h e o r yi nd i s c r e t ea n dc o m b i n a t o r i a lg e o m e t r y
+[Gr¨ unbaum 1967, 2003, Ziegler 1997, De Loera, Rambau & Santos 2010 ].
+Hang Si Introduction to Delaunay-based Tetrahedral Mesh Generation 18 / 154
+p
+p0
+q0
+q
+r
+r0
+s
+s0
+z=x2
++y2
+z =0
+z=x2
++y2
+a lower face
+Figure 3: The relation between Delaunay triangulation in Rd and convex
+hull in Rd+1 (here d = 2). Left: Some 2d points and their corresponding 3d
+lift points. Right: The Delaunay triangulation of a set of 2d points and the
+lower convex hull of its 3d lifted points.
+lower faces ofP ontod dimensions. Figure 3 right illustrates the relationship
+when d = 2. A simplex σ is a Delaunay simplex if and only if there exists
+a hyperplane in Rd+1 passing through the lifted vertices of σ such that no
+other lifted vertices in V + lies below of it. Similarly, the Voronoi diagram of
+V is the projection of the lower faces of a convex polytope Q⊂ Rd+1 such
+that P and Q are polar to each other [29].
+1.1.2 Weighted Delaunay Triangulations, Power Diagrams
+Weighted Delaunay triangulations are generalizations of Delaunay triangu-
+lations by replacing the Euclidean distance by "weighted distance". We
+associate each point p∈ Rd a weight (a real value) ωp∈ R. A point with a
+weight is called a weighted point in Rd× R. In particular, points in Rd can
+be considered weighted points with zero weight.
+It is convenient to write the weight of a point as the square of a nonneg-
+ative real, ωp =±p2, where p≥ 0. A weighted point p′ = (p,±p2) can be
+interpreted as a sphere centered at p with a radius p. Figure ?? shows a set
+of weighted points in R2.
+The weighted distance between two weighted points p′ and z′ is
+πp′,z′ =∥p- z∥2- (p2 +z2),
+see Figure 4 left for an example.
+Two weighted points p′, z′ are orthogonal if their weighted distance is
+zero, i.e.,
+∥p- z∥2 = (p2 +z2).
+===== page 12 =====
+1.1 Triangulations of Point Sets 5
+p z
+Z
+p z
+Z
+p z
+P
+Figure 2.11: The weighted distance between two circles equals the length of the second
+tangent line. The weighted distance from a point to a circle equals the length of the tangent
+line. The weighted distance from one point to another is their Euclidean distance.
+Two Euclidean points have zero distance when they are the same point. Two weighted
+points ˆp,ˆzhave zero weighted distance when they are orthogonal, meaning that the two
+spheres intersect at right angle i.e. ￿p-z￿2=(P2+Z2). We also define a point to be
+orthogonalto a sphere when the sphere passes through the point, which means that the
+weighted distance is also zero. Figure 2.12 demonstrates orthogonality in two dimensions.
+The book by Pedoe [46] offers a comprehensive study on the system of orthogonal circles. For
+completeness, we say two weighted points arefurther than orthogonalwhen their weighted
+distance is positive, andcloser than orthogonalwhen the distance becomes an imaginary
+number.
+In general, four points inR3define a unique circumsphere passing through them. Sim-
+ilarly four weighted points ˆp0,ˆp1,ˆp2,ˆp3in three dimensions define a unique common ortho-
+sphere(orthogonal sphere) ˆzby the system of equations
+￿z-pi￿2-(Z2+P2
+i)=0,0≤i≤3.
+19
+Figure 2.13: Orthospheres are generalization of circumspheres.
+Figure 2.14: Two weighted Delaunay triangulations of a cube.
+21
+Figure 4: Left: The weighted distance (left) of two weighted points ( p,p 2)
+and (z,z 2). Right: The orthosphere of three weighted points. (Figures are
+taken from Damrong Guoy's PhD thesis.)
+We say that two weighted points are farther than orthogonal when their
+weighted distance is positive, and closer than orthogonal when the distance
+becomes an imaginary number.
+In general,d+1 points in Rd define a unique circumsphere passing through
+them. Similarly, d + 1 weighted points in Rd define a unique common or-
+thosphere. When all points have zero weights, their orthosphere is just their
+circumsphere. Figure 4 (right) gives an example of the orthosphere of three
+weighted points in two dimensions.
+Let V′⊂ Rd× R be a finite set of weighted points. We say a sphere
+is empty if all weighted points in V′ are farther than orthogonal of it. The
+weighted Delaunay triangulation of V′ is a simplicial complex D′ such that
+every simplex has an orthosphere which is empty, and the underlying space
+ofD′ is the convex hull of V′. Obviously, if all the points have the same
+weight, the weighted Delaunay triangulation is the same as the usual Delau-
+nay triangulation. Note that, a weighted Delaunay triangulation does not
+necessarily contain all points in V′.
+The dual of a weighted Delaunay triangulation is a weighted Voronoi
+diagram, also called the power diagram [1, 9] of the weighted point set V′.
+Power diagrams can be similarly defined as the Voronoi diagram by using
+the weighted distance instead of the Euclidean distance. If no d + 2 weighted
+points of V′ share a common orthosphere, i.e., it is in general position, then
+the simplices of the weighted Delaunay triangulation and the cells of the
+power diagram have a one-to-one correspondence. In R3, the vertices of
+the power diagram are the orthocenters of the tetrahedra of the weighted
+Delaunay tetrahedralization.
+A weighted Delaunay triangulation of V ⊂ Rd is also the projection
+of the set of lower faces of a convex polytope P ⊂ Rd+1. Any point in
+p ={p0,...,p d-1} ∈V is lifted to a point p′ ={p0,...,p d-1,pd} ∈Rd+1,
+where pd = p2
+0 +··· +p2
+d-1-p2 (p is the weight of p). For p̸= 0, p′ does
+===== page 13 =====
+6 1 INTRODUCTION
+not lie on a paraboloid in Rd+1, but is moved vertically downward by p2. A
+simplex belongs to the weighted Delaunay triangulation of V (i.e., it has an
+empty orthosphere) if and only if there exits a hyperplane passing through
+the lifted weighted points of these simplex and no lifted weighted point of V
+lie below the hyperplane.
+Both weighted Delaunay triangulations and power diagrams are called
+regular subdivisions of point sets [29]. Regular subdivisions have nice combi-
+natorial structures. They are one of the important objects studied in higher-
+dimensional convex polytopes [29, 5].
+1.1.3 Algorithms
+Algorithms for generating Delaunay (and weighted Delaunay) tetrahedraliza-
+tions are well studied in computational geometry [7]. TetGen implemented
+two algorithms, the Bowyer-Watson algorithm [3, 28], and the incremental
+flip algorithm [9]. Both algorithms are incremental, i.e., they insert points
+one after another. Both have the worst-case runtime O(n2). In most prac-
+tical applications, they are usually very efficient. For example, if points are
+uniformly distributed, the expected running time is O(n logn).
+The speed of incremental algorithms is very much affected by the cost of
+point location. TetGen uses a spatial sorting scheme [2] to improve the point
+location. The idea is to sort the points such that nearby points in space have
+nearby indices. The points are first randomly sorted in different groups, then
+points in each group are sorted along the Hilbert curve. Inserting points in
+this order, each point location can be done in nearly constant time.
+TetGen uses Shewchuk's exact geometric predicates [15] for performing
+the Orient3D, InSphere, and Orient4D tests. These suffice to guarantee the
+numerical robustness of generating Delaunay and weighted Delaunay tetra-
+hedralizations. TetGen uses a simplified symbolic perturbation scheme [8] to
+remove the degeneracies.
+===== page 14 =====
+1.2 Tetrahedral Meshes of 3d Spaces 7
+A 3d PLC non-PLCs
+Figure 5: Left: A 3d piecewise linear complex. The left shaded area shows a
+facet, which is non-convex and has a hole in it. It has also edges and vertices
+floating in it. The right shaded area shows an interior facet separating two
+sub-domains. Right: Configurations which are not PLCs.
+1.2 Tetrahedral Meshes of 3d Spaces
+A tetrahedral mesh is a 3d simplicial complex that is a discrete representation
+of a 3d continuous space (domain), both in its topology and geometry. Note
+that a Delaunay tetrahedralization is a tetrahedral mesh of the convex hull
+of its vertex set. In general, a geometric domain may not be convex and may
+have arbitrarily complex boundaries.
+The input domain of TetGen is modeled by a piecewise linear complex
+(Section 1.2.1). The focuses of TetGen are the representation of the geometry
+(the boundary) and the quality of the mesh. TetGen generates several types
+of tetrahedral meshes to achieve these goals. They are explained in the
+following subsections.
+1.2.1 Piecewise Linear Complexes (PLCs)
+At first, we need a model to represent a 3d domain. A 3d piecewise linear
+complex (PLC) [11]X is a set of cells, that satisfies the following properties:
+(1) The boundary of each cell in X is a union of cells in X .
+(2) If two distinct cells f,g ∈X intersect, their intersection is a union of
+cells inX .
+Figure 5 left shows an example.
+The boundary of a 3d PLC is the set of cells whose dimensions are less
+than or equal to 2. A 0-dimensional cell is a vertex. In particular, we call
+a 1-dimensional cell (an edge) a segment, and a 2-dimensional cell a facet.
+Each facet of a PLC is a 2d PLC. It may contain holes, segments and vertices
+in its interior, see Figure 5 left for an example.
+===== page 15 =====
+8 1 INTRODUCTION
+Figure 6: Examples of surface meshes of PLCs.
+PLCs are flexible in describing 3d geometric features. For instance, they
+permit facets, segments and vertices to float in a domain, or segments and
+vertices to float in the facet. One purpose of these floating cells is to constrain
+how the PLC can be meshed, so that boundary conditions may be applied
+at those cells.
+The definition of a PLC disallows illegal intersections of its cells, see Fig-
+ure 5 right for examples. Two segments only can intersect at a common
+vertex that is also in X . Two facets of X may intersect only at a union of
+vertices and segments which are also in X .
+The underlying space of a PLC X , denoted|X| , is ⋃
+f∈Xf, which is the
+domain to be triangulated. A tetrahedral mesh ofX , is a 3d simplicial com-
+plexT such that (1)X andT have the same vertices, (2) every cell in X is
+a union of simplices in T , and (3)|T| =|X| .
+LetT be a tetrahedral mesh of a 3d PLC X . The boundary of X is
+respected by the elements of T , i.e., each segment of X is represented by a
+union of edges in T , and each facet of X is represented a union of triangles
+inT . To distinguish those edges and triangles of T which are on segments
+and facets ofX , we call them boundary edges and boundary faces.
+TetGen uses a simple boundary representation (a surface mesh) to repre-
+sent a 3d PLC. It is explained in Section 5.1.1 and in the file formats .poly
+and .smesh of TetGen. Figure 6 shows two typical surface meshes of 3d
+PLCs. The following points are useful to know.
+• TetGen does not generate the input surface mesh of the PLC.
+• TetGen can modify the surface mesh by further subdividing them. It
+is necessary to conform to the constrained Delaunay property and im-
+prove the mesh quality. This is the default choice of the -p switch.
+===== page 16 =====
+1.2 Tetrahedral Meshes of 3d Spaces 9
+Figure 7: Polyhedra which can not be tetrahedralized without Steiner points.
+Left: The Sch¨ onhardt polyhedron [14]. Right: The Chazelle's polyhedron [4].
+• TetGen can preserve the surface mesh (does not subdivide it) when the
+switch -Y is applied.
+• If the input surface mesh contains self-intersections, TetGen will detect
+them and stop the meshing process automatically.
+• If the input surface mesh does not enclose of 3d volume, i.e., it is not
+watertight, TetGen will finish the meshing process, but it returns an
+empty 3d tetrahedral mesh unless the -c switch (to keep the convex
+hull of the mesh) is used.
+Limitation of PLCs. A PLC only gives a piecewise linear approximation
+of a 3d domain. It does not take the curvature of the surfaces into account.
+When TetGen modifies the surface mesh, it only modifies the linear edges
+and facets. This is unfortunately a limitation of using PLC.
+1.2.2 Steiner Points
+There are 3d polyhedra which may not be triangulated with only its vertices.
+Two typical examples are shown in Figure 7. Such polyhedra can only be
+triangulated if one adds some additional vertices, so-calledSteiner points into
+it.
+A Steiner tetrahedralization of a PLC X is a tetrahedralization of X∪
+S, where S is a finite set of Steiner points (not vertices of the PLC X ).
+TetGen generates Steiner tetrahedralizations of PLCs. Two types of Steiner
+points are used in TetGen:
+• The first type of Steiner points is used in creating an initial tetrahedral-
+ization of PLC. These Steiner points are mandatory to create a valid
+tetrahedralization.
+===== page 17 =====
+10 1 INTRODUCTION
+• The second type of Steiner points is used in creating quality tetrahedral
+meshes of PLCs. These Steiner points are optional, while they may be
+necessary to improve the mesh quality or to conform to the size of mesh
+elements.
+In both cases, TetGen tries to generate the Steiner points efficiently and
+use a small amount of Steiner points. The optimal locations and the optimal
+amount of Steiner points is still a topic of research.
+1.2.3 Boundary Conformity
+A fundamental problem in mesh generation is how to generate a mesh which
+contains a set of input constraints (edges and triangles). These constraints
+usually represent special requirements, such as the boundary complex of a
+PLC. It is generally referred to the boundary conformity or boundary recovery
+problem.
+Boundary conformity in 2d is very easy. One can enforce any edge (which
+does not intersect any boundary) into a triangulation. Moreover, it does not
+need any Steiner point. However, it isn't easy in 3d since it is not always
+possible to enforce an edge or a triangle into a 3d triangulation without using
+Steiner points.
+TetGen can generate different types of (Steiner) tetrahedralizations such
+that input segments and facets of a PLC are respected.
+• A conforming Delaunay tetrahedralization. It is a subcomplex of a De-
+launay tetrahedralization, i.e., every tetrahedron is a Delaunay tetra-
+hedron. It may contain Steiner points. Some Steiner points may lie on
+PLC boundary, i.e., a boundary segment or facet of the PLC may be
+represented by a union of edges and triangles of the tetrahedralization.
+• A constrained Delaunay tetrahedralization (CDT). Each of its tetra-
+hedra satisfies a constrained Delaunay criterion. A CDT has many
+properties similar to those of a Delaunay tetrahedralization. It is fur-
+ther explained in Section 1.2.4. A CDT may contain Steiner points.
+Moreover, most of the Steiner points lie on the segments of the PLC.
+• A constrained tetrahedralization. It is a tetrahedralization which pre-
+serves the input surface mesh of the PLC. It may contain Steiner points,
+which may lie on the boundary or in the PLC's interior. This type of
+tetrahedralization may be neither Delaunay nor constrained Delaunay.
+These different types of tetrahedralizations produced by TetGen may find
+use in different situations. For instance, conforming DTs are desired for
+===== page 18 =====
+1.2 Tetrahedral Meshes of 3d Spaces 11
+d
+p
+q
+a
+b
+c
+f
+a
+bc
+d
+e
+Figure 8: Left: The tetrahedron abcd is constrained Delaunay. Right: The
+triangle abc is locally Delaunay.
+applications that need the Delaunay property. While a comforming DT might
+need a large amount of Steiner points. CDTs require less Steiner points
+than conforming DTs. Constrained tetrahedralizations are useful in many
+engineering applications for which the input domain boundaries need to be
+preserved.
+1.2.4 Constrained Delaunay Tetrahedralizations
+A constrained Delaunay tetrahedralization(CDT) is a variation of a Delaunay
+tetrahedralization that is constrained to respect the edges and facets of X .
+CDTs in the plane was introduced by Lee and Lin [10]. Shewchuk [16, 21]
+generalized them into three or higher dimensions.
+In the following, we give two equivalent definitions of constrained Delau-
+nay tetrahedralizations.
+The visibility between two verticesp, q∈|X| is called occludedif there is a
+facetf∈X such that p and q lie on opposite sides of the plane that includes
+f, and the line segment pq intersects this facet (see Figure 8). A tetrahedron
+t whose vertices are inX is constrained Delaunay if its circumsphere encloses
+no vertex of X , which is visible from any point in the relative interior of t
+(see Figure 8 Left).
+A tetrahedralizationT is a constrained Delaunay tetrahedralization ofX
+if it is a tetrahedralization of X and every tetrahedron of T is constrained
+Delaunay.
+Let s be a triangle in a tetrahedralization T ofX . s is said to be locally
+Delaunay if either it belongs to only one tetrahedron of T , or it is a face of
+exactly two tetrahedra t1 and t2 and it has a circumsphere which does not
+enclose any vertex of t1 andt2. Equivalently, the circumsphere of t1 encloses
+no vertex of t2 and vice versa (see Figure 8 Right). A tetrahedralization T
+of P is a CDT of P if every triangle in T not included in any facet of P is
+locally Delaunay.
+The definitions of Delaunay tetrahedralization and constrained Delaunay
+===== page 19 =====
+12 1 INTRODUCTION
+Regular Needle Spindle Wedge Cap Sliver
+Figure 9: Tetrahedra of different shapes.
+tetrahedralization are almost the same except that, for the CDT, we free the
+requirement of being locally Delaunay for triangles in the facet. Hence CDTs
+retain many properties of those of Delaunay tetrahedralizations, see [21, 23].
+Note that simplices (tetrahedra, triangles, and edges) in a CDT are not
+always Delaunay.
+A CDT of an arbitrary PLC X may not exist [21]. Steiner points are
+necessary to ensure the existence of a CDT. A Steiner CDT ofX is a CDT
+ofX∪ S, where S⊂|X| is a set of Steiner points.
+Compared to conforming Delaunay tetrahedralizations, (Steiner) CDTs
+usually require much less Steiner points.
+1.2.5 Mesh Quality, Tetrahedron Shape Measures
+There is no unique definition of the term "mesh quality". It depends on
+the intended application and the numerical methods employed, see, e.g. [19].
+As a general guideline, elements with small and large angles (and dihedral
+angels) should be avoided since they usually downgrade the accuracy and
+performance of numerical methods.
+Figure 9 shows six differently shaped tetrahedra. A tetrahedron shape
+measure is a continuous function that evaluates the shape of a tetrahedron
+by a real number. Various tetrahedron shape measures have been suggested;
+some of them are equivalent.
+The most general shape measure for a simplex is the aspect ratio. The
+aspect ratio, η(τ), of a tetrahedron τ is the ratio between the longest edge
+length lmax and the shortest height hmin, i.e., η(τ) =lmax/hmin. The aspect
+ratio measures the "roundness" of a tetrahedron in terms of a value between√
+2/
+√
+3 and +∞. A low aspect ratio implies a better shape. Other possible
+definitions of aspect ratio exist, such as the ratio between the circumradius
+and inradius. These definitions are equivalent in the sense that if a tetrahe-
+dralization is bounded w.r.t. one of the ratios then it is bounded w.r.t. all
+the others.
+The tetrahedron shape measures used in TetGen are the face an-
+gles (angles between two edges) and dihedral angles (angles between two
+===== page 20 =====
+1.2 Tetrahedral Meshes of 3d Spaces 13
+R
+L
+R
+L
+R
+L
+Figure 10: The radius-edge ratio (R
+L) of tetrahedra. Most of the badly shaped
+tetrahedra will have a large radius-edge-ratio except slivers (Right).
+faces) as the shape measures of tetrahedra. They work well with the Delau-
+nay refinement algorithm used in TetGen. Also, the combination of them
+achieves the same objective as the aspect ratio.
+To bound the smallest face angle is equivalent to bound the radius-edge
+ratio of the tetrahedron. The radius-edge ratio, ρ(τ) of a tetrahedron τ is
+the ratio between the radius r of its circumscribed ball and the length d of
+its shortest edge, i.e.,
+ρ(τ) = r
+d≥ 1
+2 sinθmin
+,
+where θmin is the smallest face angle of τ, see Figure 10. The radius-edge
+ratioρ(τ) is at least
+√
+6/4≈ 0.612, achieved by the regular tetrahedron. The
+radius-edge ratio of most badly shaped tetrahedra is big (e.g., > 2.0) except
+the sliver, which is a very flat tetrahedra. They can have no small edges, but
+nearly zero volume. A sliver can have a minimal value
+√
+2/2≈ 0.707; hence
+the radius-edge ratio is not equivalent to aspect ratio (due to the slivers).
+Nevertheless, the radius-edge ratio is a useful shape measure. It can be
+shown that if a tetrahedral mesh has a radius-edge ratio bounded for all of
+its tetrahedra, then the point set of the mesh is well spaced, and each node
+of the mesh has bounded degree [11, 23].
+The dihedral angle between two faces of a tetrahedron τ is between 0◦
+and 180◦. The minimum dihedral angle φmin(τ) of τ is a tetrahedron shape
+measure used by TetGen.
+1.2.6 Mesh Adaptation, Mesh Sizing Functions
+The goal of adaptive mesh generation is to generate a mesh that achieves the
+desired mesh quality with a small number of mesh elements. In numerical
+methods, such a mesh gives the right balance between the solution time and
+the accuracy of the solution, see Figure 11 for an example.
+===== page 21 =====
+14 1 INTRODUCTION
+Figure 11: An adaptive tetrahedral mesh (left) and the calculated numerical
+solution (right) of a heat conduction problem.
+As a general guideline for adaptive mesh generation, TetGen uses a mesh
+sizing function . Let X be a 3d PLC. A mesh sizing function H :|X|→ R,
+is a function that maps each point p∈|X| to a positive value H(p) which
+specifies the desired mesh edge lengths at the point location p. Typically,
+the mesh sizing function can be the geometrical features of the input PLC,
+an error distribution function obtained from a previous numerical solution
+or a user-specified function.
+A mesh sizing function H is isotropic if the edge length does not vary
+with respect to the directions at p, otherwise, it is anisotropic. The current
+version of TetGen only supports isotropic mesh sizing functions. In most
+cases, H is defined only at some points in |X| . The size at other points in
+|X| is obtained using interpolation.
+TetGen supports several ways of defining a sizing function. It can be
+defined automatically, explicitly on various sources of volumes, facets, line
+segments, and points, or through user-defined sizing functions.
+• By default, TetGen uses the local feature size [13] of the PLC. It is a
+distance function on|X| based on its boundary information.
+• One can apply a maximum volume bound (the -a switch) on every
+tetrahedra of the mesh. It is the same as defining a global constant
+sizing function. For a domain consisting of multiple sub-domains (ma-
+terials), the volume bound can vary in each sub-domain, see the .poly
+and .smesh file formats.
+• One can define a mesh sizing function directly on the input PLC. In
+this way, to each vertex of the PLC, a value for the mesh sizing function
+is to be assigned, see the .mtr file format.
+• One can use a background mesh to define a sizing function. The back-
+ground mesh can be any tetrahedral mesh. Its underlying space must
+cover the input PLC. To each mesh node of the background tetrahedral
+===== page 22 =====
+1.2 Tetrahedral Meshes of 3d Spaces 15
+mesh, a value for the mesh sizing function is assigned, which contains
+the desired edge length at that location in the PLC.
+All the above ways of defining a sizing function can be used at the same time.
+TetGen will automatically choose the smallest mesh element size. In the last
+two ways, i.e., defining mesh element sizes on nodes, it is possible to set the
+size to zero. In this case, the mesh element size at this location is ignored.
+1.2.7 Mesh Optimization
+Mesh optimization is a critical way of improving mesh quality. Typically,
+it improves one or several objective functions on mesh quality, such as the
+aspect ratio, minimum or maximum dihedral angles, etc.
+Mesh optimization is usually done by applying various local mesh opera-
+tions, which either change the node locations or change the mesh connections.
+The most frequently used operations are vertex smoothing, edge/face swap-
+ping, edge contraction, and vertex insertion. These operations are combined
+according to a schedule to improve the mesh quality iteratively. One can de-
+cide to either optimize the whole mesh (global optimization) or only optimize
+a part of the mesh (local optimization).
+TetGen uses mesh optimization after the mesh generation. It locally opti-
+mizes the tetrahedral mesh to restore the Delaunay property and to improve
+the mesh quality. The current version uses the maximum dihedral angle as
+an objective function. It provides options to choose local operations and to
+restrict the maximum number of iterations in the optimization procedure,
+see the -O switch.
+1.2.8 Algorithms
+Shewchuk first considered algorithms for constructing 3d CDTs. In [16], a
+sufficient condition for the existence of a CDT of a PLC (or a polyhedron)
+is given. Based on this condition, several algorithms for constructing Steiner
+CDTs are proposed [18, 20, 26, 25]. TetGen's CDT algorithm is from Si and
+G¨ artner [26, 25].
+The basic algorithm for generating quality tetrahedral meshes is the De-
+launay refinement algorithm from Ruppert [13] and Shewchuk [17]. This
+algorithm generates a quality mesh of Delaunay tetrahedra with no tetrahe-
+dra having a radius-edge ratio greater than 2 .0 (equivalently, no face angle
+less than 14.5o). The sizes of tetrahedra are graded from small to large over a
+short distance. TetGen implemented this algorithm for improving the mesh
+quality of a CDT of a PLC. In practice, the algorithm is generally surpass-
+===== page 23 =====
+16 1 INTRODUCTION
+ing the theoretical bounds and eliminating tetrahedra with small or large
+dihedral angles efficiently.
+There are two theoretical problems of the basic Delaunay refinement al-
+gorithm. First, it does not remove slivers due to using a radius-edge ratio
+as the sole tetrahedral shape measure. Second, it may not terminate if the
+input PLCX contains sharp features, i.e., there are two edges of X meeting
+at an acute angle, or two facets of X meeting at an acute dihedral angle.
+TetGen uses the minimal dihedral angle of a tetrahedron as a second
+shape measure. The Delaunay refinement algorithm can find and remove
+slivers. Since TetGen works with CDTs, it can detect all the sharp features
+in the CDT in advance. Tetrahedra at the sharp features are never removed.
+The modified algorithm in TetGen always terminates. However, some badly-
+shaped tetrahedra near the sharp features may survive.
+If a user-defined mesh sizing function is given, TetGen will generate an
+adaptive tetrahedral mesh according to the input mesh sizing function. It
+uses a constrained Delaunay refinement algorithm [22].
+===== page 24 =====
+1.3 Description of the Meshing Process 17
+Figure 12: The flowchart of the mesh generation process of TetGen.
+1.3 Description of the Meshing Process
+Figure 12 shows a graphic flowchart of the meshing process in TetGen.
+Here are the general steps of TetGen to create a (quality) tetrahedral
+mesh. Many of these steps can be skipped, depending on the command line
+switches.
+1. Initialize constants and parse the command line.
+2. Read the vertices from a ( .node) file and either
+- create the corresponding Delaunay tetrahedralization (DT) (no
+-r), or
+- read an existing tetrahedral mesh from ( .ele, .face, .edge) files
+and reconstruct it ( -r).
+===== page 25 =====
+18 1 INTRODUCTION
+3. Read the boundary informations (segments and facets) from ( .poly or
+.smesh, .edge) files and triangulate them ( -p).
+4. Read the background mesh from ( .b.node, .b.ele, .b.mtr ...) files
+(if it is provided) and interpolate the mesh element size from the back-
+ground mesh to the current mesh ( -m).
+5. Insert the boundary segments and facets into the DT ( -p) by either
+- constructing a constrained Delaunay tetrahedralization (CDT) in
+which the segments and facets may be split into smaller pieces (no
+-Y), or
+- recovering the segments and facets in a tetrahedralization which
+contains them (-Y).
+6. Read the holes (-p), regional attributes (-pA), and regional volume
+constraints (-pa), and either
+- remove the exterior tetrahedra (in the holes and concavities) (no
+-c), or
+- mark the exterior tetrahedra ( -c),
+and spread the regional attributes and volume constraints.
+7. Coarsen the mesh ( -R) by removing vertices which are either marked
+or inconsistent according to a mesh sizing function ( -m).
+8. Read the list of additional vertices from a ( .a.node) file (if it is pro-
+vided) and insert them into the current mesh ( -i).
+9. Enforce the constraints on minimum quality bound (-q) and maximum,
+volume (-a), and mesh sizing function ( -m).
+10. Optimize the mesh with respect to the optimization scheme ( -O) based
+on specified quality measures ( -o).
+11. Write the output files and print the statistics.
+12. Check the consistency of the mesh ( -C).
+===== page 26 =====
+19
+2 General Information
+This section gives some general information about TetGen.
+2.1 Language, Platforms
+TetGen is written entirely in C++, and it only uses the standard C (ANSI)
+libraries. Hence the code is easily portable and should be compiled by a
+popular C++ compilers, such as GNU's gcc/g++, Intel's and Mircosoft's C++
+compilers. TetGen compiles and runs on all major computer architectures
+and major operating systems (Unix/Linux, Windows, Mac OS) with 32-bit
+and 64-bit versions.
+The current version of TetGen contains about 26 , 000 source code lines
+and 7, 000 comment lines. These numbers do not include those of Shewchuk's
+robust predicates.
+2.2 Memory requirement
+TetGen dynamically allocates memory when it is needed. There is no mini-
+mum memory requirement to run TetGen. It only depends on the physical
+memory available from your system. The more memory you have, the larger
+the mesh you can generate.
+For example, the 32-bit version of TetGen used about 694 .5 Mega bytes
+memory to generate the Delaunay tetrahedralization (DT) of a set of 2, 000, 000
+(two million) points randomly distributed inside a unit cube. This DT has
+13, 504, 899 tetrahedra-approximately 364 bytes per-vertex or 54 bytes per
+tetrahedron. In other words, with 4 Gigabyte memory, a maximum Delaunay
+tetrahedralization may be generated by the 32-bit version of TetGen having
+approximately 11, 799, 360 (ca. 11 million) vertices or 79 , 536, 431 (ca. 79
+million) tetrahedra.
+More memory is needed in generating quality tetrahedral meshes. The
+extra memory is used to store boundary information and working arrays
+of algorithms. For example, the 32-bit version of TetGen used about 770
+Megabytes memory to generate a quality tetrahedral mesh with 2 , 000, 000
+(two million) vertices and 12, 237, 300 tetrahedra.
+So far, the largest quality tetrahedral mesh was generated by the 64-
+bit version of TetGen. It contains 1 , 007, 700, 944 (ca. 1 billion) vertices,
+and 6, 454, 556, 696 (ca. 6 .45 billion) tetrahedra. TetGen used about 905 .7
+Gigabytes memory on generating this mesh, see Table 2.
+===== page 27 =====
+20 2 GENERAL INFORMATION
+2.3 CPU time estimation
+When generating Delaunay tetrahedraliations, the worst-case running time
+of TetGen is O(n2), where n is the input number of vertices. However, this
+only happens for some special point sets. For most point sets appearing in
+applications, TetGen runs in almost O(n logn) time, see Table 1.
+The CPU time required to obtain the quality tetrahedral mesh is related
+to the complexity of the geometry and topology of the inputs and the com-
+mand line switches and parameters specified. Nevertheless, the running time
+of TetGen increases almost linearly concerning the output number of mesh
+elements, see Table 2.
+2.4 Performance
+This section gives some practical information regarding the performance of
+TetGen. In particular, Table 1 and Table 2 report the statistics of some test
+runs of TetGen. The used version of TetGen was a 64-bit version compiled by
+GNU gcc/g++ version 4.7.2 with the -O3 (optimization) switch. The used
+computer was a computer of WIAS ( erhard-03) with Intel(R) Xeon(R)
+Ten-Core 2.40GHz CPU, 1, 024 Giga byte memory, and SuSE Linux. The
+given CPU times exclude the file I/O time. Comparisons of TetGen with
+other programs are available in paper [24].
+Table 1 shows the statistics of TetGen on creating Delaunay tetrahedral-
+izations. Three random point sets of different sizes are used in these tests.
+They are generated by the tool rbox (command: rbox -D3 xxx ) in the pro-
+gram qhull (http://www.qhull.org). It is well known that the Delaunay
+tetrahedralizations of random point sets have linear complexity. Both mem-
+ory usage and CPU time of TetGen are quasilinear.
+# of points # of tets used memory CPU time
+(input) (output) (Mega bytes) (seconds)
+1, 000, 000 6, 748, 645 710 9.2
+2, 000, 000 13, 504, 917 1, 420 19.0
+20, 000, 000 135, 059, 867 14, 196 203.1
+Table 1: Statistics of TetGen on generating Delaunay tetrahedralizations.
+Table 2 shows the statistics of TetGen on creating quality tetrahedral
+meshes. The input of these tests is a 3d unit cube with 8 vertices and 6
+facets described in file cube.smesh. The resulting meshes were generated by
+using the command: tetgen -pqa# -x1000000 cube.smesh , where " -a#"
+===== page 28 =====
+2.5 Errors 21
+specifies a very small tetrahedron volume constraint, and " -x1000000" spec-
+ifies a user-defined memory allocation size.
+volume # of points # of tets used memory CPU time
+constraint (output) (output) (Mega bytes) (seconds)
+1.0× 10-7 3, 023, 518 18, 744, 549 2, 904 126
+1.0× 10-8 29, 412, 255 186, 090, 870 27, 599 1, 374
+1.0× 10-9 290, 323, 148 1, 854, 336, 524 268, 781 12, 124
+5.0× 10-10 579, 301, 396 3, 706, 331, 655 534, 386 26, 872
+2.87× 10-10 1, 007, 700, 944 6, 454, 556, 696 927, 449 44, 261
+Table 2: Statistics of TetGen on generating quality tetrahedral meshes.
+2.5 Errors
+When running TetGen, errors may happen. In this case, TetGen may fail to
+generate a mesh. The typical reasons that cause failures of TetGen may be
+one of the follows:
+• The wrong use of command line switches and parameters.
+• The input surface mesh contains self-intersections.
+• Out of memory.
+• A known bug of TetGen.
+• An unknown bug of TetGen.
+In most cases TetGen is able to detect the error. If TetGen is running as
+a standalone program and if an error is detected, then TetGen will report a
+message that describes the error possibly together with a suggestion to fix
+it, and terminate. Below is an example of such a message.
+Found two segments intersect each other.
+1st: [13,7] 1.
+2nd: [1114,1113] 1.
+A self-intersection was detected. Program stopped.
+Hint: use -d option to detect all self-intersections.
+===== page 29 =====
+22 2 GENERAL INFORMATION
+If TetGen is running as a library, i.e., it is called inside another program,
+then the error message will not be seen, and TetGen will throw an error
+index (integer), which can be caught by the standard C++ exception handler
+try and catch. A list of error indices and messages are provided in the
+Appendix.
+When TetGen terminates on an error, it automatically releases the used
+memory before terminating itself.
+===== page 30 =====
+23
+3 Getting Started
+TetGen is distributed in its source code (written in C++). The latest version
+of TetGen is available at http://www.tetgen.org.
+Section 3.1 briefly explains how to compile TetGen into an executable
+program or a library.
+Once TetGen is compiled, and assume you have the executable file,tetgen
+(or tetgen.exe in Windows), you can start testing TetGen with the included
+example file by following the tutorial in Section 3.2.
+TetGen does not have a graphic user interface (GUI). It can export mesh
+files to popular mesh viewers, see Section 3.3.
+3.1 Compilation
+The archive (.zip or .tra.gz) contains the following files:
+README General information.
+LICENSE Copyright notices.
+tetgen.h C++ header file of TetGen.
+tetgen.cxx C++ source file of TetGen.
+predicates.cxx C++ source of Shewchuk's predicates.
+makefile make file for compiling TetGen.
+CMakeLists.txt cmake file for compiling TetGen.
+example.poly An example input file.
+The file predicates.cxx is a modified C++ version of Shewchuk's robust
+geometric predicates http://www.cs.cmu.edu/~quake/robust.html.
+To compile TetGen, use a C++ compiler for the system on which Tet-
+Gen will be used, such as GNU's g++, or Microsoft C++ on MS Windows
+systems. TetGen may be compiled into an executable program or a library.
+3.1.1 Using make
+The easiest way to compile TetGen is to edit and use the included makefile.
+Before compiling, put all source files,tetgen.h, tetgen.cxx, and predicates.cxx
+and the makefile into one directory (usually they are), read the makefile,
+which describes your options, and edit it accordingly.
+You should at least specify the C++ compiler and the level of optimiza-
+tion. By default, the GNU C++ compiler (g++) is used, and there is no
+optimization is used.
+===== page 31 =====
+24 3 GETTING STARTED
+Once you have done this, type make to compile TetGen into an executable
+program or type make tetlib to compile TetGen into a library. The exe-
+cutable file tetgen or the library libtet.a appears in the same directory as
+the makefile.
+Alternatively, the files are usually easy to compile directly on the com-
+mand line. Assume you're using g++, first compile the file predicates.cxx
+to get an object file:
+g++ -c predicates.cxx
+To compile TetGen into an executable file, use the following command:
+g++ -o tetgen tetgen.cxx predicates.o -lm
+To compile TetGen into a library, the symbol TETLIBRARY is needed:
+g++ -DTETLIBRARY -c tetgen.cxx
+ar r libtet.a tetgen.o predicates.o
+Some additional remarks to get an efficient executable version of TetGen.
+• One should use the optimization options provided by the C++ com-
+piler. Usually, an optimized version of TetGen may run double times
+faster than an unoptimized one.
+• There are some assertions inserted into the source code of TetGen.
+They are used for catching program bugs. But they may slow down the
+performance of TetGen. You can disable them by adding the symbol
+-DNDEBUG in your commands of compilation.
+Here is an example to get an optimized version of TetGen using GNU's C++
+compiler:
+g++ -O3 -DNDEBUG -c predicates.cxx
+g++ -O3 -DNDEBUG -o tetgen tetgen.cxx predicates.o -lm
+3.1.2 Using cmake
+As an alternative, one can compile TetGen using cmake (www.cmake.org).
+It simplifies the compilation of TetGen with different compilers and architec-
+tures (Linux, MacOSX, and MS Windows) at the same time.
+Using the provided file CMakeLists.txt, the simplest sequence of com-
+mands is:
+===== page 32 =====
+3.1 Compilation 25
+cd <tetgen-directory>
+mkdir build
+cd build
+cmake ..
+make
+When the compilation is finished, you should get both of the executable
+file tetgen and the library libtet.a under the directory build.
+To get a debug version of TetGen, use the following commands
+cd <tetgen-directory>
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+make
+The default is cmake -DCMAKE_BUILD_TYPE=Release .. .
+To specify a compiler, do
+CXX=icpc cmake -DCMAKE_BUILD_TYPE=Debug ..
+3.1.3 Remarks on Using Shewchuk's Robust Predicates
+TetGen uses Shewchuk's robust geometric predicates which perform exact
+floating-point arithmetic (predicates.cxx). The arithmetic is based on the
+IEEE 754 floating-point standard. However, some processors may not default
+use this standard for floating-point representations and arithmetic. If so, a
+configuration is needed to execute the predicates correctly. It is described on
+its website http://www.cs.cmu.edu/~quake/robust.pc.html for details.
+Below are my own experience in using Shewchuk's predicates.
+• If TetGen fails with "a segmentation fault" during generating Delau-
+nay tetrahedralization, it is most likely that the predicates were not
+correctly configured.
+• I used gcc/g++ version 4.4 on a MacOSX system with an Intel Core 2
+Duo. There is no need to configure the predicates. Just use the default
+settings in the predicates. TetGen runs correctly both with debug and
+with optimization options. The same when I used gcc/g++ version 4.6
+on a Linux (Ubuntu) system with an Intel Pentium 2.8GHz.
+===== page 33 =====
+26 3 GETTING STARTED
+• I encountered failures of TetGen when I used the gcc/g++ version 4.2
+on a Linux system with an Intel Xeon CPU TetGen was compiled with
+an optimization option -O3. However, TetGen ran correctly when it
+was compiled with the debug option -g. The same issue happened
+when TetGen was compiled using Intel's C++ compiler (version 2012)
+with the optimization option -O3.
+3.1.4 Using CGAL's Robust Predicates
+TetGen can use other robust predicates as well, such as the filtered robust
+predicates in CGAL (http://www.cgal.org). TetGen includes the interface
+to the CGAL's predicates in the file predicates.cxx. It uses the following
+kernel,
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+In this section, we show how to use CGAL's predicates in TetGen. The
+following steps are needed.
+1. Download CGAL. The version I used was 4.1 (October 2012). Compile
+and install CGAL by using the following commands:
+cd CGAL-x.y # go to CGAL directory
+cmake . # configure CGAL
+make # build the CGAL libraries
+If you have any problems in compiling CGAL, please see CGAL's manual
+about installation. Once CGAL is compiled, make sure that you get the
+new file compiler config.h inside the directory CGAL-x.y/include/CGAL.
+2. Set the following environment path variables:
+BOOST=/opt/local/include
+GMP_LIB=/opt/local/lib
+CGAL_INC=$(HOME)/Programs/CGAL/CGAL-4.1/include
+BOOST should point to the directory containing the boost library. Ver-
+sion 1.35 or later is required. GMP LIB should point to the directory
+containing the library GMP, - the GNU Multiple Precision Arithmetic
+Library. And CGAL INC should point to the C++ headers of CGAL's
+library.
+===== page 34 =====
+3.2 A Short Tutorial 27
+3. Compile predicates.cxx by using the variable-DUSE CGAL PREDICATES,
+i.e.,
+g++ -I$(BOOST) -I$(CGAL_INC) -DUSE_CGAL_PREDICATES \
+-O3 -c predicates.cxx
+4. Compile an executable version of TetGen by the following command:
+g++ -O3 -o tetgen tetgen.cxx predicates.o -L$(GMP_LIB) -lgmp
+3.2 A Short Tutorial
+TetGen gives a short list of command line options if it is invoked without
+arguments (that is, just type tetgen). A brief description of the usage is
+printed by invoking TetGen with the -h switch:
+tetgen -h
+The enclosed example file, example.poly, is a simple 3d mesh domain (a
+PLC), see Figure 24. Try out TetGen using:
+tetgen -p example.poly
+With the -p switch, TetGen will read the file, i.e., example.poly, and
+generate its constrained Delaunay tetrahedralization. The resulting mesh is
+saved in four files: example.1.node, example.1.ele, example.1.face, and
+example.1.edge, which are a list of mesh nodes, tetrahedra, boundary faces,
+and boundary edges, respectively. The file formats of TetGen are described
+in Section 5. The screen output of the above command looks like this:
+Opening example.poly.
+Delaunizing vertices...
+Delaunay seconds: 0.000864
+Creating surface mesh ...
+Surface mesh seconds: 0.000307
+Constrained Delaunay...
+Constrained Delaunay seconds: 0.000325
+Removing exterior tetrahedra ...
+Exterior tets removal seconds: 8.6e-05
+Optimizing mesh...
+Optimization seconds: 6.4e-05
+Writing example.1.node.
+Writing example.1.ele.
+===== page 35 =====
+28 3 GETTING STARTED
+Writing example.1.face.
+Writing example.1.edge.
+Output seconds: 0.000663
+Total running seconds: 0.002451
+Statistics:
+Input points: 28
+Input facets: 23
+Input segments: 44
+Input holes: 2
+Input regions: 2
+Mesh points: 28
+Mesh tetrahedra: 68
+Mesh faces: 160
+Mesh faces on facets: 50
+Mesh edges on segments: 44
+The above mesh is pretty coarse, and contains many badly-shaped (e.g.,
+long and skinny) tetrahedra. Now try:
+tetgen -pq example.poly
+The -q switch triggers the mesh refinement such that Steiner points are
+added to remove badly-shaped tetrahedra. The resulting mesh is contained
+in the same four files as before. However, now it is a quality tetrahedral mesh
+whose tetrahedra have no small face angle less than about 14 o (the default
+quality value). The screen output of the above command looks like this:
+Opening example.poly.
+Delaunizing vertices...
+Delaunay seconds: 0.000384
+Creating surface mesh ...
+Surface mesh seconds: 0.000181
+Constrained Delaunay...
+Constrained Delaunay seconds: 0.000163
+Removing exterior tetrahedra ...
+Exterior tets removal seconds: 0.000368
+Refining mesh...
+Refinement seconds: 0.009291
+Optimizing mesh...
+Optimization seconds: 0.000517
+Writing example.1.node.
+Writing example.1.ele.
+Writing example.1.face.
+===== page 36 =====
+3.2 A Short Tutorial 29
+Writing example.1.edge.
+Output seconds: 0.004716
+Total running seconds: 0.015802
+Statistics:
+Input points: 28
+Input facets: 23
+Input segments: 44
+Input holes: 2
+Input regions: 2
+Mesh points: 216
+Mesh tetrahedra: 689
+Mesh faces: 1587
+Mesh faces on facets: 430
+Mesh edges on segments: 126
+Steiner points inside domain: 1
+Steiner points on facets: 105
+Steiner points on segments: 82
+Now try to run:
+tetgen -pq1.2V example.poly
+TetGen will again generate a quality mesh, which contains more points
+than the previous one, and all tetrahedra have radius-edge ratio bounded by
+1.2, i.e., the element shapes are better than those in the previous mesh. In
+addition, TetGen prints a mesh quality report (due to the -V switch) which
+looks as below:
+Mesh quality statistics:
+Smallest volume: 0.00059866 | Largest volume: 0.09363
+Shortest edge: 0.25 | Longest edge: 1.4142
+Smallest asp.ratio: 1.3255 | Largest asp.ratio: 10.169
+Smallest facangle: 24.898 | Largest facangle: 126.8698
+Smallest dihedral: 8.6045 | Largest dihedral: 163.4980
+Aspect ratio histogram:
+< 1.5 : 23 | 6 - 10 : 26
+1.5 - 2 : 364 | 10 - 15 : 1
+2 - 2.5 : 480 | 15 - 25 : 0
+2.5 - 3 : 248 | 25 - 50 : 0
+3 - 4 : 125 | 50 - 100 : 0
+4 - 6 : 56 | 100 - : 0
+(A tetrahedron's aspect ratio is its longest edge length divided by its
+===== page 37 =====
+30 3 GETTING STARTED
+smallest side height)
+Face angle histogram:
+0 - 10 degrees: 0 | 90 - 100 degrees: 465
+10 - 20 degrees: 0 | 100 - 110 degrees: 132
+20 - 30 degrees: 188 | 110 - 120 degrees: 54
+30 - 40 degrees: 1059 | 120 - 130 degrees: 5
+40 - 50 degrees: 1704 | 130 - 140 degrees: 0
+50 - 60 degrees: 1865 | 140 - 150 degrees: 0
+60 - 70 degrees: 1609 | 150 - 160 degrees: 0
+70 - 80 degrees: 1105 | 160 - 170 degrees: 0
+80 - 90 degrees: 736 | 170 - 180 degrees: 0
+Dihedral angle histogram:
+0 - 5 degrees: 0 | 80 - 110 degrees: 1831
+5 - 10 degrees: 2 | 110 - 120 degrees: 274
+10 - 20 degrees: 150 | 120 - 130 degrees: 193
+20 - 30 degrees: 266 | 130 - 140 degrees: 105
+30 - 40 degrees: 643 | 140 - 150 degrees: 62
+40 - 50 degrees: 1056 | 150 - 160 degrees: 52
+50 - 60 degrees: 1213 | 160 - 170 degrees: 24
+60 - 70 degrees: 1121 | 170 - 175 degrees: 0
+70 - 80 degrees: 946 | 175 - 180 degrees: 0
+Instead of using the -q switch to get a finer mesh, one can use the -a
+switch to impose a maximum volume constraint on the resulting tetrahedra.
+By doing so, no tetrahedron in the resulting mesh has volume bigger than
+the specified value after -a. Try to run the following command.
+tetgen -pq1.2Va1 example.poly
+Now the resulting mesh should contain much more vertices than the pre-
+vious one. Besides of -q and -a switches, TetGen provides more switches to
+control the mesh element size and shape. They are described in Section 4.
+To compute the Delaunay tetrahedralization and convex hull of the point
+set of this PLC, try this:
+cp example.poly example.node
+tetgen example.node
+The Delaunay tetrahedralization is saved inexample.1.node and example.1.ele.
+The convex hull is represented by a list of triangles in file example.1.face.
+All these meshes and Delaunay tetrahedralizations can be visualized by
+the programs introduced in the next section.
+Detailed descriptions of the command line switches and file formats are
+found in Section 4 and 5.
+===== page 38 =====
+3.3 Visualization 31
+3.3 Visualization
+3.3.1 Medit
+TetGen can export its tetrahedral mesh into the .mesh format. It can be
+then visualized by the software Medit, which is freely available from http:
+//www.ann.jussieu.fr/~frey/logiciels.
+For viewing mesh under Medit, add a -g switch in the command line.
+TetGen will additionally output a file named example.1.mesh, which can be
+read and rendered directly by TetGen. Try running:
+tetgen -pg example.poly
+medit example.1
+3.3.2 Paraview
+TetGen can output its tetrahedral mesh into the .vtk format by adding the
+switch -k, i.e.,
+tetgen -p -k example.poly
+It will output a file named example.1.vtk. It can then be visualized by
+the software Paraview: http://www.paraview.org.
+===== page 39 =====
+32 4 USING TETGEN
+4 Using TetGen
+This section describes the use of TetGen as a stand-alone program. It is in-
+voked from the command line with a set of switches and an input file name.
+Switches are used to control the behavior of TetGen and to specify the out-
+put files. In correspondence to the different switches, TetGen will generate
+the Delaunay tetrahedralization, or the constrained (Delaunay) tetrahedral-
+ization, or the quality conforming (Delaunay) mesh, etc.
+4.1 Command Line Syntax
+tetgen [-pYrq_Aa_miO_S_T_XMwcdzfenvgkJBNEFICQVh] input_file
+Underscores indicate that numbers may optionally follow certain switches.
+Please do not leave any space between a switch and its numeric parameter.
+These switches are explained in Section 4.2.
+input file can be different files depending on the switches you use. If no
+command-line switch is used, it must be a file with extension .node, which
+contains a list of 3d points and the Delaunay tetrahedralization of this point
+set will be generated.
+If the -p switch is used, input file must be a file with one of the fol-
+lowing extensions: .poly, .smesh, .off, .stl, .ply, and .mesh, which de-
+scribes the boundary (a surface mesh) of a 3d piecewise linear complex. The
+boundary constrained (Delaunay) tetrahedralization of this object will be
+generated. If the -q switch is used simultaneously, a boundary conforming
+quality tetrahedral mesh will be generated.
+If the -r switch is used, an existing tetrahedral mesh will be read. You
+must supply .node and .ele files which describe the tetrahedral mesh. Op-
+tionally a .face and a .edge file can be supplied which contain the boundary
+faces and edges of the mesh. input file can have no file extension.
+If the switch -q is applied, the mesh will be refined with respect to the
+new quality measure and variant constraints. Optionally, and a.vol, a .mtr,
+and a .var file can be supplied which contain the mesh element size control
+information.
+File formats are described in Section 5.
+4.2 Command Line Switches
+An overview of all command-line switches and a short description follow.
+These switches are shown by invoking TetGen without any switch and in-
+===== page 40 =====
+4.2 Command Line Switches 33
+put file. Detailed descriptions of these switches are given in the following
+subsections.
+-p Tetrahedralizes a piecewise linear complex (PLC).
+-Y Preserves the input surface mesh (does not modify it).
+-r Reconstructs a previously generated mesh.
+-q Refines mesh (to improve mesh quality).
+-R Mesh coarsening (to reduce the mesh elements).
+-A Assigns attributes to tetrahedra in different regions.
+-a Applies a maximum tetrahedron volume constraint.
+-m Applies a mesh sizing function.
+-i Inserts a list of additional points.
+-O Specifies the level of mesh optimization.
+-S Specifies maximum number of added points.
+-T Sets a tolerance for coplanar test (default 10 -8).
+-X Suppresses use of exact arithmetic.
+-M No merge of coplanar facets or very close vertices.
+-w Generates weighted Delaunay (regular) triangulation.
+-c Retains the convex hull of the PLC.
+-d Detects self-intersections of facets of the PLC.
+-z Numbers all output items starting from zero.
+-f Outputs all faces to .face file.
+-e Outputs all edges to .edge file.
+-n Outputs tetrahedra neighbors to .neigh file.
+-v Outputs Voronoi diagram to files.
+-g Outputs mesh to .mesh file for viewing by Medit.
+-k Outputs mesh to .vtk file for viewing by Paraview.
+-J No jettison of unused vertices from output .node file.
+-B Suppresses output of boundary information.
+-N Suppresses output of .node file.
+-E Suppresses output of .ele file.
+-F Suppresses output of .face and .edge file.
+-I Suppresses mesh iteration numbers.
+-C Checks the consistency of the final mesh.
+-Q Quiet: No terminal output except errors.
+-V Verbose: Detailed information, more terminal output.
+-h Help: A brief instruction for using TetGen.
+===== page 41 =====
+34 4 USING TETGEN
+4.2.1 Delaunay and weighted Delaunay tetrahedralizations
+Given a set of 3d points or weighted points, TetGen generates the Delaunay
+tetrahedralization or the weighted Delaunay tetrahedralization of the point
+set. It can also output the Voronoi diagram or the power diagram.
+Save the set of points in a .node file, e.g., test.node. Run TetGen using
+the command:
+tetgen test.node
+This command generates the Delaunay tetrahedralization (DT) of this
+point set. Below is a screen output of TetGen:
+Opening test.node.
+Delaunizing vertices...
+Delaunay seconds: 0.001695
+Writing test.1.node.
+Writing test.1.ele.
+Writing test.1.face.
+Output seconds: 0.001555
+Total running seconds: 0.003615
+Statistics:
+Input points: 100
+Mesh points: 100
+Mesh tetrahedra: 514
+Mesh faces: 1057
+Mesh edges: 642
+Convex hull faces: 58
+Figure 13 shows an example of an input point set (100 vertices) and the
+generated DT and its convex hull.
+The default outputs of TetGen are three files listed in Table 3.
+The set of all faces and edges of the DT can be obtained by adding the
+output switches -f (output all faces) and -e (output all edges), respectively.
+For example, by the following command
+===== page 42 =====
+4.2 Command Line Switches 35
+Figure 13: From left to right: a set of 100 randomly distributed points in a
+unit cube, the Delaunay tetrahedralization, and the convex hull of the point
+set, respectively.
+test.1.node The list of vertices (same as input) of the DT.
+test.1.ele The list of tetrahedra of the DT.
+test.1.face The list of convex hull faces of the point set.
+Table 3: The default output files of TetGen.
+tetgen -fe test.node
+TetGen will output the four files listed in Table 4.
+test.1.node The list of vertices (same as input) of the DT.
+test.1.ele The list of tetrahedra of the DT.
+test.1.face The list of all faces of the DT.
+Convex hull faces have a face marker '1'.
+Interior faces have a face marker '0'.
+test.1.edge The list of all edges of the DT.
+Convex hull edges have an edge marker '1'.
+Interior edges have an edge marker '0'.
+Table 4: The output files by the command: tetgen -fe test.node .
+The adjacency graph of the list of tetrahedra of the DT can be obtained by
+adding the -n switch in the command line. An additional file, test.1.neigh,
+will be output by TetGen, see file format .neigh for details.
+The -w switch creates a weighted Delaunay tetrahedralization from a set
+of weighted points. Remember that a weighted point is defined as p′ =
+{px,py,pz,p 2
+x +p2
+y +p2
+z-w}∈ R4, where w is the weight (a real value) of the
+point p ={px,py,pz}∈ R3 [7].
+===== page 43 =====
+36 4 USING TETGEN
+Figure 14: Left: a set of 164 randomly distributed points in a unit cube.
+Right: the Delaunay tetrahedralization (shown in black edges) and Voronoi
+diagram (shown in colored faces).
+Save the set of weighted points in a .node file. The points in .node file
+must have at least one attribute, and the first attribute of each point is its
+weight. To generate a weighted DT of this point set, run TetGen with the
+following command:
+tetgen -w test.node
+The weighted Delaunay tetrahedralization and its convex hull are saved
+in the files with the same names as is listed in Table 3. Note that some of
+the points in test.1.node may not belong to any tetrahedron.
+The Voronoi diagram or the power diagram of the point set is obtained
+by taking the dual of the generated Delaunay or weighted Delaunay tetrahe-
+dralization, see Figure 14 for an example.
+By adding a -v switch in the command line, TetGen outputs the Voronoi
+diagram or the power diagram in the four files shown in Table 5:
+test.1.v.node The list of Voronoi vertices (or orthocenters).
+test.1.v.edge The list of Voronoi edges.
+test.1.v.face The list of Voronoi faces.
+test.1.v.cell The list of Voronoi cells.
+Table 5: The output files for Voronoi or power diagram.
+The .v.node file has the file format as a .node file. The file formats of
+.v.edge, .v.face, and .v.cell are described in the file format section.
+Note that the switches -w and -v are only used for a point set.
+===== page 44 =====
+4.2 Command Line Switches 37
+4.2.2 Constrained tetrahedralizations and boundary recovery (-p,
+-Y)
+The -p switch reads a boundary description (a surface mesh) of a 3d piecewise
+linear complex (PLC) and generates a tetrahedral mesh of the PLC. The PLC
+is stored in one of the input file formats of TetGen, .poly and .smesh or
+other supported file formats .
+Starting from TetGen 1.6, by default, TetGen generates a constrained
+tetrahedralization of the PLC. It will try to preserve the input edges and
+facets of the PLC in the generated tetrahedralization. It only adds Steiner
+points when flips and advanced local mesh modifications cannot recover an
+edge or a facet. In this case, Steiner points might be added directly on the
+input edges or facets.
+If the -Y switch is used simultaneously, the input boundary edges and
+faces of the PLC are preserved in the generated tetrahedral mesh. Steiner
+points (if there exists any) appear only in the interior space of the PLC. For
+example, run the following command:
+tetgen -p -Y cami1a.poly
+This will produce a tetrahedral mesh of the PLC shown in Figure 15 right.
+Below is a screen output of TetGen:
+Opening cami1a.poly.
+Opening cami1a.node.
+Delaunizing vertices...
+Delaunay seconds: 0.016072
+Creating surface mesh ...
+Surface mesh seconds: 0.001333
+Recovering boundaries...
+Boundary recovery seconds: 0.0432
+Removing exterior tetrahedra ...
+Exterior tets removal seconds: 0.001152
+Suppressing Steiner points ...
+Steiner suppression seconds: 0.001164
+Recovering Delaunayness...
+Delaunay recovery seconds: 0.016093
+Optimizing mesh...
+Optimization seconds: 0.004006
+Jettisoning redundant points.
+Writing cami1a.1.node.
+===== page 45 =====
+38 4 USING TETGEN
+Writing cami1a.1.ele.
+Writing cami1a.1.face.
+Writing cami1a.1.edge.
+Output seconds: 0.003188
+Total running seconds: 0.086466
+Statistics:
+Input points: 460
+Input facets: 884
+Input segments: 1349
+Input holes: 0
+Input regions: 0
+Mesh points: 461
+Mesh tetrahedra: 1516
+Mesh faces: 3498
+Mesh faces on facets: 954
+Mesh edges on segments: 1349
+Steiner points inside domain: 1
+From the mesh statistics of the output (the last line), we can see that
+TetGen only added 1 Steiner point in the interior of the PLC. The input
+facets and segments are preserved.
+You can use the -p -D option to generate a constrained Delaunay tetra-
+hedralization (CDT), see Figure 15 right. Here is an example of creating a
+CDT of the PLC named cami1a.poly (Figure 15 left). Run the following
+command:
+tetgen -p -D cami1a.poly
+This will produce the CDT of the PLC shown in Figure 15 middle. Below
+is a screen output of TetGen:
+Opening cami1a.poly.
+Opening cami1a.node.
+Delaunizing vertices...
+Delaunay seconds: 0.019862
+===== page 46 =====
+4.2 Command Line Switches 39
+Creating surface mesh ...
+Surface mesh seconds: 0.002374
+Constrained Delaunay...
+Constrained Delaunay seconds: 0.012435
+Removing exterior tetrahedra ...
+Exterior tets removal seconds: 0.000783
+Optimizing mesh...
+Optimization seconds: 0.000662
+Writing cami1a.1.node.
+Writing cami1a.1.ele.
+Writing cami1a.1.face.
+Writing cami1a.1.edge.
+Output seconds: 0.003398
+Total running seconds: 0.039744
+Statistics:
+Input points: 460
+Input facets: 884
+Input segments: 690
+Input holes: 0
+Input regions: 0
+Mesh points: 542
+Mesh tetrahedra: 1678
+Mesh faces: 3904
+Mesh faces on facets: 1118
+Mesh edges on segments: 772
+Steiner points on segments: 82
+From the mesh statistics of the output (the last line), we can see that
+TetGen added 82 Steiner points on the segments of the PLC.
+The default outputs of TetGen are four files listed in Table 6:
+cami1a.1.node The list of vertices (including Steiner points).
+cami1a.1.ele The list of tetrahedra.
+cami1a.1.face The list of boundary faces.
+cami1a.1.edge The list of boundary edges.
+Table 6: The output files by command: tetgen -p cami1a.poly
+Other output switches are available by adding the switches:-f (output all
+faces including interior faces), -e (output all edges including interior edges),
+===== page 47 =====
+40 4 USING TETGEN
+Figure 15: An input PLC ( cami1a.poly, left), a constrained tetrahedral-
+ization (right, -pY switch) in which Steiner points lie in the interior of the
+PLC, and the generated Steiner CDT (middle,-p -D switch) in which Steiner
+points are located on the boundary edges of the PLC, and
+and -n (output the adjacency graph of the tetrahedra).
+4.2.3 Quality mesh generation (-q)
+The -q switch adds new points to improve the mesh quality. It can be used
+together with -p (to refine a constrained tetrahedralization), or-r (to refine a
+previously generated mesh), -a, or -m (to conform to a mesh sizing function).
+TetGen uses two quality constraints on tetrahedra: a maximum radius-
+edge ratio bound and a minimum dihedral angle bound. By default, these
+two parameters are 2.0 and 0 degrees, respectively. These quality parameters
+may be specified after the -q. The two constraints are separated by a slash
+'/' (or ','):
+• the first parameters is the maximum allowable radius-edge ratio, default
+is 2.0; and
+• the second parameters is the minimum allowable dihedral angle, default
+is 0 (degree);
+of any tetrahedron. For example, -q1.2 specifies a maximum radius-edge
+ratio of 1.2; -q1.2/10 specifies the same plus a minimum dihedral angle of
+10 degrees. -q/7 specifies the default radius-edge ratio bound of 2 and a
+dihedral angle bound of 7 degrees.
+For example, the following command uses the default quality parameters.
+It is equivalent to -pq2.0/0.
+tetgen -pq thepart.smesh
+===== page 48 =====
+4.2 Command Line Switches 41
+The screen output of the command line is shown below. Figure 16 il-
+lustrates three quality tetrahedral meshes of a PLC generated by applying
+different radius-edge ratio bounds.
+Opening thepart.smesh.
+Opening thepart.node.
+Delaunizing vertices...
+Delaunay seconds: 0.03408
+Creating surface mesh ...
+Surface mesh seconds: 0.004497
+Constrained Delaunay...
+Constrained Delaunay seconds: 0.025309
+Removing exterior tetrahedra ...
+Exterior tets removal seconds: 0.001419
+Refining mesh...
+Refinement seconds: 0.489247
+Optimizing mesh...
+Optimization seconds: 0.014569
+Writing thepart.1.node.
+Writing thepart.1.ele.
+Writing thepart.1.face.
+Writing thepart.1.edge.
+Output seconds: 0.048593
+Total running seconds: 0.618028
+Statistics:
+Input points: 994
+Input facets: 1995
+Input segments: 1491
+Input holes: 0
+Input regions: 0
+Mesh points: 8029
+Mesh tetrahedra: 33773
+Mesh faces: 73092
+Mesh faces on facets: 11092
+Mesh edges on segments: 5143
+Steiner points inside domain: 2485
+Steiner points on facets: 898
+Steiner points on segments: 3652
+===== page 49 =====
+42 4 USING TETGEN
+Figure 16: The quality tetrahedral meshes of a PLC ( thepart.smesh) gen-
+erated by the commands: -pq2/0, -pq1.4/0, and -pq1.1/0
+.
+Remarks
+• The default output files (four files) have the same names as those in
+Table 6.
+• Adding a -V switch in the command line, TetGen will print a mesh
+quality report (aspect ratios, radius-edge ratios, dihedral angles) of the
+generated tetrahedral mesh on the screen, see Section 4.2.11.
+• If there are no sharp features in the input PLC, the Delaunay refinement
+algorithm used in TetGen is guaranteed to terminate successfully with
+a radius-edge ratio bound no smaller than 2 .0, and with no bound on
+the minimum dihedral angle. In practice, the algorithm behaves much
+better, e.g., it usually succeeds for a radius-edge ratio of 1 .2 and a
+minimum dihedral angle of 18 degrees.
+• If there are sharp features in the PLC, TetGen will ensure the desired
+quality constraints on most of the tetrahedra, but leave some bad-
+quality tetrahedra in the final mesh. Usually, they are near the sharp
+features.
+4.2.4 Adaptive mesh generation (-a, -m)
+TetGen supports several ways of generating adaptive tetrahedral meshes.
+They have been described already in Section 1.2.6.
+Use the maximum volume parameter (-a) The -a switch is used in
+mesh refinement, i.e., together with -q. It imposes a maximum volume con-
+straint on all tetrahedra. If a number follows the -a, no tetrahedra is gener-
+ated whose volume is larger than that number. See Figure 18 for an example.
+===== page 50 =====
+4.2 Command Line Switches 43
+• One can impose both a fixed volume constraint and a varying volume
+constraint for some sub-regions (defined in .poly or .smesh file) by
+invoking the -a switch twice, once with and once without a number
+following. Each volume specified may include a decimal point.
+• If no number is specified and the -r switch is used, a .vol file is
+expected, which contains a separate volume constraint for each tetra-
+hedron. It is useful for refining a finite element or finite volume mesh
+based on a posteriori error estimates.
+Use a mesh sizing function (-m) The -m switch is used in mesh refine-
+ment, i.e., together with the -q switch. It applies a user-defined mesh sizing
+function which specifies the desired edge lengths in the final mesh. It aims to
+create an adaptive mesh whose edge lengths are conforming to this function.
+At the moment, only isotropic mesh sizing functions are supported.
+TetGen assumes that the mesh sizing function is specified on a set of
+discrete points whose convex hull covers the mesh domain (i.e., the underlying
+space of the PLC). TetGen linearly interpolates the mesh element size at any
+point in the domain from its adjacent points.
+When the -m switch is used, TetGen will read a .mtr file, which stores
+the nodal mesh element size, i.e., the desired edge length at the location of
+the node in the mesh domain. There are two possible ways to specify the
+sizing function.
+• The mesh element size is directly defined on the nodes of the input
+PLC ( -p switch) or the nodes of the input mesh ( -r switch). In this
+case, its file name is xxx.mtr, where xxx is the base file name of the
+input PLC or the input mesh, see Figure 17 for an example.
+• The mesh element size is defined on the nodes of a background mesh.
+In this case, there is a background mesh given by the files xxx.b.node,
+xxx.b.ele, and the mesh element size file xxx.b.mtr.
+4.2.5 Reconstructing a tetrahedral mesh (-r)
+The -r switch reconstructs an existing tetrahedral mesh. Usually, the pur-
+pose of using this switch is to refine the mesh to improve its quality, i.e., to
+use it together with the -q switch. Other usages of the -r switch are possible,
+such as inserting additional points (-i switch), mesh adaptation (-m switch),
+and linear function interpolation ( -m switch plus a background mesh).
+===== page 51 =====
+44 4 USING TETGEN
+Figure 17: The tetrahedral meshes of a PLC ( L.smesh) generated by the
+commands: -pqm. A sizing function ( L.mtr) was applied on the nodes of the
+PLC. Both input files are found in Section 5.2.8.
+.
+• The tetrahedral mesh is read from a .node and an .ele file. These two
+files must be supplied.
+• If a .face file exists, TetGen will read it and use it to find boundary
+faces in the tetrahedral mesh. Note: only those faces with a non-
+zero boundary marker are regarded as boundary faces. In either case,
+TetGen will automatically identify the faces on the exterior of the mesh
+domain and regard them as boundary faces. Interior boundary faces are
+also identified by comparing the attributes of two adjacent tetrahedra.
+• If an .edge file exists, TetGen will read it and use it to find boundary
+edges in the mesh. Note: only those edges with a non-zero boundary
+marker are regarded as boundary edges. TetGen will also automatically
+identify boundary edges from the identified boundary faces.
+• The reconstructed mesh is distinguished from its origin with a dif-
+ferent iteration number. For example, tetgen -r xxx.1 reads the
+mesh in files xxx.1.node, xxx.1.ele and possibly xxx.1.face and
+xxx.1.edge if they exist; reconstructs the mesh; outputs it into three
+files xxx.2.node, xxx.2.ele, xxx.2.face, and xxx.2.edge. Now,
+xxx.2 can be used as input in the above command, the result is another
+mesh saved in files xxx.3.node, and so on. Mesh iteration numbers al-
+low you to create a sequence of successively finer meshes.
+• -r should not be used together with the -I.
+===== page 52 =====
+4.2 Command Line Switches 45
+4.2.6 Mesh optimization (-O)
+The -O switch specifies the following parameters to control the mesh optimi-
+sation procedure of TetGen. All parameters are integers and are separated
+by a slash '/'.
+• maximum flip level,
+• local mesh operations, and
+• maximum iterations
+The maximum flip level is an integer ranged from 0 to 10. If this level
+is 0, only the elementary (2-3, 3-2, 4-4) flips are used. Otherwise, TetGen will
+propagate the flips to adjacent faces to search an improved configuration. The
+larger the flip level is, the more search will be performed, and TetGen may
+run very slow. The default mesh optimization flip level is 3.
+There are three local mesh operations available in TetGen, which are:
+• Edge/face flips.
+• Vertex smoothing.
+• Vertex insertion/Deletion.
+The integer for choosing operations is ranged from 0 to 7. Here 0 means
+no operation is chosen (hence no mesh optimization will be done). Each
+operation is enabled/disabled by setting the corresponding bit in this integer.
+• The 1st bit (the least significant bit) enables/disables edge/face flips.
+• The 2nd bit enables/disables vertex smoothing.
+• The 3rd bit enables/disables vertex insertion/deletion.
+The default is 7, i.e., all of these three operations are enabled.
+The last parameter specifies the maximum number of iterations to per-
+form the above local mesh operations. The default value is 3.
+For example, the switch -O2/7/3 specifies the maximum flip level 2, uses
+all local mesh operations, and uses 3 iterations in mesh optimization. These
+are the default parameters in TetGen. The switch -O/1 chooses only the
+edge/face flip operation and uses the default parameters for others.
+===== page 53 =====
+46 4 USING TETGEN
+The following switch is temporary (maybe changed in the future)
+The current objective function to be optimized by TetGen is to reduce the
+maximum dihedral angle of the tetrahedra. The default value is 165 degree.
+One can set this value after the -o/. For example, -o/150 sets the maximum
+dihedral angle to be 150 degree.
+4.2.7 Mesh coarsening (-R)
+The -R switch indicates that some vertices of an existing tetrahedral mesh
+are to be removed. TetGen provides two ways to indicate those vertices to
+be removed.
+• Vertices whose boundary markers (see .node file format) are '-1' are to
+be removed.
+• When a mesh sizing function is supplied ( -m switch), vertices whose
+mesh element sizes are too large are to be removed.
+The -R switch only removes vertices which can be removed. In particular,
+such vertices lie in the interior of the domain, or vertices lying in the interior
+of a facet or a segment. Note that this switch does not guarantee that all
+the marked vertices are successfully removed.
+Once the mesh has been coarsened, the mesh quality may decrease. You
+may use the -q switch together with the -R switch. It will trigger the mesh
+improvement algorithm of TetGen to improve the mesh quality after the mesh
+coarsening.
+4.2.8 Inserting additional points (-i)
+The -i switch indicates that a list of additional points is going to be inserted
+into an existing tetrahedral mesh. The list of additional nodes is read from
+files xxx.a.node, where xxx stands for the input file name (i.e., xxx.poly or
+xxx.smesh, or xxx.ele, ...). This switch is useful for refining a finite element
+or finite volume mesh using a list of user-defined points.
+• Points which lie in the exterior of the mesh domain are simply dis-
+carded.
+• TetGen uses a relative tolerance (set by -T switch) to check whether a
+point lies on the domain boundary or not, default it is 10 -8.
+===== page 54 =====
+4.2 Command Line Switches 47
+Figure 18: The tetrahedral meshes of a PLC ( ts80305 nd32 cell834.off)
+generated by the commands: -pqAa1e-12
+.
+4.2.9 Assigning region attributes (-A)
+The -A switch assigns an additional attribute (an integer number) to each
+tetrahedron that identifies to what facet-bounded region each tetrahedron
+belongs. In the output mesh, all tetrahedra in the same region will get a
+corresponding non-zero attribute.
+Figure 18 shows an example of tetrahedral meshes of a PLC which con-
+tains several sub-domains.
+• A region attribute is an integer which can be either positive or negative.
+It must not be a zero, which is used for the exterior of the PLC.
+• User-defined attributes are assigned to regions by the .poly or .smesh
+file (in the region section). If a region is not explicitly marked by the
+.poly file or .smesh file, tetrahedra in that region are automatically
+assigned a non-zero attribute.
+• By default, the region attributes are numbered from 1, 2, 3,··· . If there
+are user-assigned region attributes (by the .poly or .smesh file), the
+region attributes are shifted by a number i, i.e., i + 1,i + 2,i + 3,··· ,
+where i is either 0 or the maximum integer of the user-assigned region
+attributes.
+• The -A switch has an effect only if the -p switch is used and the -r
+switch is not.
+4.2.10 Mesh output switches (-f, -e, -n, -z, -o2)
+TetGen provides various switches to output its mesh. They are summarized
+below.
+===== page 55 =====
+48 4 USING TETGEN
+-f The -f switch outputs all triangular faces (including interior faces) of the
+mesh into a .face file. Without -f, only the boundary faces or the convex
+hull faces are output.
+In the .face file, interior faces and boundary (or convex hull) faces are
+distinguished by their boundary markers. Each interior face has a boundary
+marker '0'. A non-zero boundary marker means a boundary or convex hull
+face.
+-e The -e switch outputs all mesh edges (including interior edges) of the
+mesh into a .edge file. Without -e, only the boundary edges are output.
+In the .edge file, interior edges and boundary edges are distinguished by
+their boundary markers. Each interior edge has a boundary marker '0'. A
+non-zero boundary marker means a boundary edge.
+-n The -n switch outputs the neighboring tetrahedra to a .neigh file. Each
+tetrahedron has four neighbors. The first neighbor of this tetrahedron is
+opposite to the first of its corner, and so on. The neighbors are given by
+their indices in the corresponding .ele file. A '-1' indicates that there is no
+neighbor at this face of the tetrahedron.
+If the -nn switch is used, TetGen also outputs the neighboring tetrahedra
+to each face of the mesh in the corresponding .face file.
+-z The -z switch numbers all output items starting from zero. This switch
+is useful in case of calling TetGen from another program.
+-o2 With the -o2 switch, TetGen will output the tetrahedral mesh with
+quadratic elements which have 10 nodes per tetrahedron, 6 nodes per trian-
+gular face, and 3 nodes per edge. The positions of these extra nodes in each
+element is shown in Figure 20.
+4.2.11 Mesh statistics (-V)
+The -V switch gives detailed information about what TetGen is doing. More
+'V's are increasing the amount of detail.
+Specifically, -V gives information on algorithmic progress and more de-
+tailed statistics including a rough mesh quality report. Below is a screen
+output of the quality report.
+===== page 56 =====
+4.2 Command Line Switches 49
+Mesh quality statistics:
+Smallest volume: 0.016741 | Largest volume: 125.77
+Shortest edge: 0.30902 | Longest edge: 12.189
+Smallest asp.ratio: 1.2927 | Largest asp.ratio: 16.964
+Smallest facangle: 15.352 | Largest facangle: 141.8279
+Smallest dihedral: 5.587 | Largest dihedral: 163.9413
+Aspect ratio histogram:
+< 1.5 : 5 | 6 - 10 : 33
+1.5 - 2 : 105 | 10 - 15 : 4
+2 - 2.5 : 228 | 15 - 25 : 1
+2.5 - 3 : 215 | 25 - 50 : 0
+3 - 4 : 321 | 50 - 100 : 0
+4 - 6 : 150 | 100 - : 0
+(A tetrahedron's aspect ratio is its longest edge length divided by its
+smallest side height)
+Face angle histogram:
+0 - 10 degrees: 0 | 90 - 100 degrees: 637
+10 - 20 degrees: 122 | 100 - 110 degrees: 131
+20 - 30 degrees: 556 | 110 - 120 degrees: 101
+30 - 40 degrees: 700 | 120 - 130 degrees: 44
+40 - 50 degrees: 1273 | 130 - 140 degrees: 5
+50 - 60 degrees: 1085 | 140 - 150 degrees: 1
+60 - 70 degrees: 1129 | 150 - 160 degrees: 0
+70 - 80 degrees: 871 | 160 - 170 degrees: 0
+80 - 90 degrees: 506 | 170 - 180 degrees: 0
+Dihedral angle histogram:
+0 - 5 degrees: 0 | 80 - 110 degrees: 1675
+5 - 10 degrees: 10 | 110 - 120 degrees: 228
+10 - 20 degrees: 141 | 120 - 130 degrees: 149
+20 - 30 degrees: 362 | 130 - 140 degrees: 92
+30 - 40 degrees: 487 | 140 - 150 degrees: 77
+40 - 50 degrees: 762 | 150 - 160 degrees: 32
+50 - 60 degrees: 770 | 160 - 170 degrees: 7
+60 - 70 degrees: 812 | 170 - 175 degrees: 0
+70 - 80 degrees: 768 | 175 - 180 degrees: 0
+To get the statistics for an existing mesh, run TetGen on that mesh with
+the -rNEF switches to read the mesh and print the statistics without writing
+any file.
+Moreover, -V also gives information on the memory usage of TetGen.
+Below is a screen output of the memory usage report.
+Memory usage statistics:
+Maximum number of tetrahedra: 45309
+Maximum number of tet blocks (blocksize = 8188): 6
+Approximate memory for tetrahedral mesh (bytes): 8,920,640
+Approximate memory for extra pointers (bytes): 1,775,824
+===== page 57 =====
+50 4 USING TETGEN
+Approximate memory for algorithms (bytes): 637,136
+Approximate memory for working arrays (bytes): 2,092,580
+Approximate total used memory (bytes): 13,426,180
+-VV gives more details on the algorithms, and slows down the execution,
+while -VVV is only useful for debugging.
+4.2.12 Memory allocation (-x)
+TetGen allocates memory in blocks. Each block is a chunk of memory al-
+located once. It stores a number of mesh entities, i.e., vertices, tetrahedra,
+boundary faces, and boundary edges. TetGen will dynamically allocate new
+blocks when they are needed.
+By default, each block consists of 8188 tetrahedra. This data size may be
+too small for generating large meshes. This may slow down the performance
+of TetGen. The -x switch allows users to set the desired number of elements
+allocated in one block.
+If the -V switch is used, TetGen will report its memory usage, see Sec-
+tion 4.2.11. A hint to enlarge the block size can be seen from the "Maximum
+number of tet blocks" (the second line in this report). If this number is large
+(for example 10000), it is reasonable to enlarge the block size.
+4.2.13 Miscellaneous
+-c The -c switch keeps the convex hull of the tetrahedral mesh. By default,
+TetGen removes all tetrahedra which do not lie in the interior of the PLC
+(the domain) which may have an arbitrary shape and topology, i.e., it may
+be non-convex and may contain holes. If the -c switch is used, tetrahedra in
+the exterior of the PLC are not removed. The union of the mesh elements is
+a topological ball.
+TetGen assigns to all exterior tetrahedra a region attribute '-1', so that
+they can be distinguished from the interior tetrahedra.
+-S The -S switch specifies a maximum number of Steiner points (points
+that are not in the input) which are added by mesh refinement to improve
+the mesh quality. The default is to allow an unlimited number of Steiner
+points.
+-C The -C switch indicates TetGen to check the consistency of the mesh
+on finish. If it is specified twice, i.e., -CC, TetGen also checks the constrained
+===== page 58 =====
+4.2 Command Line Switches 51
+Delaunay (for the -p switch) or conforming Delaunay (for -q, -a, or -i)
+property of the mesh.
+-I With the -I switch, TetGen does not use the iteration numbers. It
+suppresses the output of .node file, so your input file will not be overwritten.
+It cannot be used with the-r switch, because that would overwrite your input
+.ele file. It shouldn't be used with the -q switch if one is using a .node file
+for input, because no .node file is written, so there is no record of any added
+Steiner points.
+-T The -T switch sets a user-defined tolerance used by many computations
+of TetGen, default is 10-8.
+In principle, the vertices which are used to define a facet of a PLC should
+be exactly coplanar. But this is very hard to achieve in practice due to the
+inconsistent nature of the floating-point format used in computers.
+TetGen accepts facets whose vertices are not exactly but "approximately
+coplanar". Four points a, b, c and d are assumed to be coplanar as long
+as the ratio v/l3 is smaller than the given tolerance, where v and l are the
+volume and the average edge length of the tetrahedron abcd, respectively.
+To choose a proper tolerance according to the input point set will usually
+reduce the number of adding points and improve the mesh quality.
+===== page 59 =====
+52 5 FILE FORMATS
+1 2
+34 1112
+109
+17
+Figure 19: The facet (shown in pink) consists of four polygons and one hole.
+The ordered vertex lists of the polygons are: (1, 2, 3, 4), (9, 10, 11, 12), (11, 3),
+and (17). The last two polygons are degenerate.
+5 File Formats
+Files are used as input and output when using TetGen as a stand-alone
+program. This section describes the input/output file formats of TetGen.
+When using TetGen as a library, the data structure tetgenio (explained in
+Section 6) is used to transfer the data stored in files.
+5.1 Useful Things to Know
+5.1.1 A Boundary Description of PLCs
+In TetGen, a 3d PLC is described by a boundary discretization (e.g., a surface
+mesh) of the PLC. This description can be viewed as a Boundary Representa-
+tion (B-Rep) without topological information, i.e., there are no information
+like incidences and orientations about edges and facets. This makes the
+description simple and it can describe non-manifolds easily. TetGen will re-
+cover and validate the topological information from this description during
+its meshing process.
+The boundary description of a PLC contains the set of vertices and facets
+of the PLC. Recall that each facet of a PLC is a 2d PLC. It may contain
+holes, segments and vertices in its interior, see Figure 19 for an example.
+TetGen describes a facet by a list of polygons and a list of holes. Each
+polygon of a facet is described by an ordered list of vertices. The order of
+the vertices can be in either clockwise or counterclockwise order. A polygon
+may be degenerate, i.e., it may contain only one or two vertices. A degenerate
+polygon is used to represent an isolated vertex or segment in this facet, see
+Fig. 19.
+A hole in a facet is described by specifying an arbitrary point p∈ R3,
+such that the projection of p onto this facet lies strictly in the interior of this
+===== page 60 =====
+5.2 TetGen's File Formats 53
+hole. Note that p is not a vertex of the PLC.
+Remark. By the definition of a PLC, all vertices of a facet must lie in
+the same affine subspace of that facet. However, this requirement is generally
+impossible to be satisfied in practice due to the floating-point numbers used in
+computer. TetGen only requires that all vertices of a facet are approximately
+coplanar.
+In addition, a list of holes and sub-regions of the PLC can be defined. A
+hole of the PLC is described by specifying an arbitrary point p∈ R3 that
+lies strictly in the interior of the hole. Sub-regions are described exactly the
+same way. Note that the points used to define holes and sub-regions are not
+vertices of the PLC.
+This description of a PLC is further explained in the input file formats
+of TetGen, i.e., the .node, .poly, and .smesh file formats.
+5.1.2 Boundary Markers
+In TetGen, the mesh entities like vertices, edges, and faces, are assigned with
+a boundary marker. Boundary markers are tags (integers) used mainly to
+identify which entities are associated with which boundary element of the
+input PLC, such as, a segment or a facet. A common application is to deter-
+mine where boundary conditions should be applied to a finite element mesh.
+You can prevent boundary markers from being written into files produced by
+TetGen by using the -B switch.
+Mesh entities which are not on the boundary of the PLC must have the
+boundary markers '0'.
+Mesh entities which are on the boundary will be assigned to a boundary
+marker that is the same as the boundary marker of that boundary of the
+PLC. However, if a boundary of a PLC does not have a boundary marker or
+have a marker '0', TetGen will assign a '1' to those entities belong to this
+boundary in the output files. This way, TetGen is able to distinguish them
+from other interior mesh entities.
+5.2 TetGen's File Formats
+Table 7 lists all file formats that are used by TetGen. All files are of ASCII
+form and may contain comments prefixed by the character '#'. Points, tetra-
+hedra, facets, edges, holes, and maximum volume constraints must be num-
+bered consecutively, starting from either 1 or 0. However, all input files
+must be consistent. TetGen automatically detects your choice while reading
+the .node (or .poly or .smesh) file. When calling TetGen from another
+program, use the -z switch if you wish to number objects from zero.

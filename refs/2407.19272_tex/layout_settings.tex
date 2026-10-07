@@ -1,0 +1,400 @@
+% Shared layout derived from PhD_thesis__Measure_Preserving/settings.tex.
+% Copy this file, fonts/, and one *_template.tex into a new project.
+% Compile from that directory with pdfLaTeX (twice), or XeLaTeX.
+\providecommand{\TemplateStyle}{manuscript}
+\usepackage{etoolbox}
+\newif\ifTemplateManuscript
+\newif\ifTemplateProject
+\newif\ifTemplateChinese
+\ifdefstring{\TemplateStyle}{manuscript}{\TemplateManuscripttrue}{%
+  \ifdefstring{\TemplateStyle}{project}{\TemplateProjecttrue}{%
+    \ifdefstring{\TemplateStyle}{chinese}{\TemplateChinesetrue}{%
+      \PackageError{layout_settings}{Unknown TemplateStyle}{Use manuscript, project, or chinese.}}}}
+\providecommand{\ProjectHeader}{Research Plan}
+% Original math aliases are enabled by default; use them in math mode.
+% They overwrite some LaTeX accents (\c, \v, etc.). To disable:
+% \newcommand{\TemplateLegacyMath}{false} BEFORE \input{layout_settings.tex}.
+\providecommand{\TemplateLegacyMath}{true}
+
+% ======================================================
+% Packages
+% ======================================================
+
+% --- Language support ---
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage{CJKutf8}
+\else
+  \ifXeTeX
+    \usepackage{fontspec}
+    \usepackage{xeCJK}
+    \IfFontExistsTF{DFKai-SB}
+      {\setCJKmainfont{DFKai-SB}[AutoFakeBold=2]
+       \setCJKsansfont{DFKai-SB}[AutoFakeBold=2]}
+      {\IfFontExistsTF{BiauKai}
+        {\setCJKmainfont{BiauKai}[AutoFakeBold=2]
+         \setCJKsansfont{BiauKai}[AutoFakeBold=2]}
+        {% Fandol Kai omits common Traditional Chinese glyphs.
+         % Bundle the freely redistributable AR PL KaitiM Big5 instead.
+         \IfFileExists{fonts/bkai00mp.ttf}{%
+           \setCJKmainfont{bkai00mp.ttf}[Path=fonts/,AutoFakeBold=2,AutoFakeSlant=.2]
+           \setCJKsansfont{bkai00mp.ttf}[Path=fonts/,AutoFakeBold=2,AutoFakeSlant=.2]
+         }{%
+           \IfFontExistsTF{AR PL KaitiM Big5}{%
+             \setCJKmainfont{AR PL KaitiM Big5}[AutoFakeBold=2,AutoFakeSlant=.2]
+             \setCJKsansfont{AR PL KaitiM Big5}[AutoFakeBold=2,AutoFakeSlant=.2]
+           }{\PackageError{layout_settings}{Traditional Chinese font missing}{%
+             Upload the supplied fonts folder, or compile with pdfLaTeX.}}}}}
+  \else
+    \PackageError{layout_settings}{Unsupported engine}{Use pdfLaTeX or XeLaTeX.}
+  \fi
+\fi
+\ifPDFTeX
+  \AtBeginDocument{\begin{CJK*}{UTF8}{bkai}}
+  \AtEndDocument{\clearpage\end{CJK*}}
+\fi
+
+% --- Mathematics ---
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bbm}
+\usepackage{esint}
+\usepackage{mathrsfs}
+\usepackage[scr=stixtwofancy,
+    scrscaled=1.15,
+    bb=bboldx,
+    bbscaled=1.05]{mathalpha}
+% \usepackage[mathscr]{eucal}  % set special mathscr
+
+% --- Page layout and text ---
+\usepackage[
+    a4paper,
+    left=3.18cm,
+    right=3.18cm,
+    top=2.54cm,
+    bottom=2.54cm
+]{geometry}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{comment}
+\usepackage{lineno}
+
+% --- Colors, figures, and drawings ---
+\usepackage{xcolor}
+\usepackage{graphicx}
+\ifPDFTeX\usepackage{epstopdf}\fi
+\usepackage{overpic}
+\usepackage{subcaption}
+\usepackage{tikz}
+
+% --- Tables and algorithms ---
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% --- Title, headings, and bibliography ---
+\ifTemplateManuscript
+\usepackage{titling}
+
+\usepackage{authblk}
+\usepackage[nottoc,numbib]{tocbibind}
+\fi
+\usepackage{titlesec}
+\usepackage{array,tabularx,float,fancyhdr,lastpage}
+\ifTemplateChinese\usepackage{microtype}\fi
+
+% --- Hyperlinks and cross-references (keep near the end) ---
+\usepackage{hyperref}
+\usepackage[nameinlink]{cleveref}
+
+
+% ================================================================
+% Package configuration
+% ================================================================
+
+% --- Colors ---
+\definecolor{trueblue}{rgb}{0.0, 0.45, 0.81}
+\definecolor{lightgoldenrodyellow}{rgb}{0.98, 0.98, 0.82}
+\definecolor{uclablue}{rgb}{0.33, 0.41, 0.58}
+\definecolor{darkcerulean}{rgb}{0.03, 0.27, 0.49}
+\definecolor{carnelian}{rgb}{0.7, 0.11, 0.11}
+\definecolor{lightgray}{rgb}{.25,.25,.25}
+\definecolor{midgray}{rgb}{.6,.6,.6}
+\definecolor{bleudefrance}{rgb}{0.19, 0.55, 0.91}
+\definecolor{columbiablue}{rgb}{0.61, 0.87, 1.0}
+\definecolor{oxfordblue}{rgb}{0.0, 0.13, 0.28}
+\definecolor{yaleblue}{rgb}{0.06, 0.3, 0.57}
+\definecolor{harvardcrimson}{rgb}{0.79, 0.0, 0.09}
+\definecolor{burgundy}{rgb}{0.50, 0.0, 0.13}
+\definecolor{forestgreen}{rgb}{0.0, 0.35, 0.18}
+\definecolor{darkelectricblue}{rgb}{0.33, 0.41, 0.47}
+\definecolor{babyblueeyes}{rgb}{0.63, 0.79, 0.95}
+\definecolor{ceruleanblue}{rgb}{0.16, 0.32, 0.75}
+\definecolor{sphereblue}{RGB}{129,159,247}
+\definecolor{bananayellow}{rgb}{1.0, 0.88, 0.21}
+\definecolor{MSBlue}{rgb}{.204,.353,.541}
+
+% --- Mathematics and theorem environments ---
+\numberwithin{equation}{section}
+\numberwithin{figure}{section}
+\theoremstyle{plain}
+\newtheorem{theorem}{\sffamily Theorem}[section]
+\newtheorem{corollary}{\sffamily Corollary}[section]
+\newtheorem{lemma}{\sffamily Lemma}[section]
+\newtheorem{assumption}{\sffamily Assumption}[section]
+\newtheorem{remark}{\sffamily Remark}[section]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem*{question}{\sffamily Question}
+\renewcommand{\qedsymbol}{$\rule{1.3ex}{1.3ex}$}
+
+% --- Page layout and text ---
+\linespread{1.2}
+\setlist[enumerate]{leftmargin=.5in}
+\setlist[itemize]{leftmargin=.5in}
+% \linenumbers
+% \usepackage{refcheck}
+
+% --- Figures and drawings ---
+\graphicspath{{images/}{./}}
+\captionsetup*[figure]{
+    labelfont={bf,sf},
+    name={Figure},
+    labelsep=period
+}
+\usetikzlibrary{
+    arrows.meta,
+    calc,
+    positioning,
+    angles,
+    quotes,
+    intersections,
+    3d,
+    perspective,
+    decorations.pathreplacing,
+    decorations.markings
+}
+
+% --- Tables ---
+\newlength{\Oldarrayrulewidth}
+\newcommand{\Cline}[2]{%
+  \noalign{\global\setlength{\Oldarrayrulewidth}{\arrayrulewidth}}%
+  \noalign{\global\setlength{\arrayrulewidth}{#1}}\cline{#2}%
+  \noalign{\global\setlength{\arrayrulewidth}{\Oldarrayrulewidth}}}
+
+% --- Hyperlinks and cross-references ---
+\hypersetup{
+    colorlinks=true,
+    allcolors=trueblue,
+    hypertexnames=false
+}
+\Urlmuskip=0mu plus 1mu
+\crefname{section}{section}{sections}
+\crefname{subsection}{subsection}{subsections}
+\Crefname{section}{Section}{Sections}
+\Crefname{subsection}{Subsection}{Subsections}
+\Crefname{figure}{Figure}{Figures}
+\Crefname{corollary}{Corollary}{Corollary}
+
+% --- Title, headings, and author information ---
+\titleformat*{\section}{\Large\bfseries\sffamily\color{black}}
+\titleformat*{\subsection}{\large\bfseries\sffamily\color{black}}
+\titleformat*{\subsubsection}{\bfseries\sffamily\color{black}}
+\renewcommand{\abstractname}{\large\sffamily Abstract}
+% Keep the article title in the normal text flow (no full-page vertical fill).
+% \newcommand*\samethanks[1][\value{footnote}]{\footnotemark[#1]}
+\makeatletter
+\def\@fnsymbol#1{\ensuremath{\ifcase#1\or \dagger\or \ddagger\or
+   \mathsection\or \mathparagraph\or \|\or **\or \dagger\dagger
+   \or \ddagger\ddagger \else\@ctrerr\fi}}
+\makeatother
+
+% --- Chinese abstract ---
+\newenvironment{zhabstract}{
+  \vspace*{\fill}
+  \begin{center}
+    \begin{minipage}{0.85\textwidth}
+      \begin{center}
+        \large \textbf{摘要}
+      \end{center} 
+}{
+    \end{minipage}
+  \end{center}
+  \vspace*{\fill} }
+
+
+
+\newcommand*\Laplace{\mathop{}\!\mathbin\bigtriangleup}
+\newcommand{\argmin}{\operatornamewithlimits{argmin}}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\mean}{\operatornamewithlimits{mean}}
+\newcommand{\SD}{\operatornamewithlimits{SD}}
+
+
+
+\ifdefstring{\TemplateLegacyMath}{true}{%
+% --- 定義符號 --- %
+% --- Bold Roman symbols (\mathbf) --- %
+\def\0{\mathbf{0}}
+\def\1{\mathbf{1}}
+\def\a{\mathbf{a}}
+\def\b{\mathbf{b}}
+\def\c{\mathbf{c}}
+\def\bC{\mathbf{C}}
+\def\bd{\mathbf{d}}
+\def\e{\mathbf{e}}
+\def\f{\mathbf{f}}
+\def\g{\mathbf{g}}
+\def\h{\mathbf{h}}
+\def\n{\mathbf{n}}
+\def\o{\mathbf{o}}
+\def\p{\mathbf{p}}
+\def\r{\mathbf{r}}
+\def\s{\mathbf{s}}
+\def\u{\mathbf{u}}
+\def\v{\mathbf{v}}
+\def\w{\mathbf{w}}
+\def\x{\mathbf{x}}
+\def\y{\mathbf{y}}
+\def\bY{\mathbf{Y}}
+\def\z{\mathbf{z}}
+% \def\bV{\mathbf{V}}
+
+% --- Blackboard-bold symbols (\mathbb, \mathbbm) --- %
+\def\bbA{\mathbb{A}}
+\def\D{\mathbb{D}}
+\def\bI{\mathbb{I}}
+\def\R{\mathbb{R}}
+\def\bS{\mathbb{S}}
+\def\bbv{\mathbb{v}}
+\def\bbV{\mathbb{V}}
+\def\bf{\mathbbm{f}}
+% \def\bg{\mathbbm{g}}
+\def\bh{\mathbbm{h}}
+
+% --- Calligraphic symbols (\mathcal) --- %
+\def\A{\mathcal{A}}
+\def\E{\mathcal{E}}
+\def\F{\mathcal{F}}
+\def\K{\mathcal{K}}
+\def\M{\mathcal{M}}
+\def\N{\mathcal{N}}
+\def\S{\mathcal{S}}
+\def\V{\mathcal{V}}
+
+% --- Script symbols (\mathscr) --- %
+\def\bA{\mathscr{A}}
+\def\sE{\mathscr{E}}
+\def\sM{\mathscr{M}}
+\def\sN{\mathscr{N}}
+\def\bV{\mathscr{V}}
+
+% --- Upright Roman symbols (\mathrm) --- %
+\def\d{\mathrm{d}}
+\def\i{\mathrm{i}}
+\def\Im{\mathrm{Im}}
+\def\O{\mathrm{O}}
+\def\Q{\mathrm{Q}}
+\def\rA{\mathrm{A}}
+\def\rC{\mathrm{C}}
+\def\rD{\mathrm{D}}
+\def\Re{\mathrm{Re}}
+\def\rI{\mathrm{I}}
+\def\rS{\mathrm{S}}
+\def\diag{{\mathrm{diag}}}
+\def\tr{{\mathrm{tr}}}
+\def\trace{\mathrm{trace}}
+
+% --- Typewriter symbols (\mathtt) --- %
+\def\B{\mathtt{B}}
+\def\C{\mathtt{C}}
+\def\bF{\mathtt{F}}
+\def\I{\mathtt{I}}
+\def\bN{\mathtt{N}}
+\def\X{\mathtt{X}}
+\def\Y{\mathtt{Y}}
+
+% --- Sans-serif symbols (\mathsf) --- %
+\def\H{\mathsf{H}}
+
+% --- Bold Greek symbols (\boldsymbol) --- %
+\def\bphi{{\boldsymbol{\phi}}}
+\def\balpha{{\boldsymbol{\alpha}}}
+\def\btheta{{\boldsymbol{\theta}}}
+\def\bdelta{{\boldsymbol{\delta}}}
+\def\bomega{{\boldsymbol{\omega}}}
+
+% --- Special symbols and operators --- %
+\def\eps{\varepsilon}
+\def\tp{\mathtt{p}}
+\def\cR{\mathcal{R}}
+\def\rE{\mathrm{E}}
+\def\tE{\mathtt{E}}
+\def\tF{\mathtt{F}}
+\def\tG{\mathtt{G}}
+\def\tH{\mathtt{H}}
+\def\tL{\mathtt{L}}
+\def\Mh{\mathcal{M}_h}
+\def\Nh{\mathcal{N}_h}
+\def\tR{\mathtt{R}}
+\def\T{\mathcal{T}}
+\def\bT{\mathbb{T}}
+\def\Div{\mathrm{div}}
+\def\Cof{\mathrm{cof}}
+\ifTemplateProject\def\Q{\mathcal{Q}}\fi
+}{}
+% --- Style-specific layout ---
+\definecolor{heading}{RGB}{42,68,86}
+\definecolor{placeholdergray}{RGB}{90,90,90}
+\newcommand{\placeholder}[1]{\textcolor{placeholdergray}{\textbf{[#1]}}}
+\ifTemplateProject
+  \geometry{headheight=15pt,headsep=0.6cm,footskip=1cm}
+  \setstretch{1.25}
+  \setlength{\parindent}{2em}
+  \setlength{\parskip}{0.25em}
+  \setlist[itemize]{leftmargin=2.2em,itemsep=0.25em,topsep=0.35em}
+  \setlist[enumerate]{leftmargin=2.4em,itemsep=0.25em,topsep=0.35em}
+  \captionsetup{font=small,labelfont={bf,sf}}
+  \titleformat{\section}{\Large\bfseries\sffamily}{\thesection.}{0.7em}{}
+  \titlespacing*{\section}{0pt}{1.2em}{0.65em}
+  \titleformat{\subsection}{\large\bfseries\sffamily}{\thesubsection}{0.65em}{}
+  \titlespacing*{\subsection}{0pt}{1em}{0.45em}
+  \titleformat{\subsubsection}{\normalsize\bfseries\sffamily}{\thesubsubsection}{0.6em}{}
+  \titlespacing*{\subsubsection}{0pt}{0.8em}{0.3em}
+  \pagestyle{fancy}
+  \fancyhf{}
+  \fancyhead[L]{\small\ProjectHeader}
+  \fancyfoot[C]{\small Page \thepage\ of \pageref{LastPage}}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0pt}
+  \hypersetup{allcolors=trueblue}
+\fi
+\ifTemplateChinese
+  \setlength{\parindent}{2em}
+  \setlength{\parskip}{0.42em}
+  \linespread{1.22}
+  \setlist[itemize]{leftmargin=2.2em,itemsep=0.2em,topsep=0.25em}
+  \titleformat{\section}{\large\bfseries\color{heading}}{\thesection.}{0.55em}{}
+  \titlespacing*{\section}{0pt}{1.05em}{0.35em}
+  \pagestyle{fancy}
+  \fancyhf{}
+  \fancyfoot[C]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \setlength{\headheight}{14pt}
+  \hypersetup{allcolors=trueblue}
+  \renewcommand{\refname}{參考文獻}
+  \renewcommand{\figurename}{圖}
+  \renewcommand{\tablename}{表}
+  \captionsetup*[figure]{name=圖}
+  \newcommand{\ChineseTitle}[2]{%
+    \begin{center}
+      {\LARGE\bfseries\color{heading} #1\par}
+      \vspace{0.45em}
+      {\large #2\par}
+    \end{center}
+    \vspace{0.6em}}
+\fi

@@ -1,0 +1,958 @@
+
+===== page 1 =====
+ASIAN J. M AT H. c⃝ 2016 International Press
+V ol. 20, No. 2, pp. 383-398, April 2016 007
+V ARIA TIONAL PRINCIPLES FOR MINKOWSKI TYPE PROBLEMS,
+DISCRETE OPTIMAL TRANSPOR T, AND DISCRETE
+MONGE-AMPERE EQUA TIONS∗
+XIANFENG GU † ,F E N GL U O‡ ,J I A NS U N§ , AND SHING-TUNG YAU¶
+Abstract. In this paper, we develop several related finite dimensional variational principles
+for discrete optimal transport (DOT), Minkowski type problems for convex polytopes and dis-
+crete Monge-Ampere equation (DMAE). A link between the discrete optimal transport, the discrete
+Monge-Ampere equation and the power diagram in computational geometry is established.
+Key words. Monge-Ampere equation, Minkowski problem, Alexandrov problem, variational,
+power diagram.
+AMS subject classifications. Primary 52B55; Secondary 52B11, 65M99.
+1. Introduction.
+1.1. Statement of results. The classical Minkowski problem for convex body
+has influenced the development of convex geometry and differential geometry through-
+out the twentieth century. In its simplest form, it states,
+ni
+FiAi
+Fig. 1. Minkowski problem
+Problem 1 (Minkowski problem for compact polytopes in Rn). Suppose
+n1,...,n k are unit vectors which spanRn and A1,...,A k > 0 so that ∑k
+i=1 Aini =0 .
+Find a compact convex polytopeP ⊂ Rn with exactlyk codimension-1 facesF1,...,F k
+so thatni is the outward normal vector toFi and the area ofFi is Ai.
+Minkowski's famous solution to the problem says that the polytopeP exists and is
+unique up to parallel translation. Furthermore, Minkowski's proof is variational and
+suggests an algorithm to find the polytope. The Minkowski problem was generalized
+to the smooth case by Alexandrov where the area function is given by the Gauss
+curvature. Alexandrov [2] himself solved this generalized problem. The generalized
+Minkowski problem reduces to solving some Monge-Ampere equation. The regularity
+of the solution was studied by Pogorelov [12], Nirenberg [9] and Cheng and Yau [6].
+In [6], Cheng and Yau gave a complete proof for the higher-dimensional Minkowski
+problem in Euclidean spaces.
+∗Received August 14, 2014; accepted for publication March 11, 2015.
+†Stony Brook University, New York, USA (gu@cs.sunysb.edu).
+‡Rutgers University, New Jersey, USA (fluo@math.rutgers.edu).
+§Tsinghua University, Beijing, China (jsun@math.tsinghua.edu.cn).
+¶Harvard University, Boston, USA (yau@math.harvard.edu).
+383
+===== page 2 =====
+384 X .G U ,F .L U O ,J .S U N ,A N DS . - T .Y A U
+u u∗
+∇u
+Wi pi
+πi
+π∗
+i
+Ω,T Ω∗,T ∗
+proj proj∗
+Fig. 2. Discrete Optimal Transport Mapping (left to right): mapWi to pi. Discrete Monge-
+Ampere equation (right to left):vol(Wi) is the discrete Hessian determinant ofpi.
+Minkowski problem for unbounded convex polytopes was considered and solved
+by A.D. Alexandrov and his student A. Pogorelov. Unlike the bounded case, one needs
+to deal with the infinite area unbounded faces. Their solutions are to prescribe the
+hyperplanes which contain the unbounded faces and phrase the Minkowski problem
+for bounded faces. Alexandrov solved the case where all unbounded faces are parallel
+to a given line and Pogorelov solved the remaining case in which the unbounded
+polytope contains a cone. In his influential book on convex polyhedra [1], Alexandrov
+proved the following fundamental theorem (Theorem 7.3.2 and theorem 6.4.2) which
+is one of the main foci of our investigation.
+Theorem 1.1. (Alexandrov) SupposeΩ is a compact convex polytope with non-
+empty interior inR
+n, p1,...,p k ⊂ Rn are distinctk points andA1,...,A k > 0 so that∑k
+i=1 Ai = vol(Ω). Then there exists a vectorh =( h1,...,h k) ∈ Rk, unique up to
+adding the constant(c,c,...,c ), so that the piecewise linear convex function
+u(x)= m a x
+1≤i≤k
+{x·pi +hi}
+satisfies vol({x ∈ Ω|∇u(x)= pi})= Ai.
+Note that Alexandrov stated his theorem in terms of the geometric language. The
+above theorem is stated in terms of convex functions. We call the functionsu and
+▽u(x)inthetheoremthe Alexandrov potentialandthe Alexandrov map.Alexandrov's
+proof is non-variational and non-constructive. Producing a variational proof of it was
+clearly in his mind. Indeed, on page 321 of [1], he asked if one can find a variational
+proof. One of the main results of the paper (theorem 1.2) gives a (finite dimensional)
+variational proof Alexandrov's Theorem 1.1. Indeed, we give a variational proof of
+a general version of Theorem 1.1 (Theorem 1.2 below) and produce an algorithm for
+finding the functionu. Furthermore, our variational principle gives a new proof of
+the infinitesimal rigidity result of Alexandrov (corollary 3.2).
+In recent surge of study on optimal transport, Theorem 1.1 is reproved and is
+a very special case of the work of Brenier [5] (see also for instance [15], Theorem
+2.12(ii), and Theorem 2.32). Brenier proved, among other things, that the function
+▽u minimizes the quadratic cost
+∫
+Ω |x-T(x)|2dx among all measure preserving maps
+(transport maps) T :( Ω,dx) → (Rn, ∑k
+i=1 Aiδpi). Here δp is the Dirac measure
+supported at the pointp. In this special case of finite image measures∑k
+i=1 Aiδpi,a n
+excellent proof that▽u minimizes the quadratic cost can also be found in ([4] Lemma
+===== page 3 =====
+DISCRETE OPTIMAL TRANSPORT AND MINKOWSKI PROBLEM 385
+1). We reproduce their proof in§3.6 for completeness. Thus our work produces a finite
+dimensional variational principle and an algorithm for finding optimal transport maps
+with finite images.
+1.2. V ariational principles. Here is a simple framework which we will use to
+establish variational principles for solving equations in this paper. SupposeX ⊂ R
+k
+is a simply connected open set andA(x)=( A1(x),...,A k(x)) :X → Rk is a smooth
+function so that∂Ai(x)
+∂xj
+= ∂Aj(x)
+∂xi
+for alli,j. Then for any givenB =( B1,...,B k) ∈ Rk,
+solutions x of the equationA(x)= B are exactly the critical points of the function
+E(x)=
+∫x
+a
+∑k
+i=1(Ai(x) - Bi)dxi. Indeed, the assumption ∂Ai(x)
+∂xj
+= ∂Aj(x)
+∂xi
+says the
+differential 1-formω = ∑k
+i=1(Ai(x)-Bi)dxi is closed in the simply connected domain
+X. Therefore the integralE(x)=
+∫x
+a ω is well defined independently of the choice of
+the path froma to x. By definition, ∂E(x)
+∂xi
+= Ai(x) - Bi, i.e., ▽E(x)= A(x) - B.
+Thus A(x)= B is the same as▽E(x)=0 .
+We will use the above framework to give a variational proof of Alexandrov's
+theorem. The paper will mainly deal with piecewise linear (PL) convex functions.
+Here are the notations. Given p
+1,...,p k ∈ Rn and h =( h1,...,h k) ∈ Rk,w eu s e
+u(x)= uh(x) to denote the PL convex function
+uh(x)=m a x
+i
+{x·pi +hi}.
+Let Wi(h)= {x ∈ Rn|▽ u(x)= pi} = {x|x · pi + hi ≥ x · pj + hj for all j} be the
+closed convex polytope. Note thatWi(h) may be empty or unbounded. One of the
+main result we will prove is,
+Theorem 1.2. Let Ω be a compact convex domain inRn, {p1,...,p k} be a set of
+distinct points inRn and σ :Ω → R be a positive continuous function. Then for any
+A1,...,A k > 0 with ∑k
+i=1 Ai =
+∫
+Ω σ(x)dx,t h e r ee x i s t sb =( b1,...,b k) ∈ Rk, unique
+up to adding a constant(c,...,c ), so that
+∫
+Wi(b)∩Ω σ(x)dx = Ai for all i. The vectors
+b are exactly minimum points of the convex function
+(1) E(h)=
+∫h
+0
+k∑
+i=1
+∫
+Wi(h)∩Ω
+σ(x)dxdhi -
+k∑
+i=1
+hiAi
+on the open convex setH = {h ∈ Rk |vol(Wi(h) ∩ Ω) > 0 for all i}. Furthermore,
+∇ub minimizes the quadratic cost
+∫
+Ω |x - T(x)|2σ(x)dx among all transport maps
+T :( Ω,σdx) → (Rn, ∑k
+i=1 Aiδpi).
+We remark that Alexandrov's theorem corresponds toσ ≡ 1 .T h ee x i s t e n c ea n d
+the uniqueness of Theorem 1.2 are special case of the important work of Brenier
+[5] on optimal transport. Our main contribution is the variational formulation. The
+Hessianofthefunction E(h)hasacleargeometricmeaningandiseasytocompute(see
+equation (6)) based on the so-called power diagram from computational geometry [4],
+which enables one to efficiently compute the Alexandrov map∇u
+b using the Newton's
+method. See [14, 16, 7] for the applications of this algorithm in computer vision,
+computer graphics and visualization. Furthermore, as a consequence of our proof, we
+obtainanewproofoftheinfinitesimalrigiditytheoremofAlexandrovthat ∇E : H
+0 →
+A = {(A1,...,A k) ∈ Rk|Ai > 0, ∑k
+i=1 Ai =
+∫
+Ω σ(x)dx} is a local diffeomorphism (see
+Corollary 3.2). We remark that Aurenhammer et al. [4] also noticed the convexity
+of the function E, and they gave an elegant and simple proof of▽u
+b minimizing
+quadratic cost.
+===== page 4 =====
+386 X .G U ,F .L U O ,J .S U N ,A N DS . - T .Y A U
+1.3. Discrete Monge-Ampere equation (DMAE). Closely related to the
+optimaltransportproblemistheMonge-Ampereequation(MAE).LetΩbeacompact
+domain in R
+n, g : ∂Ω → R and A :Ω × R× Rn → R be given. Then the Dirichlet
+problem for MAE is to find a functionw :Ω → R so that
+(2)
+{
+det(Hess(w))(x)= A(x,w(x),▽w(x))
+w|∂Ω = g
+where Hess(w) is the Hessian matrix ofw. There are vast literature and deep re-
+sults known on the existence, uniqueness and regularity of the solution of MAE. We
+are interested in solving a discrete version of MAE in the simplest setting where
+A(x,w, ▽w)= A(x):Ω → R so that A(Ω) is a finite set. By taking Fenchel-
+Lengendre dual of the Alexandrov potential functionu, we produce a finite dimen-
+sional variational principle for solving a discrete Monge-Ampere equation.
+In the discrete setting, one of the main tasks is to define the discrete Hessian
+determinant for piecewise linear function. We define,
+Definition 1.3. Suppose (X,T ) is a domain in R
+n with a convex cell decom-
+position T and w : X → R is a convex function which is linear on each cell (a PL
+convex function). Then the discrete Hessian determinant of w assigns each vertex
+v of T the volume of the convex hull of the gradients ofw at top-dimensional cells
+adjacent tov.
+One can define the discrete Hessian determinant of any piecewise linear function
+by using the signed volumes. This will not be discussed here. With the above def-
+inition of discrete Hessian determinant, following Pogorelov [11], one formulates the
+Dirichlet problem for discrete MAE (DMAE) as follows.
+Problem 2 (Dirichlet problem for discrete MAE (DMAE)). Suppose Ω=
+conv(v
+1,...,v m) is the convex hull of v1,...,v m in Rn.L e t p1,...,p k be in int(Ω).
+Given any g1,...,g m ∈ R and A1,...,A k > 0, find a convex subdivisionT of Ω with
+vertices exactly{v1,...,v m,p1,...,p k} and a PL convex functionw :Ω → R which is
+linear on each cell ofT so that
+(a) (Discrete Monge-Ampere Equation) the discrete Hessian determinant ofw at
+pi is Ai,
+(b) (Dirichlet condition)w(vi)= gi.
+In [11], Pogorelov solved the above problem affirmatively. He showed that the PL
+function w exists and is unique. However, his proof is non-variational. We improve
+Pogorelov's theorem to the following.
+Theorem 1.4. SupposeΩ= conv(v1,...,v m) is an n-dimensional compact convex
+polytope in Rn so thatvi /∈ conv(v1,...,v i-1,vi+1,...,v k) for all i and p1,...,p k are in
+the interior ofΩ. For anyg1,...,g k ∈ R and A1,...,A k > 0, there exists a convex cell
+decompositionT having vi and pj as vertices and a piecewise linear convex function
+w :( Ω,T ) → R so thatw(vi)= gi,i =1 ,...,m and the discrete Hessian determinant
+of w at pj is Aj, j =1 ,...,k . In fact, the solutionw i st h eL e g e n d r ed u a lo fmax{x·
+pj + hj,x · vi - gi|j =1 ,...,k,i =1 ,...,m } and h is the unique minimal point of a
+strictly convex function.
+The paper is organized as follows. In§2, we recall briefly some basic properties
+of piecewise linear convex functions, their dual and power diagrams. Theorems 1.2
+and 1.4 are proved in§3a n d§4.
+===== page 5 =====
+DISCRETE OPTIMAL TRANSPORT AND MINKOWSKI PROBLEM 387
+2. Preliminary on PL convex functions, their duals and power dia-
+grams. We collect some well known facts about PL convex functions, their Legendre-
+Fenchel duals and their relations to power diagrams in this section. Most of the proofs
+are omitted. See Aurenhammer [3], Passera and Rullg˚ard [10], Siersmas and van Ma-
+nen [13] for details.
+Thefollowingnotationswillbeused. For u,v,p
+1,...,p k ∈ Rn,w eu s eu·v todenote
+the dot product ofu,v and conv(p1,...,p k) to denote the convex hull of{p1,...,p k}⊂
+Rn. A convex polyhedron is the intersection of finitely many closed half spaces. A
+convex polytope is the convex hull of a finite set. The relative interior of a compact
+convex setX will be denoted byint(X).
+2.1. Legendre-F enchel dual and PL convex functions. The domain of a
+function f : R
+n →(-∞,∞], denoted by D(f), is the set{x ∈ Rn|f(x) < ∞}.A
+function f is called proper if D(f) ̸= ∅. For a proper functionf : Rn → (-∞,∞],
+the Legendre-Fenchel duality(or simply the dual) off is the proper function f∗ :
+Rn →(-∞,∞] defined by
+f∗(y)=s u p{x·y -f(x)|x ∈ Rn}.
+It is well known thatf∗ is a proper, lower semi continuous convex function provided
+f a proper convex function. For instance, for the linear functionf(x)= a·x+b,i t s
+dual f∗ has domainD(f∗)= {a} so thatf∗(a)= -b. The Legendre-Fenchel duality
+theorem says that for a proper lower semi continuous convex functionf,( f∗)∗ = f.
+For P = {p1,...,p k}⊂ Rn and h =( h1,...,h k) ∈ Rk, we define the piecewise
+linear (PL) convex functionuh(x)t ob e
+(3) u(x)= uh(x)= uh,P(x)=m a x{pi ·x+hi|i =1 ,...,k }
+The domainD(u∗) of the dualu∗ is the convex hullconv(p1,...,p k)s ot h a t
+(4) u∗(y)=m i n{-
+k∑
+i=1
+tihi|ti ≥ 0,
+k∑
+i=1
+ti =1 ,
+k∑
+t=1
+tipi = y}
+(See theorem 2.2.7 of H¨ormander's book on Notions of Convexity [8]). In particular,
+u∗ is PL convex in the domainD(u∗). For instance ifh =0 ,t h e nu∗(y) = 0 for all
+y ∈ D(u∗). Another useful consequence is,
+Corollary 2.1. If pi /∈ conv(p1,...,p i-1,pi+1,...,p k),t h e n
+(5) u∗(pi)= -hi.
+Indeed, theonlywaytoexpress pi asaconvexcombinationof p1,...,p k ispi =1 ·pi.
+Thus (5) holds.
+2.2. PL convex functions, convex subdivisions and power diagrams. A
+PL convex functionf defined on a closed convex polyhedronK produces a convex
+subdivision (called natural subdivision)T of K. It is the same as the power diagram
+used in computational geometry. Let us recall briefly the definition (see for instance
+[10]). A convex subdivisionof K is a collectionT of convex polyhedra (called cells)
+so that (a)K = ∪
+σ∈T σ,( b )i fσ,τ ∈T ,t h e nσ ∩τ ∈T ,a n d( c )i fσ ∈T and τ ⊂ σ,
+then τ ∈T if and only ifτ is a face ofσ. The collection T is determined by its
+===== page 6 =====
+388 X .G U ,F .L U O ,J .S U N ,A N DS . - T .Y A U
+Ω
+Wi
+Fi
+πj
+uh(x)
+Fig. 3. PL-convex function and its induced convex subdivision.
+top-dimensional cells. The set of all zero-dimensional cells inT , denoted byT 0,i s
+called the vertices ofT .
+Iff is a PL convex function defined on a convex polyhedronK, the natural convex
+subdivision T of K associated tof is the subdivision whose top-dimensional cells in
+T are the largest convex subsets on whichf are linear. Thevertices of f are defined
+to be the vertices ofT . Suppose {v1,...,v m} is the set of all vertices off.T h e nf is
+determinedbyitsvertices {vi}andthevaluesatthevertices {f(vi)}. Indeedthegraph
+of f over K is the lower boundary of the convex hullconv((v1,f (v1)),..., (v,f(vm)))
+in Rn × R. Recall that ifP is a convex polyhedron inRn × R, then thelower faces
+of P are those facesF of P so that ifx ∈ F,t h e nx-(0,..., 0,λ)i sn o ti nP for all
+λ> 0. The lower boundary ofP is the union of all lower faces ofP.O n ec a na l s o
+describe T by using the epigraph. The epigraph{(x,t) ∈ K × R|t ≥ f(x)} of f is
+naturally a convex polyhedron. Each cell inT is the vertical projection of a lower
+face of the epigraph.
+Since the dual functionf∗ is also PL convex on its domainD(f∗), there is the
+associated convex subdivision T ∗ of D(f∗). These two subdivisions (D(f),T )a n d
+(D(f∗),T ∗) are dual to each other in the sense that there exists a bijective map
+T→ T ∗ denoted byσ → σ∗ so that (a)σ,τ ∈T with τ ⊂ σ if and only ifσ∗ ⊂ τ∗
+and (b) if τ ⊂ σ in T , then the cone(τ,σ ) is dual tocone(σ∗,τ ∗). Here the cone
+cone(τ,σ )= {t(x-y)|x ∈ σ,y ∈ τ,t ≥ 0} and dual of a coneC is {x ∈ Rn| y ·x ≤ 0
+for ally ∈ C}. See proposition 1 in section 2 of Passera and Rullg˚ard [10].
+Forthe PL convex functionuh(x)givenby (3), define theconvexpolyhedron Wi =
+Wi(h)= {x ∈ Rn|x·pi+hi ≥ x·pj+hj forall j}. (Notethat Wi maybetheemptyset.)
+By definition, the convex subdivisionT of Rn associated touh is the union of allWi's
+and their faces. Identity (4) foru∗ says that the graph{(y,u∗(y))|y ∈ conv(p1,...,p k)}
+of u∗ is the lower boundary of the convex hullconv((p1,-h1),..., (pk,-hl)).
+We summarize the convex subdivisions associated to PL convex functions as fol-
+lows,
+Proposition 2.2. (a) If int(Wi(h)) ̸= ∅ and p1,...,p k are distinct, then
+int(Wi(h)) ={x ∈ Rn|x·pi +hi > maxj̸=i{x·pj +hj}}.
+(b) If pi /∈ conv(p1,...,p i-1,pi+1,...,p k),t h e nint(Wi(h)) ̸= ∅ and Wi(h) is un-
+bounded.
+(c) If conv(p1,...,p i-1,pi+1,...,p k) is n-dimensional and pi ∈
+int(conv(p1,...,p i-1,pi+1,...,p k)),t h e nWi(h) is either bounded or empty.
+(d) If p1,...,p k are distinct so that int(Wi(h)) ̸= ∅ for all i, then the top-
+dimensional cells ofT associated touh are exactly{Wi(h)|i =1 ,...,k }, vertices ofu∗
+===== page 7 =====
+DISCRETE OPTIMAL TRANSPORT AND MINKOWSKI PROBLEM 389
+and the dual subdivisionT ∗ of conv(p1,...,p k) are exactly{p1,...,p k}.
+(e) For any distinctp1,...,p k ∈ Rn,t h e r ei sh ∈ Rk so that int(Wi(h)) ̸= ∅ for
+all i.
+Proof. To see (a), by definition{x ∈ Rn|x · pi + hi > maxj̸=i{x · pj + hj}} is
+open and is inWi(h). Hence it is included in the interiorint(Wi(h)). Let Lj(x)=
+x · pj + hj. By definition, Li(x) ≥ Lj(x) for allx ∈ Wi(h). It remains to show for
+each p ∈ int(Wi), Li(p) >L j(p)f o rj ̸= i. Take a point q ∈ int(Wi(h)) so that
+Li(q) >L j(q) (this is possible sinceLi ̸= Lj for j ̸= i). Choose a line segmentI from
+q to r in int(Wi(h)) so thatp ∈ int(I). Then using Li(q) >L j(q),Li(r) ≥ Lj(r),
+p = tq +( 1- t)r for some t ∈ (0,1) and linearity, we see thatLi(p) >L j(p). This
+establishes (a).
+To see part (b) that int(Wi) ̸= ∅, by the identity (4) for u∗
+h,P′ with P′=
+{p1,...,p k}-{ pi},w eh a v eu∗
+h,P′(pi)= ∞.B u tu∗
+h,P′(pi)=s u p{x·pi -uh,P′(x)|x ∈
+Rn}. Hence there exists x so that x · pi + hi >u h,P′(x)=m a xj̸=i(x · pj + hj),
+i.e., int(Wi(h)) ̸= ∅.F u r t h e r m o r e ,u∗
+h,P′(pi)= ∞ implies Wi(h) is non-compact, i.e.,
+unbounded.
+To see (c), suppose otherwise. Then the setWi(h) contains a ray{tv +a|t ≥ 0}
+for some non-zero vectorv. Therefore, (tv + a) · pi + hi ≥ (tv + a) · pj + hj for all
+j ̸= i. Divide the inequality byt and lett →∞ , we obtainv·pi ≥ v·pj for allj ̸= i.
+This shows that the projection ofpi to the line{tv|t ∈ R} is not in the interior of the
+convex hull of the projections of{p1,...,p k}-{ pi}. This contradicts the assumption
+that pi is in the interior of the n-dimensional convex hull.
+The first part of (d) follows from the definition. The duality theorem (proposition
+1 in section 2 of [10]) shows the second part.
+To see part (e), let us relabel the setp1,...,p k so that for alli if j>i then pj is
+not in the convex hull of{p1,...,p i}.T h i si sa l w a y sp o s s i b l ed u et ot h ea s s u m p t i o n
+that p1,...,p k are distinct. Indeed, choose a lineL so that the orthogonal projection
+of pi's toL are distinct. Now relabel these points according to the linear order of the
+projections toL.
+For this choice of ordering ofp1,...,p k, we constructh1,...,h k inductively so that
+Wi(h) contains a non-empty open set. Let h1 =0 ,s i n c ep2 ̸= p1, for any choice
+of h2, both vol({x|▽ u(h1,h2)(x)= pi}) > 0f o ri =1 ,2. Inductively, suppose
+h1,...,h i have been constructed so thatvol({x|▽ u(h1,...,hi)(x)= pj}) > 0 for all
+j =1 ,2,...,i . To construct hi+1,fi r s tn o t et h a ts i n c epi+1 is not in the convex
+hull ofp1,...,p i, by part (a), for any choice ofhi+1, vol(Wi+1(h1,...,h i+1)) > 0a n d
+Wi+1(h1,...,h i+1) is unbounded. Now by choosinghi+1 very negative, we can make
+all vol(Wj(h1,...,h i+1)) > 0 for allj =1 ,2,...,i +1.
+It is known that convex subdivisions associated to a PL convex functionuh(x)
+on Rn are exactly the same as the power diagrams. See for instance [3], [13]. We
+recall briefly the power diagrams. Suppose P = {p1,...,p k} is a set of k points
+in Rn and w1,...,w k are k real numbers. The power diagram for the weighted
+points {(p1,w1),..., (pk,wk)} is the convex subdivision T defined as follows. The
+top-dimensional cells areUi = {x ∈ Rn||x-pi|2 +wi ≤| x-pj|2 +wj for allj}.H e r e
+|x|2 = x·x is the square of the Euclidean norm and|x-pi|2+wi is thepower distance
+from x to (pi,wi). If all weights are zero, thenT is the Voronoi decomposition associ-
+ated toP.S i n c e|x-pi|2+wi ≤| x-pj|2+wj i st h es a m ea sx·x-2x·pi+|pi|2+wi ≤
+x·x-2x·pj+|pj|2+wj which is the same asx·pi-1
+2(|pi|2+wi) ≥ x·pj-1
+2(|pj|2+wj).
+We see thatUi = {x ∈ Rn|x·pi +hi ≥ x·pj +hj for allj} where hi = -1
+2(|pi|2 +wi).
+This shows the well known fact that,
+===== page 8 =====
+390 X .G U ,F .L U O ,J .S U N ,A N DS . - T .Y A U
+Fig. 4. Power diagram and its dual weighted Delaunay triangulation.
+Proposition 2.3. The power diagram associated to {(pi,wi)|i =1 ,...,k } is
+the convex subdivision associated to the PL convex functionuh defined by (3) where
+hi = -|pi|2+wi
+2 .
+2.3. V ariation of the volume of top-dimensional cells. The following is
+the key technical proposition for us to establish variational principles.
+Proposition 2.4.Supposeσ :Ω → R is continuous defined on a compact convex
+domain Ω ⊂ Rn.I fp1,...,p k ∈ Rn are distinct andh ∈ Rk so thatvol(Wi(h)∩Ω) > 0
+for alli,t h e nwi(h)=
+∫
+Wi(h)∩Ω σ(x)dx is a differentiable function inh. Furthermore,
+if Wi(h)∩Ω and Wj(h)∩Ω for j ̸= i share a codimension-1 faceF, then we have
+(6) ∂wi(h)
+∂hj
+= - 1
+|pi -pj|
+∫
+F
+σ|F(x)dA
+where dA is the area form onF, and otherwise this partial derivative is zero. In
+particular, for anyi,j
+∂wi(h)
+∂hj
+= ∂wj(h)
+∂hi
+.
+Proof. The proof is based on the following simple lemma.
+Lemma 2.5.SupposeX is a compact domain inRn, f : X → R is a non-negative
+continuous function andτ : {(x,t) ∈ X × R|0 ≤ t ≤ f(x)}→ R is continuous. For
+each t ≥ 0,l e tft(x)=m i n{t,f (x)}.T h e nW(t)=
+∫
+X(
+∫ft(x)
+0 τ(x,s)ds)dx satisfies
+(7) lim
+t→t+
+0
+W(t)-W(t0)
+t-t0
+=
+∫
+{x|f(x)>t0}
+τ(x,t0)dx
+and
+(8) lim
+t→t-
+0
+W(t)-W(t0)
+t-t0
+=
+∫
+{x|f(x)≥t0}
+τ(x,t0)dx.
+It is differentiable att0 if and only if
+∫
+{x∈X|f(x)=t0} τ(x,t0)dx =0 .
+Proof.L e tGt(x)=
+∫ft(x)
+0 τ(x,s)ds and M be an upper bound of|τ(x,t)| in its
+domain. Since|min(a,b)-min(a,c)|≤| b-c|,w eh a v e|ft(x)-ft′(x)|≤| t-t′|.N o w ,
+for anyt ̸= t′,
+===== page 9 =====
+DISCRETE OPTIMAL TRANSPORT AND MINKOWSKI PROBLEM 391
+hi ↑
+πj πj
+πiπi
+wj
+wi wi
+wj
+Fig. 5. Variation of the volume of top-dimensional cells
+(9) |Gt(x)-Gt′(x)
+t-t′ | = 1
+|t-t′||
+∫ft(x)
+ft′(x)
+τ(x,s)ds|≤ M
+|t-t′||ft(x)-ft′(x)|≤ M.
+Fix t0 and x ∈ X.I ff(x) <t 0,t h e nf o rt very close tot0, Gt(x)=
+∫f(x)
+0 τ(x,s)ds.
+Hence limt→t0
+Gt(x)-Gt0(x)
+t-t0
+=0 . I ff(x) >t 0,t h e nf o rt very close tot0, Gt(x)=
+∫t
+0 τ(x,s)ds. Hence lim t→t0
+Gt(x)-Gt0(x)
+t-t0
+= limt→t0
+1
+t-t0
+∫t
+t0
+τ(x,s)ds = τ(x,t0).
+If f(x)= t0, then the above calculations shows lim t→t+
+0
+Gt(x)-Gt0(x)
+t-t0
+= 0 and
+limt→t-
+0
+Gt(x)-Gt0(x)
+t-t0
+= τ(x,t0). Therefore, by Lebesgue's dominated convergence
+theorem, we have
+(10) lim
+t→t+
+0
+W(t)-W(t0)
+t-t0
+= lim
+t→t+
+0
+∫
+X
+Gt(x)-Gt0(x)
+t-t0
+dx =
+∫
+{x|f(x)>t0}
+τ(x,t0)dx
+and
+(11) lim
+t→t-
+0
+W(t)-W(t0)
+t-t0
+= lim
+t→t-
+0
+∫
+X
+Gt(x)-Gt0(x)
+t-t0
+dx =
+∫
+{x|f(x)≥t0}
+τ(x,t0)dx
+This establishes the lemma.
+Fix a<b , we call the domain{(x,t) ∈ X × R|a ≤ f(x),a ≤ t ≤ min(f(x),b)} a
+cap domainwith base{x|f(x) ≥ a} and top{x|f(x) ≥ b} of height (b-a) associated
+to the functionf.
+To prove the proposition 2.4, leth′=( h1,...,h i-1,hi -δ,hi+1,...,h k). For small
+positive δ> 0, by definition,Wi(h′) ⊂ Wi(h)a n dWj(h) ⊂ Wj(h′). IfWi(h)∩Wj(h)∩
+Ω= ∅,t h e nWj(h)∩Ω= Wj(h′)∩Ω for smallδ. Hence ∂Wj(h)
+∂hi
+=0 .I fWi(h)∩Ωa n d
+Wj(h)∩Ω share a codimension-1 faceF, then the closurecl(Wj(h′)∩Ω-Wj(h)∩Ω)
+is a cap domain with baseF associated to a convex functionf defined on F.T h e
+height of the cap domain is 1
+|pi-pj|δ and f is PL convex so that the (n-1)-dimensional
+Lebesgue measure of set of the form{x ∈ F|f(x)= t} is zero. Furthermore forδ> 0,
+by definition
+wj(h′)-wj(h)
+δ = 1
+δ
+∫
+Wj(h′)∩Ω-Wj(h)∩Ω
+σ(x)dx
+= 1
+δ
+∫
+F
+∫ft(y)
+0
+τ(y,s)dsdy
+===== page 10 =====
+392 X .G U ,F .L U O ,J .S U N ,A N DS . - T .Y A U
+where y ∈ F is the Euclidean coordinate andτ(y,s)i sσ expressed in the new coor-
+dinate. Thus, by lemma 2.5, we see
+(12) lim
+δ→0+
+wj(h′)-wj(h)
+δ =
+∫
+F
+σ|FdA.
+Thesamecalculationshowsthatfor δ< 0andcloseto0, usingthefactthat cl(Wj(h)∩
+Ω-Wj(h′)∩Ω) is cap with topF, we see that (12) holds as well. Finally, ifWi(h)∩Ω
+and Wj(h) ∩ Ω share a face of dimension at mostn - 2, then the same calculation
+still works where the associate cap domain has either zero top area or zero base area.
+Thus the result holds.
+3. A proof of Theorem 1.2. Our proof is divided into several steps. In the
+first step, we show that the setH = {h ∈ Rk|vol(Wi(h) ∩ Ω) > 0 for all i} is a
+non-empty open convex set. In the second step, we show that
+E(h)=
+∫h
+a
+k∑
+i=1
+∫
+Wi(h)∩Ω
+σ(x)dxdhi -
+k∑
+i=1
+hiAi
+is a well definedC1-smooth function onH so that∂E(h)
+∂hi
+=
+∫
+Wi(h)∩Ω σ(x)dx-Ai and
+E(h+( c,...,c )) =E(h) for allc. In the third step, we show thatE(h) is convex in
+H and is strictly convex inH0 = H ∩{h| ∑k
+i=1 hi =0 }. In the fourth step, we show
+that the map E has a minimum point inH by focusing on E|H0. Finally, for the
+completeness, we include a simple proof by Aurenhammer et al. (Lemma 1 in [4]) to
+show that∇u
+b is an optimal transport map minimizing the quadratic cost.
+3.1. Convexity of the domain H. We begin with a simple observation that
+a compact convex setX ⊂ Rn has positive volume if and only ifX contains a non-
+empty open set, i.e.,X is n-dimensional. Therefore,vol(Wi(h)∩Ω) > 0i st h es a m e
+as Wi(h)∩Ω contains a non-empty open set inRn. The last condition, by the above
+proposition 2.2(a), is the same as there existsx ∈ Ωs ot h a tx·pi > maxj̸=i{x·pj+hj}.
+Now to see thatH is convex, sinceH = ∩k
+i=1Hi where Hi = {h ∈ Rk|vol(Wi(h)∩
+Ω) > 0}, it suffices to show thatHi is convex for eachi. To this end, takeα,β ∈ Hi
+and t ∈ (0,1). Then there exist two vectorsv1,v2 ∈ Ωs ot h a tv1 ·pi +αi >v 1 ·pj +αj
+andv2·pi+βi >v 2·pj+βj forall j ̸= i. Therefore, (tv1+(1-t)v2)·pi+(tαi+(1-t)βi) >
+(tv1 +(1 -t)v2)·pj +(tαj +(1 -t)βj) for allj ̸= i.T h i ss h o w st h a ttα+(1 -t)β is
+in Hi. Furthermore, eachHi is non-empty. Indeed, givenh1,...,h i-1,hi+1,...,h k,b y
+taking hi very large, we see thath =( h1,...,h k)i si nHi. Also, from the definition,
+Hi is an open set. Therefore, to showH is an open convex set, it remains to show
+that H is non-empty.
+To seeH ̸= ∅, it suffices to show that there existsh so thatvol(Wi(h)) > 0( w h i c h
+could be ∞) for alli. Indeed, after a translation, we may assume that 0 is in the
+interior of Ω. Sinceuλh(x)= λuh(x/λ)a n dWi(λh)= Wi(h)/λ,i fvol(Wi(h)) > 0f o r
+all i,t h e nf o rλ> 0 large,vol(Wi(λh)∩Ω) > 0. Now by proposition 2.2(e), we can
+find h so thatvol(Wi(h)) > 0 for alli.T h u sH ̸= ∅.
+3.2. The function E(h) and its gradient. By proposition 2.4, we see that
+the differential 1-formη = ∑k
+i=1
+∫
+Wi(h)∩Ω σ(x)dxdhi - ∑k
+i=1 Aidhi is a closed 1-form
+defined on the simply connected open setH. Therefore its integral E(h)=
+∫h
+a η is
+a well definedC1-smooth function independent of the choice of the path froma to
+===== page 11 =====
+DISCRETE OPTIMAL TRANSPORT AND MINKOWSKI PROBLEM 393
+h in H. Furthermore, by definition, ∂E(h)
+∂hi
+=
+∫
+Wi(h)∩Ω σ(x)dx - Ai. The condition
+E(h+(c,...,c )) =E(h) follows from the definition sinceWi(h+(c,...,c )) =Wi(h).
+It can be shown that there is a constantC so that
+E(h)=
+∫
+Ω
+uh(x)σ(x)dx-
+k∑
+i=1
+Aihi +C.
+3.3. The convexity of E(h). We will show that the Hessian matrix ofE(h)
+is positive semi-definite and has a 1-dimensional null space spanned by the vector
+(1,1,..., 1). This implies thatE is convex inH and is strictly convex when restricted
+to H
+0.
+Let wi(h)=
+∫
+Wi(h)∩Ω σ(x)dx. By the calculation above,∂E(h)/∂hi = wi(h)-Ai
+and ∑k
+i=1 wi(h)=
+∫
+Ω σ(x)da. Therefore ∑k
+i=1 ∂2E/∂hi∂hj = 0 for each j.B y
+proposition 2.4, for i ̸= j, ∂wi(h)
+∂hj
+≤ 0. Furthermore, if Wi(h)a n dWj(h)s h a r ea
+codimension-1 face F in Ω, then ∂wi(h)
+∂hj
+= - 1
+|pi-pj|
+∫
+F σ|F(x)dA < 0. This implies
+that the Hessian matrixHess(E)=[ ∂wi(h)
+∂hj
+] is diagonally dominated and therefore
+positive semi-definite (i.e., all diagonal entries are positive and all off diagonal entries
+are non-positive so that the sum of entries of each row is zero). HenceE(h) is convex
+in H.
+Corollary 3.1. The Hessian matrixHess(E) of E(h) is positive semi-definite
+with 1-dimensional null space generated by(1,1,.., 1).I np a r t i c u l a r ,E|H0 : H0 = {h ∈
+H| ∑k
+i=1 hi =0 }→ R is strictly convex and its gradient▽(E|H0) is a diffeomorphism.
+Proof.T o s e e t h a tE|H0 is strictly convex, we show that the null space of the
+Hessian Hess(E)=[ ∂wi(h)
+∂hj
+]=[ aij] is generated by (1,..., 1). Obviously (1,..., 1) is in
+the null space. To see that the null space is 1-dimensional, supposev =( v1,...,v k)i s
+a non-zero vector so thatHess(E)vt =0( vt is the transpose ofv). Let us assume
+without loss of generality that |vi1| =m a xi{|vi|} and vi1 > 0. Using ai1i1vi1 =∑
+j̸=i1
+ai1jvj and ai1i1 = - ∑
+j̸=i1
+|ai1j|, we see thatvj = vi1 for all indices i with
+ai1j ̸= 0. It follows that index setI = {i|vi =m a xj{|vj|}} has the following property.
+If i1 ∈ I and ai1i2 ̸=0 ,t h e ni2 ∈ I. We claim that I = {1,2,...,k }, i.e., v =
+v1(1,1,..., 1). Indeed, for any two indicesi ̸= j, since Ω is connected andWr(h)a r e
+convex, there exists a sequence of indicesi1 = i,i2,...,i m = j so thatWis(h)∩Ωa n d
+Wis+1(h)∩Ω share a codimension-1 face for eachs. Thereforeaisis+1 ̸= 0. Translating
+this to the Hessian matrixHess(E)=[ aij], it says that for any two diagonal entries
+aii and ajj, there exists a sequence of indicesi1 = i,i2,...,i m = j so that aisis+1 <
+0. This last condition together with the property ofI imply I = {1,2,...,k }, i.e.,
+dim(Ker(Hess(E))) = 1.
+3.4. Existence of minimal points for E(h). By the variational framework,
+the critical points ofE(h)i nH are the solutionsb in theorem 1.2. To show thatE(h)
+has critical points inH, due to the convexity ofE and E(h +( c,...,c )) = E(h), it
+suffices to show thatE(h) has a minimal points inH0.
+First we claim thatH0 is bounded. Otherwise, there exists a sequence of vectors
+h(m) in H0 so that limm→∞ h(m)
+i = ∞ and limm→∞ h(m)
+j = -∞ for some indicesi,j.
+Since Ω is compact, we see that form large, for all pointsx ∈ Ω,
+x·pi +h(m)
+i >x ·pj +h(m)
+j .
+===== page 12 =====
+394 X .G U ,F .L U O ,J .S U N ,A N DS . - T .Y A U
+This shows thatWj(h(m))∩Ω= ∅ which contradicts the assumption thath(m) ∈ H0.
+The functionE(h) can be extended continuously to the compact closureX of H0
+using the same expression. Therefore, it has a minimal pointq ∈ X. We claim that
+q ∈ H0. If otherwise,q ∈ ∂X, i.e., there are indicesj so thatvol(Wj(q)∩Ω) = 0, we
+derive a contraction as follows.
+Due to convexity, there exists a non-zero vectorv ∈ Rk so thatq +tv ∈ H0 for
+small t> 0. Now for anyc ∈ R,w eh a v eq + t(v + c(1,..., 1)) ∈ H for small t> 0.
+Therefore, by takingc large, we may assume that allvi > 0a n dq+tv ∈ H for small
+t> 0. Define δ ∈ Rk so that
+δi = vi
+if wi(q)=0a n d
+δi =0
+if wi(q) > 0. Note that vi ≥ δi for alli. We claim that for smallt> 0, q +tδ ∈ H,
+i.e., wi(q + tδ) > 0 for all i. Indeed, if wi(q) > 0, then wi(q + tδ) > 0 for small
+t> 0 due to continuity. Next, ifwi(q) = 0, we claimWi(q +tv) ⊂ Wi(q +tδ). This
+implies wi(q +tδ) > 0s i n c ewi(q +tv) > 0. To see the claim, takex ∈ Wi(q +tv)=
+{x|x·pi +(qi +tvi) ≥ x·pj +(qj +tvj), allj}.T h e nx·pi +qi +tδi = x·pi +qi +tvi ≥
+x·pj +qj +tvj ≥ x·pj +qj +tδj, i.e.,x ∈ Wi(q +tδ).
+Since E(h+(c,...,c )) =E(h) and every pointx ∈ H is of the formh+(c,...,c )f o r
+some h ∈ H0,c ∈ R,t h ep o i n tq is also a minimal point ofE defined on the closure
+of H. Now by the construction ofδ,w eh a v eE(q +tδ) ≥ E(q) for smallt> 0. By
+taking derivative with respect tot at t = 0, we obtain,▽E(q)·δ ≥ 0, i.e.,
+(13)
+∑
+i=1
+(wi(q)-Ai)δi ≥ 0.
+But by the construction ofδ, the right-hand-side above is- ∑
+i∈J Aivi < 0w h e r e
+J = {i|wi(q)=0 } and Ai > 0. The contradiction shows thatq is inH0.
+3.5. Infinitesimal rigidity. With above preparations, we now show the map
+gradient map sendinghto Φ(h)=( w1(h),...,w k(h)) is a diffeomorphism fromH0 onto
+A = {(A1,...,A k) ∈ Rk|Ai > 0, ∑k
+i=1 Ai =
+∫
+Ω σ(x)dx}. Indeed, by the calculation
+above, Φ(h)i s∇ ˜E|H0 where ˜E(h)= E(h)+ ∑k
+i=1 Aihi is a strictly convex function
+with positive definite Hessian onH0. In particular, its gradient Φ is an injective local
+diffeomorphism from H0 to A. On the other hand, for any choice of A ∈A ,t h e
+existence of critical points of˜E(h)- ∑k
+i=1 Aihi proved in§3.4 shows that Φ is onto.
+As a consequence of the proof, we obtained a new proof of the infinitesimal rigidity
+theorem of Alexandrov.
+Corollary 3.2. (Alexandrov) The map▽˜E : H0 → W sending the normalized
+heights h to the area vector(w1(h),...,w k(h)) is a local diffeomorphism.
+3.6. ∇ub is an optimal transport map. We reproduce the elegant proof by
+Aurenhammer et al. [4] here for completeness. Notice the quadratic transport cost
+of ∇ub is ∑k
+i=1
+∫
+Wi
+|pi -x|2σ(x)dx. From Proposition 2.3,{W1,...,W k} is the power
+diagram associated to {(pi,wi = |pi|2 - 2bi)} in Rd. Suppose {U1,...,U k} is any
+===== page 13 =====
+DISCRETE OPTIMAL TRANSPORT AND MINKOWSKI PROBLEM 395
+partition ofRd so that
+∫
+Ui
+σ(x)dx =
+∫
+Wi
+σ(x)dx,i =1 ,2,··· ,k. By the definition of
+the power diagram, we have
+k∑
+i=1
+∫
+Wi
+(|x-pi|2 +wi)σ(x)dx =
+k∑
+i,j=1
+∫
+Wi∩Uj
+(|x-pi|2 +wi)σ(x)dx
+≤
+k∑
+i,j=1
+∫
+Wi∩Uj
+(|x-pj|2 +wj)σ(x)dx =
+k∑
+j=1
+∫
+Uj
+(|x-pj|2 +wj)σ(x)dx.
+Using
+∫
+Wi
+σ(x)dx =
+∫
+Ui
+σ(x)dx,w eh a v e
+k∑
+i=1
+∫
+Wi
+|x-pi|2σ(x)dx) ≤
+k∑
+i=1
+∫
+Ui
+|x-pi|2σ(x)dx.
+This shows that∇ub minimizes the quadratic transport cost.
+4. A proof of Theorem 1.4. We fixg1,...,g m throughout the proof. For sim-
+plicity, letpk+j = vj and hk+j = -gj for j =1 ,...,m and let
+Wi(h)= {x ∈ Rn|x·pi +hi ≥ x·pj +hj,j =1 ,...,k +m}.
+Define
+H = {h ∈ Rk|vol(Wi(h)) > 0,i =1 ,...,k +m}.
+Lemma 4.1. (a) H is a non-empty open convex set inRk.
+(b) For each h ∈ H and i =1 ,...,k and j =1 ,...,m , Wi(h) is a non-empty
+bounded convex set andWk+j(h) is a non-empty unbounded set.
+Proof. The proof of convexity of H is exactly the same as that of §2.1. We
+omit the details. Also, by definitionH is open. To show thatH is non-empty, using
+proposition 2.2(e), there exists¯h ∈ Rk so that for alli =1 ,...,k , vol(Wi(¯h)) > 0.
+We claim fort> 0 large the vectorh = ¯h +( t,...,t ) ∈ H. Indeed, let B be a large
+compact ball so thatB ∩Wi(¯h) ̸= ∅ for alli =1 ,...,k .N o wc h o o s et large so that
+min
+x∈B
+{x·pi +hi|i =1 ,2,...,k } > max
+x∈B
+{x·vj +gj|j =1 ,...,m }.
+F o rt h i sc h o i c eo fh,b yd e fi n i t i o n ,Wi(¯h)∩B ⊂ Wi(h).
+Part (b) follows from proposition 2.2 (b) and (c).
+For h ∈ H and i =1 ,...,k ,l e twi(h)= vol(Wi(h)) > 0. For each h ∈ H,
+by proposition 2.4 applied to a large compact domain X whose interior contains
+∪k
+i=1Wi(h), we see thatwi(h) is a differentiable function so that∂wi
+∂hj
+= ∂wj
+∂hi
+for all
+i,j =1 ,...,k . Thus the differential 1-formη = ∑k
+i=1 wi(h)dhi is a closed 1-form on the
+open convex setH.S i n c eH is simply connected, there exists aC1-smooth function
+E(h): H → R so that ∂E
+∂hi
+= wi(h).
+Lemma 4.2. The Hessian matrix Hess(E) of E is positive definite for each
+h ∈ H.I np a r t i c u l a r ,E is strictly convex and▽E : H → Rk is a smooth embedding.
+Proof. By the same proof as in §2.3, we have for i ̸= j, ∂wi(h)/∂hj =
+- 1
+|pi-pj|Area(F) < 0i f Wi(h)a n dWj(h) share a codimension-1 face F and it is
+===== page 14 =====
+396 X .G U ,F .L U O ,J .S U N ,A N DS . - T .Y A U
+zero otherwise. Furthermore, for eachj =1 ,...,k , ∑k
+i=1 ∂wi/∂hj = ∂(∑k
+i=1 wi(h))
+∂hj
+> 0
+if Wj(h) and one ofWμ+k(h) share a codimension-1 face. It is zero otherwise. This
+shows the Hessian matrixHess(E)=[ aij] is diagonally dominated so thataij ≤ 0
+for alli ̸= j and aii ≥ ∑
+j̸=i |aij|.T h u sHess(E) is positive semi-definite. To show
+that it has no kernel, we proceed with the same argument as in the proof of corollary
+3.1. The same argument shows that ifb =( b
+1,...,b k)i san u l lv e c t o rf o r[aij], then
+b1 = b2 = ... = bk. On the other hand, there is an indexi so thatWi(h) and one of
+Wj+k(h) share a codimension-1 face, i.e,aii > ∑k
+i=1 |aij|.U s i n g∑k
+j=1 aijb1 =0 ,w e
+see thatb1 = 0, i.e.,b = 0. This establishes the lemma.
+Now we prove theorem 1.4 as follows. Let A = {A =( A1,...,A k)|Ai > 0}
+and consider the strictly convex functionE(h): H → R with ∂E(h)/∂hi = wi(h).
+Our goal is to prove thatE(h) - ∑k
+i=1 Aihi has a minimal point inH by showing
+A = ▽E(h)f o rs o m eh ∈ H.
+Let Φ =▽E : H →A be the gradient map. By lemma 4.2, Φ is an injective
+local diffeomorphism fromH to A. In particular, due todim(H)= dim(A), Φ(H)
+is open in A. To finish the proof that Φ(H)= A,s i n c eA is connected, it suffices
+to prove that Φ(H) is closed in A. Take a sequence of points h(i) in H so that
+Φ(h(i)) converges to a point a ∈A . We claim that a ∈ Φ(H). After taking a
+subsequence, we may assume thath(i) converges to a point in [-∞,∞]k.W e fi r s t
+show that {h(i)} is a bounded set inRk. If otherwise, there are three possibilities:
+(a) there isj so that h(i)
+j →- ∞ as i →∞ , (b) there are two indicesj1 and j2 so
+that limi→∞ h(i)
+j1 = ∞ and {h(i)
+j2 } is bounded, and (c) for all indicesj, limi→∞ h(i)
+j =
+∞. In the first case (a), due topj ∈ int(conv(v1,...,v m)) and h(i)
+j is very negative,
+x·pj +h(i)
+j < max{x·vj′+gj′|j′=1 ,...,m } for i large for allx. This implies fori
+large Wj(h(i))= ∅ which contradicts the assumption that limi Φ(h(i))= a ∈A .I n
+the case (b) that{h(i)
+j2 } is bounded, then Wj2(h(i)) lies in a compact setB.F o ri
+large, x·pj1 +h(i)
+j1 ≥ max{x·vj +gj,x ·pj2 +h(i)
+j2 )} for allx ∈ B.T h i si m p l i e st h a t
+Wj2(h(i))= ∅ for largei which contradicts the assumption that limi Φ(h(i))= a ∈A .
+In the last case (c), since for each j, limi→∞ h(i)
+j = ∞, for any compact set B,
+t h e r ei sa ni n d e xi so that B ⊂∪ k
+μ=1Wμ(h(i)). This implies that the sum of the
+volumes ∑k
+μ=1 vol(Wμ(h(i)) tends to infinity which again contradicts the assumption
+limi Φ(h(i))= a ∈A .
+Now that h(i) is convergent to a pointh in Rk, by the continuity of the map
+sending h to (w1(h),...,w k(h)) on Rk, we see that Φ(h)= a. This showsh ∈ H and
+a ∈ Φ(H), i.e., Φ(H) is closed inA.
+Hence, given any (A1,...,A k) ∈A , there exists a uniqueh ∈ H so that Φ(h)=
+(A1,...,A k). Let u =m a x{x · pi + hi|i =1 ,...,k + m} be the PL convex function
+on Rn and w be its dual. By corollary 2.1, we conclude that the vertices ofw are
+exactly {vi,pj|i,j} with w(vi)= gi and w(pj)= -hj so that the discrete Hessian of
+w at pi,w h i c hi swi(h)= Ai. Furthermore, by proposition 2.2, the associated convex
+subdivision ofw on Ω has exactly the vertex set{v1,...,v k,p1,...,p k}.
+===== page 15 =====
+DISCRETE OPTIMAL TRANSPORT AND MINKOWSKI PROBLEM 397
+REFERENCES
+[1] A. D. Alexandrov Convex polyhedra Translated from the 1950 Russian edition by N. S.
+Dairbekov, S. S. Kutateladze and A. B. Sossinsky,Springer Monographs in Mathematics.
+Springer-Verlag, Berlin, 2005.
+[2] A. D. Alexandrov, On the area of a convex body, Mat. Sb., 6:1 (1939), pp. 167-173 (Russian).
+[3] F. Aurenhammer, Power diagrams: properties, algorithms and applications, SIAM Journal
+of Computing, 16:1 (1987), pp. 78-96.
+[4] F. Aurenhammer, F. Hoffmann, and B. Aronov, Minkowski-type theorems and least-squares
+clustering, Algorithmica, 20:1 (1998), pp. 61-76.
+[5] Y. Brenier, Polar factorization and monotone rearrangement of vector-valued functions,
+Comm. Pure Appl. Math., 44:4 (1991), pp. 375-417.
+[6] S.-Y. Cheng and S.-T. Yau, On the regularity of the solution of the n-dimensional minkowski
+problem, Comm. Pure Appl. Math., 29 (1976), pp. 495-516.
+[7] F. de Goes, K. Breeden, V. Ostromoukhov, and M. Desbrun, Blue noise through optimal
+transport, ACM Trans. Graph. (SIGGRAPH Asia), 31 (2012).
+[8] L. H¨ormander, Notions of convexity Reprint of the 1994 edition, Modern Birkh¨auser Classics.
+Birkh¨auser Boston, Inc., Boston, MA, 2007.
+[9] L. Nirenberg, The weyl and minkowski problems in differential geometry in the large, Comm.
+Pure Appl. Math., 6 (1953), pp. 337-394.
+[10] M. Passare and H. Rullg˚ard, Ameobas, monge-amp`are measures, and triangulations of the
+newton polytope, Duke Mathematics Journal, 121:3 (2004), pp. 481-507.
+[11] A. V. Pogorelov, Extrinsic geometry of convex surfaces. Translated from the Russian by
+Israel Program for Scientific Translations, volume 35 of " Translations of Mathematical
+Monographs", American Mathematical Society, Providence, R.I., 1973.
+[12] A. V. Pogorelov, On the question of the existence of a convex surface with a given sum
+principal radii of curvature, Usp. Mat. Nauk, 8 (1953), pp. 127-130.
+[13] D. Siersma and M. van Manen , Power diagrams and their applications , preprint,
+arXiv:math/0508037, 2005.
+[14] Z. Su, W. Zeng, R. Shi, Y. Wang, J. Sun, and X. Gu, Area preserving brain mapping,i n
+"Computer Vision and Pattern Recognition (CVPR), 2013 IEEE Conference on", pp. 2235-
+2242, June 2013.
+[15] C. Villani, Topics in optimal transportation, Number 58 in Graduate Studies in Mathematics.
+American Mathematical Society, Providence, RI, 2003.
+[16] X. Zhao, Z. Su, X. Gu, A. Kaufman, J. Sun, J. Gao, and F. Luo, Area-preservation mapping
+using optimal mass transport, IEEE Transactions on Visualization and Computer Graphics,
+19:12 (2013), pp. 2838-2847.
+===== page 16 =====
+398 X .G U ,F .L U O ,J .S U N ,A N DS . - T .Y A U

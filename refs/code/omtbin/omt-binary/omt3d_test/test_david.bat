@@ -1,0 +1,1 @@
+..\bin\omt3d -input david_h.t -output david_omt.tet6 -clip cube

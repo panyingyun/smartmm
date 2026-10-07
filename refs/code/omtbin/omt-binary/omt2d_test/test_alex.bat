@@ -1,0 +1,1 @@
+..\bin\omt2d -input alex.off -output alex_omt.off -threshold 1e-6

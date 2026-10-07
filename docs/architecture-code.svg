@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1260" viewBox="0 0 1920 1260" role="img" aria-labelledby="title desc">
+  <title id="title">smartmm 代码架构图</title>
+  <desc id="desc">smartmm 代码架构：入口层（tests/run_pipeline.py、tests/run_demo.py、tools）依赖共享基础层（src/tetparam/mesh.py、metrics.py、generate.py），并驱动阶段 1 共形映射、阶段 2A 最优传输、阶段 2B 变分保体积、阶段 3 四面体剖分四个模块；统一数据结构 TetMesh(vertices (n,3), tets (m,4))，统一输出契约 out/{input,ball,volpres,remesh_*}.vtk + pipeline.png + report.json。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8fbfd"/>
+      <stop offset="1" stop-color="#eef4f7"/>
+    </linearGradient>
+    <linearGradient id="input" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dceefa"/>
+      <stop offset="1" stop-color="#bad8ea"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e4f4df"/>
+      <stop offset="1" stop-color="#c7e5c5"/>
+    </linearGradient>
+    <linearGradient id="stage1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5c7d8f"/>
+      <stop offset="1" stop-color="#94aebe"/>
+    </linearGradient>
+    <linearGradient id="stage2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3d9a7d"/>
+      <stop offset="1" stop-color="#72bda1"/>
+    </linearGradient>
+    <linearGradient id="stage3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7766ad"/>
+      <stop offset="1" stop-color="#aa9bcf"/>
+    </linearGradient>
+    <linearGradient id="stage4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c2803a"/>
+      <stop offset="1" stop-color="#e0a86a"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#39556a" flood-opacity="0.16"/>
+    </filter>
+    <filter id="smallShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#39556a" flood-opacity="0.14"/>
+    </filter>
+    <marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L6,3.5 L1,6 Z" fill="#637c89"/>
+    </marker>
+    <style>
+      text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", Arial, sans-serif; fill: #18303f; }
+      .title { font-size: 30px; font-weight: 700; }
+      .section { font-size: 27px; font-weight: 700; }
+      .file { font-size: 24px; font-weight: 700; }
+      .body { font-size: 22px; }
+      .small { font-size: 19px; }
+      .card-title { font-size: 22px; font-weight: 700; fill: white; }
+      .card-file { font-size: 16px; font-weight: 700; fill: white; }
+      .card-body { font-size: 15px; fill: white; }
+      .chip { font-size: 14px; font-weight: 700; }
+      .pill-title { font-size: 20px; font-weight: 700; fill: #23414f; }
+      .pill-body { font-size: 17px; fill: #3d5b6b; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1260" fill="url(#bg)"/>
+  <circle cx="120" cy="150" r="3" fill="#8fb3a5" opacity=".6"/>
+  <circle cx="1800" cy="180" r="5" fill="#d4b862" opacity=".55"/>
+  <circle cx="1845" cy="600" r="3" fill="#8fb3a5" opacity=".6"/>
+  <circle cx="65" cy="560" r="4" fill="#d4b862" opacity=".55"/>
+
+  <text x="54" y="58" class="title">smartmm</text>
+  <text x="54" y="88" class="small" fill="#66808e">三维共形 + 最优传输 · 保体积参数化与四面体剖分 · Python 代码架构（包依赖与模块分层）</text>
+
+  <!-- Entry layer -->
+  <g filter="url(#shadow)">
+    <rect x="110" y="120" width="1700" height="160" rx="20" fill="url(#input)" stroke="#6f9eb9" stroke-width="2"/>
+  </g>
+  <text x="150" y="162" class="section">入口层 entrypoints</text>
+  <line x1="690" y1="178" x2="690" y2="262" stroke="#8bb8d0" stroke-width="2"/>
+  <line x1="1210" y1="178" x2="1210" y2="262" stroke="#8bb8d0" stroke-width="2"/>
+  <g transform="translate(160,200)">
+    <text x="0" y="0" class="file">tests/run_pipeline.py</text>
+    <text x="20" y="36" class="body">• CLI：几何/网格 → 保体积参数化 → 新网格</text>
+    <text x="20" y="68" class="body">• 支持 .step/.stl/.node+.ele/.vtk/.msh</text>
+  </g>
+  <g transform="translate(726,200)">
+    <text x="0" y="0" class="file">tests/run_demo.py · test_*.py</text>
+    <text x="20" y="36" class="body">• 内置形状端到端演示 + 实测报告</text>
+    <text x="20" y="68" class="body">• 回归验证与两条路线对比</text>
+  </g>
+  <g transform="translate(1246,200)">
+    <text x="0" y="0" class="file">tools/*.py</text>
+    <text x="20" y="36" class="body">• 测试几何、网格工具自检、性能基准</text>
+    <text x="20" y="68" class="body">• PDF 抽取、公式自检（28 项）</text>
+  </g>
+
+  <path d="M960 280V330" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <!-- Shared foundation layer -->
+  <g filter="url(#shadow)">
+    <rect x="110" y="330" width="1700" height="170" rx="20" fill="url(#core)" stroke="#79a57a" stroke-width="2"/>
+  </g>
+  <text x="150" y="372" class="section">共享基础层 src/tetparam</text>
+  <line x1="690" y1="388" x2="690" y2="472" stroke="#8db58c" stroke-width="2"/>
+  <line x1="1210" y1="388" x2="1210" y2="472" stroke="#8db58c" stroke-width="2"/>
+  <g transform="translate(170,410)">
+    <text x="0" y="0" class="file">mesh.py</text>
+    <text x="20" y="36" class="body">• TetMesh 容器 · TetGen/VTK I/O · 方向修正</text>
+    <text x="20" y="68" class="body">• 带符号体积 · 二面角 · radius-ratio · 边界提取</text>
+  </g>
+  <g transform="translate(726,410)">
+    <text x="0" y="0" class="file">metrics.py</text>
+    <text x="20" y="36" class="body">• 体积比 / 雅可比场 / 拉伸能量与下界</text>
+    <text x="20" y="68" class="body">• distortion_report：验收指标一站式输出</text>
+  </g>
+  <g transform="translate(1246,410)">
+    <text x="0" y="0" class="file">generate.py</text>
+    <text x="20" y="36" class="body">• 立方球（COBE）网格 · Delaunay 球 · ODV 光滑</text>
+    <text x="20" y="68" class="body">• twist/pear/bump/bend/taper 五种形变测试件</text>
+  </g>
+
+  <!-- Bus to the four stages -->
+  <path d="M960 500V548" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M290 548H1630" stroke="#637c89" stroke-width="2.5" fill="none"/>
+  <path d="M315 548V598" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M745 548V598" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M1175 548V598" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M1605 548V598" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <rect x="710" y="530" width="500" height="34" rx="17" fill="#f8fbfd" stroke="#c8d5de" stroke-width="2"/>
+  <text x="960" y="554" class="small" text-anchor="middle" fill="#4d6a7a">统一数据结构 TetMesh(vertices (n,3), tets (m,4))</text>
+
+  <!-- Stage 1 -->
+  <g filter="url(#shadow)">
+    <rect x="115" y="600" width="400" height="350" rx="20" fill="url(#stage1)" stroke="#3f5f70" stroke-width="2"/>
+  </g>
+  <text x="137" y="640" class="card-title">阶段 1 · 共形映射</text>
+  <rect x="395" y="652" width="100" height="28" rx="14" fill="#eef5f9" opacity=".95"/>
+  <text x="445" y="671" class="chip" text-anchor="middle" fill="#3f5f70">0.05 s</text>
+  <line x1="137" y1="692" x2="493" y2="692" stroke="white" opacity=".35"/>
+  <text x="137" y="726" class="card-file">harmonic.py</text>
+  <text x="137" y="750" class="card-body">P1 刚度 L_ij = Σ_τ |τ|⟨∇λ_i, ∇λ_j⟩</text>
+  <text x="137" y="774" class="card-body">（四面体 cotan 权重 k_uv = 1/12 Σ l_i cot θ_i）</text>
+  <text x="137" y="802" class="card-body">边界 ∂M → S²：径向投射 / 切向松弛</text>
+  <text x="137" y="826" class="card-body">星形双射初值 · 体积失配能量折叠修复</text>
+  <line x1="137" y1="848" x2="493" y2="848" stroke="white" opacity=".25"/>
+  <text x="137" y="880" class="card-body" opacity=".95">解 L_II f_I = −L_IB f_B，残差 ~1e-15</text>
+  <text x="137" y="908" class="card-body" opacity=".95">ball_map(auto) 在 star/harmonic 间自动选优</text>
+  <text x="137" y="932" class="card-body" opacity=".95">实测 E_V 超界 5.6%–9.5%</text>
+
+  <!-- Stage 2A -->
+  <g filter="url(#shadow)">
+    <rect x="545" y="600" width="400" height="350" rx="20" fill="url(#stage2)" stroke="#277158" stroke-width="2"/>
+  </g>
+  <text x="567" y="640" class="card-title">阶段 2A · 最优传输</text>
+  <rect x="825" y="652" width="100" height="28" rx="14" fill="#e5fff4" opacity=".95"/>
+  <text x="875" y="671" class="chip" text-anchor="middle" fill="#257258">论文原路线</text>
+  <line x1="567" y1="692" x2="923" y2="692" stroke="white" opacity=".35"/>
+  <text x="567" y="726" class="card-file">laguerre.py · volume_ot.py</text>
+  <text x="567" y="750" class="card-body">站点 p_i = ψ(v_i) · 质量 ν_i = Σ_τ∋v_i |τ| / 4</text>
+  <text x="567" y="774" class="card-body">对偶 max E(h) = Σ ν_i h_i − ∫ max_i(|x−p_i|²−h_i)</text>
+  <text x="567" y="802" class="card-body">∇E = ν − |W_i|（体积差向量）</text>
+  <text x="567" y="826" class="card-body">Hessian = 加权图 Laplacian（面面积 / 2·站距）</text>
+  <line x1="567" y1="848" x2="923" y2="848" stroke="white" opacity=".25"/>
+  <text x="567" y="880" class="card-body" opacity=".95">阻尼牛顿 + λ 回退（空 cell 必须回退）</text>
+  <text x="567" y="908" class="card-body" opacity=".95">合成算例 6 次迭代 → 5.7e-12</text>
+  <text x="567" y="932" class="card-body" opacity=".95">&gt;1e4 站点请换 geogram + exploragram</text>
+
+  <!-- Stage 2B -->
+  <g filter="url(#shadow)">
+    <rect x="975" y="600" width="400" height="350" rx="20" fill="url(#stage3)" stroke="#5f4b94" stroke-width="2"/>
+  </g>
+  <text x="997" y="640" class="card-title">阶段 2B · 变分保体积</text>
+  <rect x="1255" y="652" width="100" height="28" rx="14" fill="#f2edff" opacity=".95"/>
+  <text x="1305" y="671" class="chip" text-anchor="middle" fill="#655297">工程推荐</text>
+  <line x1="997" y1="692" x2="1353" y2="692" stroke="white" opacity=".35"/>
+  <text x="997" y="726" class="card-file">volume_ot.py</text>
+  <text x="997" y="750" class="card-body">E_V(f) = Σ_τ |f(τ)|² / |τ| ≥ V(f)² / V(M)</text>
+  <text x="997" y="774" class="card-body">等号 ⟺ 保体积（下界定理，OT 的变分形式）</text>
+  <text x="997" y="802" class="card-body">vsem()：L-BFGS，球面边界冻结（秒级）</text>
+  <text x="997" y="826" class="card-body">iem()：边界在球面上投影梯度滑动</text>
+  <line x1="997" y1="848" x2="1353" y2="848" stroke="white" opacity=".25"/>
+  <text x="997" y="880" class="card-body" opacity=".95">ot_vertex_map：F(v_i) = W_i 质量中心</text>
+  <text x="997" y="908" class="card-body" opacity=".95">实测 E_V 超界 9.5% → 1.3%–2.4%</text>
+  <text x="997" y="932" class="card-body" opacity=".95">不依赖任何幂图裁剪器</text>
+
+  <!-- Stage 3 -->
+  <g filter="url(#shadow)">
+    <rect x="1405" y="600" width="400" height="350" rx="20" fill="url(#stage4)" stroke="#9a6122" stroke-width="3"/>
+  </g>
+  <text x="1427" y="640" class="card-title">阶段 3 · 四面体剖分</text>
+  <rect x="1685" y="652" width="100" height="28" rx="14" fill="#fff8ec" opacity=".97"/>
+  <text x="1735" y="671" class="chip" text-anchor="middle" fill="#8a5620">体积误差 0</text>
+  <line x1="1427" y1="692" x2="1783" y2="692" stroke="white" opacity=".35"/>
+  <text x="1427" y="726" class="card-file">remesh.py · inverse_map</text>
+  <text x="1427" y="750" class="card-body">点定位：KD-tree 候选 + 重心坐标（tol 1e-6）</text>
+  <text x="1427" y="774" class="card-body">λ_k(x) = δ_k0 + ∇λ_k · (x − v_0) → 原像</text>
+  <text x="1427" y="802" class="card-body">模板拉回：refine / uniform_ball_template</text>
+  <text x="1427" y="826" class="card-body">边界兜底：最近边界三角形的原像</text>
+  <line x1="1427" y1="848" x2="1783" y2="848" stroke="white" opacity=".25"/>
+  <text x="1427" y="880" class="card-body" opacity=".95">模板骨架一致时体积误差 0（机器精度）</text>
+  <text x="1427" y="908" class="card-body" opacity=".95">翻转 0 · 连接关系直接复用</text>
+  <text x="1427" y="932" class="card-body" opacity=".95">生产建议：采样 → fTetWild / TetGen</text>
+
+  <!-- Stage cards to test pills -->
+  <path d="M315 950V1006" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M745 950V1006" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M1175 950V1006" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <path d="M1605 950V1006" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <g filter="url(#smallShadow)"><rect x="115" y="1010" width="400" height="100" rx="16" fill="#ecfaf5" stroke="#5ca58a" stroke-width="2"/></g>
+  <text x="315" y="1050" class="pill-title" text-anchor="middle">阶段 1 回归测试</text>
+  <text x="315" y="1082" class="pill-body" text-anchor="middle">test_stage1 · diag_harmonic</text>
+
+  <g filter="url(#smallShadow)"><rect x="545" y="1010" width="400" height="100" rx="16" fill="#f4f0fb" stroke="#8b78bb" stroke-width="2"/></g>
+  <text x="745" y="1050" class="pill-title" text-anchor="middle">OT 核心验证</text>
+  <text x="745" y="1082" class="pill-body" text-anchor="middle">test_laguerre：合成算例 + Hessian 有限差分</text>
+
+  <g filter="url(#smallShadow)"><rect x="975" y="1010" width="400" height="100" rx="16" fill="#eaf6fb" stroke="#4a9bb8" stroke-width="2"/></g>
+  <text x="1175" y="1050" class="pill-title" text-anchor="middle">两条路线对比</text>
+  <text x="1175" y="1082" class="pill-body" text-anchor="middle">test_ot_vs_vsem · test_pipeline</text>
+
+  <g filter="url(#smallShadow)"><rect x="1405" y="1010" width="400" height="100" rx="16" fill="#fdf6e3" stroke="#c9a227" stroke-width="2"/></g>
+  <text x="1605" y="1050" class="pill-title" text-anchor="middle">几何件与可视化</text>
+  <text x="1605" y="1082" class="pill-body" text-anchor="middle">make_test_geometry · check_meshers · 绘图</text>
+
+  <text x="110" y="1160" class="small" fill="#66808e">依赖方向：tests · tools → tetparam{harmonic · laguerre · volume_ot · remesh} → {mesh · metrics · generate}；仅依赖 numpy · scipy · meshio · matplotlib · gmsh</text>
+  <text x="110" y="1192" class="small" fill="#66808e">统一数据结构 TetMesh(vertices (n,3), tets (m,4))；统一输出 out/{input, ball, volpres, remesh_refine1, remesh_uniform}.vtk + pipeline.png + report.json</text>
+  <text x="110" y="1224" class="small" fill="#66808e">可选外部生态：geogram + exploragram（BSD-3，&gt;1e4 站点的幂图/半离散 OT 求解）· TetGen 1.6.1（已编译 vendor\tetgen\build\tetgen.exe）· fTetWild（MPL-2.0）· Mmg（LGPL-3.0）</text>
+</svg>

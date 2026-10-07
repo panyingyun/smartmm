@@ -1,0 +1,346 @@
+﻿<html><head><title>David Xianfeng Gu's Home Page</title>
+ </head>
+      <body>
+          <center>
+              <table WIDTH="688" NOSAVE>
+                  <tr ALIGN=LEFT VALIGN=TOP NOSAVE>
+                      <td ROWSPAN="2" NOSAVE><img SRC="https://www3.cs.stonybrook.edu/~gu/figures/david_title.jpg" width=360 height=360 align=CENTER></td>
+
+                      <td COLSPAN="2" NOWRAP NOSAVE>
+                          <h1>Xianfeng David Gu</h1>
+                          <br>SUNY Empire Innovation Professor
+                          <br><a href="http://www.cs.stonybrook.edu/">Department of Computer Science</a>
+                          <br><a href="http://www.stonybrook.edu/commcms/ams2/">Department of Applied Mathematics</a>
+                          <br><a href="http://www.stonybrook.edu">Stony Brook University</a>
+                          <br>
+                          <br>Room 147 New Computer Science Building
+                          <br>State University of New York at Stony Brook
+                          <br>Stony Brook, New York 11794-2424
+                          <br>
+                          <br>Phone:&nbsp; (631) 632-1828 (Office)&nbsp;
+                          <br>Fax: (631) 632-8334
+                          <br>gu at cs.stonybrook.edu
+                          <br>
+                          <br> Director of 3D Scanning Laboratory
+                          <br><A HREF="http://www.cs.stonybrook.edu/~gu">http://www.cs.stonybrook.edu/~gu</A>
+              </table>
+          </center>
+          <p>
+
+              <table>
+                  <tr>
+                      <TD>
+                          <ul>
+                              <li> <a HREF="http://www.cs.stonybrook.edu/~gu/lectures/index.html">Lectures</a>
+                              <li> <a HREF="talks/index.html">Talks</a>
+                          </ul>
+                      </TD>
+                      <td>
+                          <ul>
+                              <li> <a HREF="selected_publications/index.html">Publication</a>
+                              <li> <a HREF="software/index.html">Software</a>
+                          </ul>
+                      </td>
+
+                      <TD>
+                          <ul>
+                              <li> <a HREF="http://www.cs.stonybrook.edu/~gu/demo/index.html">Demos</a>
+                              <li> <a HREF="gallery/index.html">Gallery</a>
+                          </ul>
+                      </TD>
+                      <td>
+                          <ul>
+                              <li> <a HREF="selected_publications/books.html">Book</a>
+                              <li> <a HREF="http://www.cs.stonybrook.edu/~gu/index.html#algorithm">Algorithm</a>
+                          </ul>
+                      </td>
+                      <td>
+                          <ul>
+                              <li> <a HREF="http://www.cs.stonybrook.edu/~gu/CV.pdf">Curriculum Vitae</a>
+                              <li> <a HREF="http://www.cs.stonybrook.edu/~gu/publications.pdf">Publication List</a>
+                          </ul>
+                      </td>
+                      <td>
+                          <ul>
+                              <li> <a HREF="http://www.cs.stonybrook.edu/~gu/software/holoimage/index.html">3D Scanning Lab</a>
+                              <li> <a HREF="https://scholar.google.com/citations?user=Y063_CIAAAAJ&hl=en">Google Scholar</a>
+                          </ul>
+
+                      </td>
+                  </tr>
+
+              </table>
+
+              <HR WIDTH="100%">
+
+              <H3>Optimal Transportation and Explainable AI</H3>
+              <b>Optimal transportation</b> finds the most economical way to transform one probability measure to the other. Optimal transportation theory
+              is the intersection among various fields, including probability and statistics, convex differential geometry, fluid dynamics and Monge-Ampere
+              partial differential equation and so on.
+          <p>
+              <b>Statistical learning</b> aims at learning probability distributions defined on low dimensional data manifolds embedded in
+              high dimensional ambient spaces. Therefore the central tasks include learning the manifold structure and the probability distrubitions.
+              The second task can be accomplished using optimal transportation.
+          <p>
+              <b>Explainable AI</b> The fundamental principle for deep learning is to perform optimization in the space consisting all probability measures (the Wasserstein space).
+              Optimal transportation theory assigns a natural Riemannian metric to the Wasserstein space, such that the variational optimization can be
+              carried out using the covariant calulus. Hence optimal transportation has been broadly applied in deep learning, such as
+              generative models.
+          <p>
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG height=240
+                                   src="figures/buddha_small.png"
+                                   width=760>
+                          </TD>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+          <p>
+              <b>Geometric Variational Algorithm</b> The optimal transportation map is the gradient map of the Brenier potential. Fundamentally, the Brenier theorem in optimal transportation is equivalent to the Alexandrov theorem
+              in convex geometry, both of them are governed by the Monge-Ampere equation. The Brenier potential (Alexandrov polyhedron) can be computed
+              by optimizing the Monge transportation cost, or equivalently the volume, using <a href="software/OT/index.html">geometric variational algorithm</a>.
+
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG height=240
+                                   src="figures/maxplanck_small_top.png"
+                                   width=673>
+                          </TD>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+          <p>
+              <b>Spherical Optimal Transportation Algorithm</b> The spherical optimal transportation map can be solved using the geometric variational
+              approach as well. The spherical OT map algorithm can be applied to solve the Minkowski problem, which determines the shape from the Gaussian curvature,
+              and the otpical design problems. The <a href="software/SOT/index.html">spherical optimal transportation algorithm</a> is based on convex optimization.
+          <p>
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG height=240
+                                   src="figures/OT_Singularity.png"
+                                   width=737>
+                          </TD>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+          <p>
+              <b>Explainable AI</b> Optimal transportation lays down the theoretic foundation of deep learning, it can be applied
+              to explain fundamental problems in deep learning, such as mode collapse. Depending on the supports of the probability measures, the optimal transportation maps may have singuarlities, where the
+              map is discontinous. In general, deep neural nets can only represent continuous maps. This cause the mode collapsing issue in deep learning.
+              Therefore, by considering the regularity issue of the optimal transportation maps, we can design generative models to eliminate mode collapse, such as
+              <a href="https://doi.org/10.1016/j.eng.2019.09.010">geometric GAN model</a>.
+          <p>
+
+              <hr>
+              <h3>3D Vision</h3>
+              <b>3D scanning</b> and <b>digital geometry processing</b> play fundamental roles in the Metaverse. The <a href="software/holoimage/index.html">3D scanning lab</a> is developing cutting 3D camera systems,
+              which combines light field camera calibration, multiwave length phase shifting structured light to capture point clouds, then
+              use Lie-algebraic cohomology for point cloud fusion and Poisson reconstruction. The system is capable of capturing high resolution
+              and high speed human facial surfaces with dynamic expressions. 
+          <p>
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG height=300
+                                   src="figures/Andrew.png"
+                                   width=773>
+                          </TD>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+          <p>
+              The geometric surfaces are processed with algorithms based on conformal geometry
+              and optimal transportation, including parameterization, remeshing, registration, comparison and so on. 
+              The <a href="tutorial/RicciFlow.html">Ricci flow</a> method and the optimal transportation map based on <a href="software/OT/index.html">geometric variational</a> method are directly applied.
+
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG height=240
+                                   src="figures/Alex_small.png"
+                                   width=681>
+                          </TD>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+              <HR>
+
+              <A name=summary></A>
+              <H3>Computational Conformal Geometry</H3>
+              <B>Conformal Structure</B> is a natural geometric structure on surfaces, which governs many physics phenomena,
+              such as heat diffusion, electric-magnetic fields, etc. Conformal field theory plays fundamental role in string theory.
+          <p>
+              In <b>mathematics</b>, conformal means "angle preserving". Conformal structure is a specail atlas of the surface, such that angles among tangent
+              vectors can be coherently defined on different local coordinate systems. Furthermore, concepts in complex anylasis can be
+              defined on the surface via conformal structure. Conformal geometry is the intersection of algebraic geometry, differential
+              geometry, complex anylasis and algebraic topology.
+          <p>
+              In <b>engineering</b>, conformal structure is between topological structure and geometric structure, which is more rigid than topology and
+              more flexible than geometry. Therefore, conformal structure leads to canonical non-rigid deformation, which is
+              important for engineering applications, especially for shape anylasis, classification and registration.
+          <p>
+              The goal of <b>computational conformal geometry</b> is to convert
+              concepts and theorems from Riemann surface theory to practical algorithms, and implement them
+              for engineering applications.
+          <p>
+
+              <H3>Riemann Surface and Holomorphic Differentials</H3>
+
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG height=240
+                                   src="research/figures/hypersheet2_600_scaled.jpg"
+                                   width=240>
+                          <TD>
+                              <IMG height=240
+                                   src="research/figures/teapots_scaled.jpg" width=320>
+                          <TD>
+                              <IMG height=240
+                                   src="research/figures/sculpture_res_600_scaled.jpg"
+                                   width=240>
+                          </TD>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+
+          <p>
+
+              A surface with a conformal structure is called a <B>Riemann surface</B>. All metric surfaces are Riemann surfaces. The image illustrates the conformal structure using isothermal coordinates. The algorithm is based on computing
+              <a href=publications/publication_2003.html#holomorphic_one_form>holomorphic differentials</a> on Riemann surfaces.
+
+              <H3>Uniformization and Ricci Flow</H3>
+
+          <p>
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG width=720 height=480
+                                   src="figures/uniformization.jpg"
+                                   width=240>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+          <P>
+
+              <B>Surface uniformization</B> means that all metric surfaces can be conformally mapped to one of the three canonical domains, the sphere, the plane and the hyperbolic space. The figures show the uniformization for surfaces with various topologies. Unformization converts general 3D geometric problems to 2D problems in these canonical domains.
+              <B>Ricci flow</B> is a powerful geometric analytic tool, which has been applied to prove Poincare conjecture.
+              Ricci flow is a parabolic system of partial differential equations which acts like
+              the heat equation to spread the curvature of a Riemannian metric evenly over the surface to produce a metric of constant curvature.
+              <a href=http://www.cs.stonybrook.edu/~gu/publications/publication_2008.html#TVCG_RICCI>Computational discrete Ricci flow</a> is the practical method to compute surface uniformization, it has many important applications in many engineering fields.
+          <p>
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG width=715 height=477
+                                   src="figures/uniformization_open.PNG"
+                                   width=240>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+          <P>
+
+              <A name=algorithm></A>
+
+              <H3>Algorithms</H3>
+
+              Algorithms for computing conformal mappings from a surface onto the canonical domain can be summarized as follows:
+
+              <ol>
+                  <li>
+                      <b>Genus zero closed surface</b>, the conformal mapping can be commputed using <a href=publications/publication_2004.html#spherical_harmonic_map>
+                          <it>Spherical Harmonic Maps</it>
+                      </a>.
+                  </li>
+                  <Li><b>Genus zero surface with multiple boundary components</b>, the conformal mapping can be computed using <A href=http://www.cs.stonybrook.edu/~gu/publications/publication_2009.html#SPM><it>Generalized Koebe's Method</it></A>, or <a href=http://www.cs.stonybrook.edu/~gu/publications/publication_2008.html#GMP>slit map method</a>.</Li>
+                  <li><b>Genus  one  surface</b>, the conformal mapping can be commputed using <a href=publications/publication_2003.html#holomorphic_one_form>holomorphic one forms</a>. Another algorithm is to use <a href=publications/technical_report.html#Euclidean_Ricci_flow>Euclidean Ricci flow</a>. </li>
+                  <li>
+                      <b>Higher genus surfaces</b>, the mapping can be commputed using
+                      <a href=http://www.cs.stonybrook.edu/~gu/publications/publication_2006.html#hyperbolic_ricci_flow><it>Hyperbolic Ricci Flow</it></a>.
+                  </li>
+                  <li><b>Quasiconformal mappings</b> can be computed using <a href=http://www.cs.stonybrook.edu/~gu/publications/publication_2009.html#IMA><it>Auxiliary Metric Method</it></a>.</li>
+              </ol>
+
+              <H3> Applications </H3>
+
+              Applications of computational conformal geometry in engineering fields are innumerous. It offers the rigorous theoretic frame work for computing surface matching, registration, classification and analysis. The followings are a few examples in the most directly related fields:
+              <ul>
+                  <li>Graphics: surface global conformal <a href=publications/publication_2003.html#holomorphic_one_form>parameterization</a>.
+                  <li>Medical Imaging: conformal <a href=publications/publication_2004.html#spherical_harmonic_map>brain mapping</a> and <a href=publications/publication_2006.html#colon_flattening>colon flattening</a>.
+                  <li>Geometric Modeling: <a href=publications/publication_2006.html#manifold_splines>manifold splines</a>.
+                  <li>Vision: <a href=http://www.cs.stonybrook.edu/~gu/publications/publication_2010.html#TPAMI>3D shape analysis</a>, surface matching and recognition.
+                  <li>Wireless sensor network: <a href=http://www.cs.stonybrook.edu/~gu/publications/publication_2009.html#INFORCOM>routing</a>, <a href=http://www.cs.stonybrook.edu/~gu/publications/publication_2010.html#IPSN>load balancing</a>.
+              </ul>
+              <HR>
+
+              <H3>Monograph Books</H3>
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG height=240
+                                   src="figures/book_1.png"
+                                   width=173>
+                              <IMG height=240
+                                   src="figures/book_2.png"
+                                   width=173>
+                              <IMG height=240
+                                   src="figures/book_3.png"
+                                   width=173>
+                              <IMG height=240
+                                   src="figures/Springer.png"
+                                   width=173>
+                              <IMG height=240
+                                   src="figures/Classical_Discrete_DG_scaled.png"
+                                   width=173>
+                          </TD>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+          <p>
+              <TABLE>
+                  <TBODY>
+                      <TR>
+                          <TD>
+                              <IMG height=240
+                                   src="figures/CCG_book_1_small.png"
+                                   width=295>
+                              <IMG height=240
+                                   src="figures/OT_book_1_small.png"
+                                   width=295>
+                          </TD>
+                      </TR>
+                  </TBODY>
+              </TABLE>
+          <p>
+              The followings are books summarizing my research:
+              <ul>
+                  <li>Classical and Discrete Differential Geometry</li>
+                  <li>Computational Conformal Geometry</li>
+                  <li>Variational Principles for Discrete Surfaces</li>
+                  <li>
+                      Ricci Flow for Shape Analysis and Surface Registration
+                  </li>
+                  <li>
+                      Conformal Geometry, Computational Algorithms and Engineering Applications
+                  </li>
+                  <li>Computational Conformal Geometry Theory</li>
+                  <li>Optimal Transportation Theory and Computation</li>
+              </ul>
+              More information about the books can be found through the <a href="selected_publications/books.html">online links</a>.
+              <HR>
+
+      </body></html>
+

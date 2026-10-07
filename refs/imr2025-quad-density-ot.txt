@@ -1,0 +1,1277 @@
+  
+===== page 1 =====  
+Quad Mesh Density Control using Optimal Transport  
+Submission ID 1015  
+Abstract  
+Surface quadrilateral mesh generation plays a fundamental  
+role in CAD/CAE fields. It is crucial to control the density  
+of the meshing structures in practice.  
+In this work, a novel method for controlling the density  
+of quad meshes is proposed based on the Optimal Trans-  
+port (OT) theory. This method has a rigorous mathemati-  
+cal foundation and efficient and robust computational algo-  
+rithms. It provides the designers with the flexibility to con-  
+trol the meshing density by prescribing arbitrary probability  
+density functions on the surface. This work demonstrates  
+the efficiency and efficacy of the method using topological  
+disk models, in principle, the method can be generalized to  
+surfaces with arbitrary topologies.  
+1 Introduction  
+Quad meshes, which represent surfaces using quadrilat-  
+eral elements, are widely used in computer graphics, ge-  
+ometric modeling, and engineering applications due to  
+their alignment with surface features and suitability for  
+tasks such as texture mapping, finite element analysis,  
+and simulation. A key challenge in these applications is  
+efficiently controlling mesh density to balance compu-  
+tational cost and detail preservation. Specifically, too  
+many elements in low-detail regions increase computa-  
+tional costs, while insufficient density in high-curvature  
+regions leads to loss of detail and accuracy. This task be-  
+comes even more critical when the density must be ad-  
+justed in a user-defined, localized manner--a capability  
+that is not adequately addressed by existing methods.  
+In this work, we address this gap by introducing  
+a novel framework that enables user-controlled quad  
+mesh density adjustments in specific regions, while  
+maintaining structural integrity and alignment with  
+geometric features. Our approach is based on OT  
+theory and offers a robust mechanism for tailoring mesh  
+density to application-specific needs. The outline of our  
+algorithm is as follows: we use 2D mesh conformally  
+mapped from 3D facial surfaces as our input. As we  
+make sure that the triangle mesh stays Delaunay at all  
+times, we adjust a height vector to change the dual of  
+our mesh, which is a power diagram, representing the  
+desired Brenier's potential. The algorithm goes back  
+and shrinks the step length once it encounters empty  
+power cells or non-convex faces (oriented in different  
+directions) and stops when the dual face's area is close  
+enough to our target area. Finally, we can adopt  
+Zheng's [32] method to generate the quad-mesh from  
+our triangle mesh with new density.  
+This work's primary contribution lies in enabling  
+precise, user-defined control over quad mesh density in  
+localized areas, addressing a pressing need in applica-  
+tions that require a balance between computational ef-  
+ficiency and geometric fidelity.  
+As shown in Fig 1, the old man's facial surface is  
+conformally mapped onto a planar rectangular domain  
+using the surface Ricci flow method [12, 11] (upper-left),  
+then we tessellate the rectangle by regular grids on the  
+plane and pull it back to the 3D surface to produce  
+a quad-mesh of the surface (lower left). In order to  
+increase the mesh density around the nose, we apply  
+the OT map. The upper row shows the intermediate  
+results during the OT process, the nose area gets larger  
+and larger. The corresponding quad-meshes are shown  
+in the lower row, the quad-meshes surrounding the nose  
+are getting denser and denser.  
+Our method can change the density of the parame-  
+terization to an arbitrary user-defined distribution. Tra-  
+ditional remeshing techniques often rely on heuristic  
+rules [22, 24] that can lead to uneven density distribu-  
+tions or distorted elements. In contrast, our OT-based  
+framework provides a mathematically rigorous way to  
+transport one distribution to another while minimizing  
+the cost of transformation. The primary contribution  
+of this work is the introduction of an OT-based method  
+for selective density modification in quad-meshes, al-  
+lowing users to concentrate or reduce mesh density in  
+targeted areas. This capability offers greater flexibility  
+for tasks that require adaptive mesh refinement, such  
+as surface parametrization, finite element analysis, and  
+high-quality rendering. The OT framework also ensures  
+that mesh transformations are smooth and well-aligned  
+with the original geometry, avoiding common pitfalls  
+such as element distortion or irregular mesh transitions.  
+Our framework aligns well with the geometric fea-  
+tures of the surface, minimizing distortion during trans-  
+formations. Future extensions of this work will focus on  
+integrating curvature-aware strategies, where mesh den-  
+sity dynamically increases in high-curvature regions and  
+decreases in flatter areas. This enhancement will further  
+improve the adaptability and efficiency of the method,  
+making it particularly useful for applications such as  
+adaptive simulation, surface parametrization, and digi-  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 2 =====  
+Figure 1: Quad mesh density control by OT map.  
+tal fabrication. The proposed OT-based approach offers  
+a powerful tool for precise mesh refinement while al-  
+lowing density control at a specific area defined by the  
+user and contributes to advance state-of-the-art mesh  
+generation and optimization techniques. The outline of  
+this paper is that we introduce the necessary theoretical  
+background in section 3 and the algorithm in section 4,  
+and we display some image results in section 5.  
+2 Related Work  
+Mapping 3D Riemannian geometry to a 2D plane,  
+known as parameterization, is crucial in many fields,  
+including computer graphics, medicine, and the trans-  
+portation industry. Various techniques have been pro-  
+posed, including cut-based flattening, projection-based  
+methods, and conformal mapping. When the surface is  
+very irregular and complex, conformal mapping is of-  
+ten the default method to ensure the existence of such  
+a mapping. Another advantage is its preservation of  
+angles, allowing local shapes to be preserved. The left  
+figure on figure 2 demonstrates that all 90-degree angles  
+are preserved on the conformal parameterization.  
+However, in order to preserve angles, conformal  
+mapping often distorts areas. As we can see in figure  
+3, on the left is the face surface model in 3D, and  
+in the middle is its conformal mapping to a rectangle  
+Figure 2: Conformal mapping (left) preserves angles.  
+in 2D. The nose is shrunk to a smaller area. In  
+many situations, this is undesirable. For instance, a  
+uniform data distribution on the 2D mapping does not  
+correspond to a uniform data distribution. Hence, the  
+need for an area-transforming map is obvious.  
+OT can help achieve this goal. It can preserve and  
+also change area arbitrarily [31]. The right image of  
+figure 2 and 3 shows an area-distorting and an area-  
+preserving mapping. The nose is of the right size and  
+it retains a uniform distribution in the case of area-  
+preserving map.  
+An area-preserving mapping can be achieved  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 3 =====  
+Figure 3: left: Alex face in 3D; middle : parameteri-  
+zation of face in 2D disk through conformal mapping;  
+right: area-preserving mapping.  
+through the composition of OT and conformal map-  
+ping. Conformal mapping is often performed through  
+the Ricci flow [16, 15]. OT on the 2D disk can be done  
+using the semi-discrete OT algorithm by Gu [13].  
+In the recent works of Lei et al. (2021) [32], a novel  
+framework for generating quadrilateral meshes on sur-  
+faces with complicated topologies has been introduced  
+based on the Abel-Jacobi theory in algebraic geometry  
+and surface Ricci flow theory. These works give a solid  
+theoretical approach to handling surfaces with realistic  
+topologies. The current work aims to locally adjust the  
+density for the quad-meshes obtained by their method.  
+Therefore, our current proposed method is flexible and  
+general to surfaces with various topologies in reality  
+[32, 3, 4].  
+Recent works [21, 20, 5] published in the graph-  
+ics community propose to generate quadrilateral meshes  
+with minimal distortions based on conformal parameter-  
+izations and moving frames. Technically, these meth-  
+ods are very promising and achieved impressive results.  
+However, all of these works lack theoretic rigor. As  
+stated in the works of Lei et al. the singularities of a  
+quadrilateral mesh must satisfy the Abel-Jacobi condi-  
+tion, and this condition is missing from these works.  
+Furthermore, in the recent work of Lei [19], it is proven  
+that cross fields are not equivalent to quad-meshes,  
+there are special cross fields with singularities that can-  
+not be converted to quad-meshes.  
+The works in [2, 25] give thorough surveys for  
+surface quad-mesh and volume hex-mesh generation  
+mainly in the graphics field, but skipped the recent  
+works in computational mechanics fields, therefore these  
+surveys didn't include the most recent advancements in  
+the structured mesh generation field.  
+There are more recent works on surface map-  
+pings [8, 26, 10] which optimize different criteria, such  
+as injectivity, scale-optimality. However, the proposed  
+work requires the full controllability of area distortion,  
+therefore, OT map is the best candidate, due to its the-  
+oretic rigor [14]  
+For mesh density controlling tasks, several heuris-  
+tic approaches aim to adapt quad-mesh density by ad-  
+justing mesh elements according to geometric features  
+or computational requirements. Advancing front algo-  
+rithms, such as Q-Morph [23], are widely used to prop-  
+agate a front through the mesh and generate quads  
+based on local topology and curvature. Q-Morph uti-  
+lizes an indirect triangulation method to determine el-  
+ement sizes and alignments, helping to maintain mesh  
+quality while achieving the desired density in critical re-  
+gions. Similarly, Laplacian smoothing and vertex-based  
+operations (e.g., edge-swap and splitting) are common  
+strategies for improving mesh regularity by dynamically  
+redistributing vertices. These methods aim to increase  
+density in high-curvature regions and reduce it in flatter  
+areas, but they often rely on trial-and-error rules with  
+limited theoretical guarantees [6].  
+OT has found numerous applications in computer  
+graphics and geometric modeling due to its ability to  
+measure distances between distributions and facilitate  
+transformations. Previous works have extensively ap-  
+plied OT in texture mapping [7], shape registration [27],  
+and surface correspondence [9]. Zhao et al. [31] utilized  
+OT in the preservation of surface area, and Su et al. [28]  
+extended it to the preservation of volume. An et al. [1]  
+focused on adaptive sampling on the parameter domain  
+to fit to the geometric complexity of the input surface in  
+order to produce high quality, local adaptive triangular  
+meshes. However, OT's potential for mesh modifica-  
+tion, particularly in controlling partial mesh densities,  
+remains relatively underexplored.  
+Our approach builds upon these efforts by lever-  
+aging OT for targeted density manipulation in quad  
+meshes by introducing an OT-based framework that  
+modifies partial density in meshes. This approach lever-  
+ages the Brenier map to ensure optimal transforma-  
+tion, providing significant improvements in flexibility  
+and precision over existing methods.  
+3 Theoretical Foundation  
+This section provides a concise overview of the theoret-  
+ical foundations of Optimal Transport. OT is a math-  
+ematical framework for determining the most efficient  
+way to transport mass from one probability distribu-  
+tion to another, minimizing a specified cost function.  
+For a comprehensive exploration of OT and its princi-  
+ples, refer to the detailed discussion in [18].  
+3.1 Optimal T ransport Monge first raised the opti-  
+mal mass transport problem, which asks for the optimal  
+way to move a pile of mass from one place to another  
+that results in the minimum transport cost. OT the-  
+ory essentially studies the problem of transforming one  
+distribution to another in the most economical way.  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 4 =====  
+Let X and Y be two metric spaces with probability  
+measures µ and ν respectively, and assume X and Y  
+have equal total measure:  
+∫  
+X  
+dµ =  
+∫  
+Y  
+dν  
+Then we want a transport map T : X → Y that is  
+measure preserving : for any measurable set B⊂Y , we  
+have:  
+µ(T -1(B)) = ν(B)  
+and we call ν the push-forward of µ by T and denote  
+ν =T#µ.  
+Let the transport cost for movingx∈X toy∈Y be  
+c(x,y ), c(x,y ) : X×Y → R. Then the total transport  
+cost is  
+C(T ) =  
+∫  
+X  
+c(x,T (x))dµ(x)  
+in most cases, c(x,y ) is either the L1 cost|x-y| or the  
+L2 cost|x-y|2. OT theory therefore studies measure-  
+preserving maps with the minimum total transport cost.  
+3.1.1 Monge and Kantorovich's Approach  
+Monge's Optimal Mass transport is in the most fun-  
+damental form: given c,µ,ν , find Wc(µ,ν ) among all  
+measure preserving transport map T , where  
+Wc(µ,ν ) = min  
+T  
+{  
+∫  
+X  
+c(x,T (x))dµ(x) : T#µ =ν}  
+There are some problems with Monge's approach: for  
+example, it could not represent splitting a single mass  
+into two halves. As a result, when X is a single point 0  
+with mass 1 and Y contains two points, each with mass  
+0.5, there does not exist a transport map.  
+Kantorovich [17] relaxed Monge's problem in the  
+1940s and proved the solution's existence and unique-  
+ness. He introduced a joint measure ρ(A,B ) that  
+can represent all measure-preserving transport, called  
+a transport plan. ρ(A,B ) can be seen as the portion of  
+mass in pile A that is moving to pile B, represented as a  
+joint distribution. We have ρ(A∗Y ) = µ(A),ρ (X×B) =  
+ν(B) for allA⊆X andB⊆Y . The projection to X and  
+Y are denotedπx andπy respectively: πxρ =µ,πyρ =ν.  
+The total cost thus becomes  
+C(ρ) =  
+∫  
+X×Y  
+c(x,y )dρ(x,y )  
+and therefore Monge-Kantorovich problem aims to find  
+an OT plan ρ among all transport plans that minimize  
+the cost C(ρ):  
+Wc(µ,ν ) = min  
+ρ  
+{  
+∫  
+X×Y  
+c(x,y )dρ(x,y ) :  
+πxρ =µ,πyρ =ν}  
+(3.1)  
+where Wc(µ,ν ) denotes the minimum cost C(ρ) among  
+all transport plans.  
+Since equation 3.1 is a linear program, it has a dual  
+formulation, known as Kantorovich dual problem:  
+Wc(µ,ν ) = max  
+ϕ,ψ  
+{  
+∫  
+X  
+φ(x)dµ(x) +  
+∫  
+Y  
+ψ(y)dν(y) :  
+φ(x) +ψ(y)≤c(x,y )}  
+We give a brief proof:  
+Proof. Let Π( X,Y ) denote the space of all trans-  
+port plans: Π( X,Y ) = {γ ∈ ρ(X,Y ) : ( πx)#γ =  
+µ, (πy)#γ = ν}, where πx,πy are the marginal distri-  
+bution of X and Y respectively, then we have:  
+sup  
+ϕ,ψ  
+∫  
+X  
+φdµ +  
+∫  
+Y  
+ψdν-  
+∫  
+X×Y  
+(φ(x) +ψ(y))dγ = 0  
+for allγ∈ Π(X,Y ) and equals infinity otherwise. Under  
+certain conditions, we can write:  
+inf  
+γ  
+∫  
+X×Y  
+cdγ + sup  
+ϕ,ψ  
+∫  
+X  
+φdµ +  
+∫  
+Y  
+ψdν  
+-  
+∫  
+X×Y  
+(φ(x) +ψ(y))dγ  
+as  
+sup  
+ϕ,ψ  
+∫  
+X  
+φdµ +  
+∫  
+Y  
+ψdν + inf  
+γ  
+∫  
+X×Y  
+cdγ  
+-  
+∫  
+X×Y  
+(φ(x) +ψ(y))dγ  
+which is  
+sup  
+ϕ,ψ  
+∫  
+X  
+φdµ +  
+∫  
+Y  
+ψdν + inf  
+γ  
+∫  
+X×Y  
+(c-φ(x)-ψ(y))dγ  
+so we can write the original program as  
+max  
+ϕ,ψ  
+{  
+∫  
+X  
+φ(x)dµ(x) +  
+∫  
+Y  
+ψ(y)dν(y)}  
+with constraint: φ(x) +ψ(y)≤c(x,y ).  
+Equivalently,ψ can be replaced by the c-transform  
+of φ: φc(y) = infx∈X (c(x,y )-φ(x)):  
+Wc(µ,ν ) = max  
+ϕ  
+{ ∫  
+X  
+φ(x)dµ(x) +  
+∫  
+Y  
+φc(y)dν(y)  
+}  
+we callφ the Kantorovich potential. If the transport cost  
+is L2: c(x,y ) = 1  
+2|x-y|2, then there's a relationship  
+between the c-transform and the classical Legendre  
+transformation of φ:  
+1  
+2|y|2-φc =  
+(1  
+2|x|2-φ  
+)∗  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 5 =====  
+3.1.2 Brenier's Approach By the end of 1980's,  
+Brenier showed that  
+Theorem 3.1. Suppose X and Y are the Euclidean  
+space Rn, and the transportation cost is the quadratic  
+Euclidean distance c(x,y ) =|x-y|2. If µ is absolutely  
+continuous and µ and ν have finite second order mo-  
+ments, then there exists a convex function u : X→ R,  
+its gradient map ∇u gives the solution to the Monge's  
+problem, where u is called Brenier's potential. Further-  
+more, the optimal mass transportation map is unique.  
+This theorem converts Monge's problem to solving the  
+pde:  
+det  
+( ∂2u  
+∂xi∂xj  
+(x)  
+)  
+= µ(x)  
+ν◦∇u(x)  
+u is called Brenier potential. When c(x,y ) = 1  
+2|x-y|2,  
+Brenier's potentialu and Kantorovich's potentialφ are  
+related:  
+u(x) = x2  
+2 -φ(x)  
+3.2 Convex Geometry and Discrete OT OT in  
+the discrete case maps one discrete distribution to  
+another. With L2 transport cost, it has an intrinsic  
+connection with convex geometry theories, especially  
+Alexandrov's theory. Specifically, finding an OT map in  
+the discrete case is equivalent to constructing a convex  
+polytope with user-defined face volume and normal  
+vectors. Alexandrov's theory is a generalization of  
+Minkowski's theory.  
+Theorem 3.2. (Minkowski) Suppose{n1,...,n k} are  
+unit vectors which span Rn and ν1,...,ν k > 0 so that∑ k  
+i=1νini = 0. There exists a compact convex polytope  
+P ⊂ Rn with exactly k codimension-1 faces F1,...,F k  
+so that ni is the outward normal vector to Fi and the  
+volume of Fi isνi. Furthermore, such P is unique up to  
+parallel translation.  
+Minkowski's proof is variational. The unbounded con-  
+vex polytope was considered and solved by A.D. Alexan-  
+drov and his student A. Pogorelov.  
+Theorem 3.3. (Alexandrov) Suppose Ω is a com-  
+pact convex polytope with non-empty interior in Rn,  
+{n1,...,n k} ⊂ Rn+1 are distinct k unit vectors, the  
+(n + 1)th coordinates are negative, and ν1,...,ν k > 0  
+so that ∑ k  
+i=1νi = vol(Ω) . Then there exists convex  
+polytope P ⊂ Rn+1 with exact k codimension-1 faces  
+F1,...,F k so that ni is the normal vector to Fi and the  
+intersection between Ω and the projection of Fi is with  
+volumeνi. Furthermore, such P is unique up to vertical  
+translation.  
+By viewing the normal vectors as the target of the trans-  
+port map, and volumes as the target measure, we can  
+see that constructing such a polytope is indeed equiv-  
+alent to finding an OT map. Alexandrov's proof was  
+based on algebraic topology and was non-constructive.  
+Gu et al.[30] gave a variational proof for the generalized  
+Alexandrov's theorem in terms of convex functions.  
+Given p1,...,p k∈ Rn and h = (h1,...,h k)∈ Rk, a  
+piecewise linear function uh(x) is defined as  
+uh(x) = max  
+i  
+{⟨x,pi⟩ +hi};  
+Then dual function u∗(y) has domain Conv (p1,...pk)  
+and  
+u∗(y) = min  
+{  
+-  
+k∑  
+i=1  
+tihi|ti≥ 0  
+k∑  
+i=1  
+ti = 1,  
+k∑  
+i=1  
+tipi =y  
+}  
+Therefore, if pi /∈ Conv (p1,...,p i-1,pi+1,...,p k), then  
+u∗(pi) =-hi.  
+The graph of u is a convex polytope in Rn+1, and  
+its projection on Rn induces a cell decomposition where  
+each cell is a closed convex polytope  
+Wi(h) ={x∈ Rn|∇uh(x) = pi}  
+It's well known that some cells defined this way may be  
+unbounded or empty. The volume wi(h) of each cell,  
+given a probability measure µ on Ω, is  
+wi(h) = µ(Wi(h)∩ Ω) =  
+∫  
+Wi(h)∩Ω  
+dµ  
+Theorem 3.4. (Gu-Luo-Sun-Yau) Let Ω be a com-  
+pact convex domain in Rn,{y1,...,y k} be a set of dis-  
+tinct points in Rn and µ a probability measure on Ω .  
+Then for any ν1,...,ν k > 0 with ∑ k  
+i=1νi =µ(Ω) , there  
+exists h = (h1,...,h k)∈ Rk, unique up to adding a con-  
+stant (c,...,c ), so that wi(h) = νi, for all i. The vectors  
+h are exactly the minimum points of the convex function  
+(3.2) E(h) =  
+∫ h  
+0  
+k∑  
+i=1  
+wi(η)dηi-  
+k∑  
+i=1  
+hiνi  
+on the open convex set  
+H ={h∈ Rk|wi(h)> 0,∀i}  
+Furthermore,∇uh minimize the quadratic cost  
+∫  
+Ω  
+|x-T (x)|2dµ(x)  
+among all transport maps T#µ =ν, whereν is the Dirac  
+mass ∑ k  
+i=1νiδyi  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 6 =====  
+3.3 Power diagram Before getting to the algorithm  
+itself, we recall power diagrams. Convex subdivisions  
+of a piecewise linear convex function uh(x) are exactly  
+the same as a power diagram. Suppose {y1,...,y k} are k  
+points in Rn, and{m1,...,m k} are k real numbers. Then  
+power distance given a point yi and a power weight mi  
+is  
+pow(x,yi) =|x-yi|2-mi  
+and a power diagram is the cell decomposition of Rn  
+Rn =  
+k⋃  
+i=1  
+Wi(m)  
+where each cell is a convex polytope  
+Wi(m) ={x∈ Rn|pow(x,yi)≤pow(x,yj),∀j}  
+The weighted Delaunay triangulation is the Poincar´ e  
+dual of power diagram, and when the power weights  
+are all 0, then the power diagram becomes Delaunay  
+decomposition. Note that if pow(x,yi)≤ pow(x,yj),  
+then  
+|x-yi|2-mi≤|x,yj|2-mj  
+x2- 2xyi +y2  
+i-mi≤x2- 2xyj +y2  
+j-mj  
+⟨x,yi⟩- 1  
+2 (y2  
+i-mi)≥⟨x,yj⟩- 1  
+2 (y2  
+j-mj)  
+setting hi =- 1  
+2 (y2  
+i-mi), we have the piecewise linear  
+convex function uh(x) = max  
+i  
+{⟨x,yi⟩ +hi}  
+3.4 Convex optimization Now, we have all the  
+tools to explain the gradient and the Hessian of the  
+energy defined in equation 3.2. By definition  
+∇E(h) = (w1(h)-ν1,w 2(h)-ν2,...,w k(h)-νk)T  
+The Hessian of energy E(h) is given by  
+∂2E(h)  
+∂hi∂hj  
+= ∂(wi(h))  
+∂hj  
+=-µ(Wi(h)∩Wj(h)∩ Ω)  
+|yj-yi|  
+that is, suppose edge eij is in the weighted Delaunay  
+triangulation, connecting yi,yj, then there exists a  
+unique dual cell Dij in the power diagram and  
+∂2E(h)  
+∂hi∂hj  
+=-µ(Dij)  
+|eij|  
+which is the volume ratio between dual cells, and the  
+diagonal elements of the Hessian is  
+∂2E(h)  
+∂2hi  
+= ∂(wi(h))  
+∂hi  
+=-  
+∑  
+j:j̸=i  
+∂(wj(h))  
+∂hi  
+We prove this by first proving a lemma.  
+Lemma 3.1. Suppose X is a compact domain in Rn,  
+f : X→ R is a non-negative continuous function and  
+τ (x,t ) : {(x,t ) ∈ X× R|0 ≤ t ≤ f (x)} → R is  
+continuous. For each t≥ 0, let ft(x) = min{t,f (x)}.  
+Then W (t) =  
+∫  
+X (  
+∫ft(x)  
+0 τ (x,s )ds)dx satisfy  
+lim  
+t→t+  
+0  
+W (t)-W (t0)t-t0  
+=  
+∫  
+x|f (x)≥t0  
+τ (x,t 0)dx  
+and  
+lim  
+t→t-  
+0  
+W (t)-W (t0)t-t0  
+=  
+∫  
+x|f (x)>t0  
+τ (x,t 0)dx  
+it is differentiable at t0 iff  
+∫  
+x|f (x)=t0  
+τ (x,t 0)dx = 0  
+Proof. Let Gt(x) =  
+∫ft(x)  
+0 τ (x,s )ds, and M be the  
+upper bound for τ (x,t ) on its domain. Since min(a,b )-  
+min(a,c )≤| b-c|, we have |ft(x)-ft0 (x)|≤| t-t0|.  
+For any t̸=t0:  
+⏐  
+⏐  
+⏐  
+⏐  
+Gt(x)-Gt0 (x)  
+t-t0  
+⏐  
+⏐  
+⏐  
+⏐ =  
+|  
+∫ft(x)  
+ft0 (x)τ (x,s )ds|  
+|t-t0|  
+≤ M  
+|t-t0||ft(x)-ft0 (x)|≤ M  
+fix t0 and x. If f (x) < t0, then for t sufficiently close  
+to t0, Gt(x) =  
+∫ft(x)  
+0 τ (x,s )ds, and lim  
+t→t0  
+Gt(x)-Gt0 (x)  
+t-t0  
+=  
+0. If f (x) > t 0, then for t sufficiently close to  
+t0, Gt(x) =  
+∫ft0 (x)  
+0 τ (x,s )ds, and lim  
+t→t0  
+Gt(x)-Gt0 (x)  
+t-t0  
+=  
+lim  
+t→t0  
+1  
+t-t0  
+∫ft(x)  
+ft0 (x)τ (x,s )ds = τ (x,t 0). If f (x) = t0,  
+the above calculations showed that lim  
+t→t+  
+0  
+Gt(x)-Gt0 (x)  
+t-t0  
+=  
+τ (x,t 0), and lim  
+t→t-  
+0  
+Gt(x)-Gt0 (x)  
+t-t0  
+= 0. Then by Lebesgue  
+dominated theorem, we have  
+lim  
+t→t+  
+0  
+W (t)-W (t0)t-t0  
+= lim  
+t→t+  
+0  
+∫  
+X  
+Gt(x)-Gt0 (x)t-t0  
+dx  
+=  
+∫  
+{x|f (x)≥t0}  
+τ (x,t 0)dx  
+lim  
+t→t-  
+0  
+W (t)-W (t0)t-t0  
+= lim  
+t→t-  
+0  
+∫  
+X  
+Gt(x)-Gt0 (x)t-t0  
+dx  
+=  
+∫  
+{x|f (x)>t0}  
+τ (x,t 0)dx  
+Hence the lemma is established.  
+Fix a < b , then {(x,t ) ∈ X× R|a ≤ f (x),a ≤  
+t ≤ min(f (x),b )} is called a cap domain with base  
+{x|f (x)≥ a} and top {x|f (x)≥ b} of height ( b-a)  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 7 =====  
+associated with function f .  
+To show the elements of the Hessian matrix, let h′ =  
+(h1,...,h i-1,hi + δ,hi+1...,hk). For small δ > 0, by  
+definition, Wi(h) ⊂ Wi(h′) and Wj(h′) ⊂ Wj(h). If  
+Wi(h)∩ Wj(h)∩ Ω = ∅, then for small δ, Wj(h) =  
+Wj(h′). Hence ∂W j (h)  
+∂h i  
+= 0. If Wi(h)∩ Ω and Wj(h)∩ Ω  
+share a co-dimension 1 face F , then cl(Wj(h)-Wj(h′))  
+is a cap domain with base F associated with function f  
+defined on F . The height of the domain is δ  
+|yi-yj | , and  
+f is piecewise linear convex, so any ( n- 1) dimensional  
+Lebesgue measure of the form {x∈ F|f (x) = t} is 0.  
+Furthermore, for δ >0, by definition  
+wj(h)-wj(h′)  
+δ = 1  
+δ  
+∫  
+Wj (h)∩Ω -Wj (h′)∩Ω  
+µ(x)dx  
+= 1  
+δ  
+∫  
+F  
+∫ ft(x′)  
+0  
+τ (x′,s )dsdx′  
+where x′∈ F are the Euclidean coordinates, τ (x′,s ) is  
+µ expressed in new coordinates. Then by the previous  
+lemma, we have  
+lim  
+δ→0+  
+wj(h)-wj(h′)  
+δ = 1  
+|yi-yj|  
+∫  
+F  
+µ|FdA  
+where dA is the area form on F . With a negative  
+δ, we can see that this equation hold as well with  
+cl(Wj(h′)-Wj(h)) has cap F , and we can obtain the  
+same formula as non-diagonal elements of the Hessian  
+of our energy in 3.2. If Wi(h) and Wj(h) share a face  
+of dimension less than n- 1, this equation holds as well  
+with a zero measure top or base.  
+4 Algorithms  
+The discrete OT algorithm has several important parts:  
+Delaunay triangulation and Dual graph calculation. We  
+will introduce these two algorithms first.  
+We first map the 3D model onto the 2D unit disk  
+through conformal methods such as Ricci flow [16],  
+the 2D parameterization Ω is a source triangle mesh  
+consisting of vertices Vs, edges Es, faces Fs and half-  
+edges Hs. It will be used as our input.  
+Input: A source triangle mesh Ω =  
+(Vs,Es,Fs,Hs), a target triangle mesh P =  
+(p1,p 2,...,p n), and user-defined target area for each  
+vertexν = (ν1,ν 2,...,ν |Vs|), where ∑ |Vs|  
+i=1νi = area of P.  
+Output: The source mesh in target shape P and  
+vertices with target area ν.  
+Notation: for any vertex v, v.vertexfaces repre-  
+sents all faces that have v as one of its vertex, for any  
+edge e, e.edgefaces represents all faces that have e as  
+one of its edge, the logic is the same for all similar ex-  
+pression.  
+4.1 Delaunay triangulation The Delaunay trian-  
+gulation algorithm 4.1 checks if the current mesh is De-  
+launay by checking if all edges are local Delaunay. If not,  
+we will try to flip that edge by removing it and connect-  
+ing the other two vertices of the two faces that share this  
+edge. All half-edges in all faces are oriented counter-  
+clockwise, thus any edge that results in a clockwise-  
+oriented face after flipping is not flippable.  
+Algorithm 4.1. Delaunay triangulation  
+function Delaunay triangulation(Ω)  
+for e∈ all non-boundary edges in Es do  
+3: if e is not local Delaunay then  
+illegal edge stack.push(e)  
+end if  
+6: end for  
+for e∈ illegal edge stack do  
+if e is not local Delaunay then  
+9: stack.pop(e)  
+for face f1, f2 has edge e do  
+if f1, f2 are counter-clockwise orient  
+then  
+12: flip e  
+stack.push(other 4 edges of f1,f2)  
+end if  
+15: end for  
+end if  
+end for  
+18: if e is Delaunay∀e∈Es then  
+return False  
+else  
+21: return True  
+end if  
+end function  
+4.2 Dual graph Algorithm 4.2 calculates the dual  
+of the mesh. Dual points are defined to be the unit  
+normal of each face, dual edges are edges that connect  
+dual points of neighboring faces, and dual faces are  
+then naturally defined but restricted inside the target  
+domain.  
+Algorithm 4.2. Dual calculation  
+function Dual calculation (Ω)  
+for f∈Fs do  
+3: f: ax+by-c=z  
+(a,b,c) = f.dualpoint  
+end for  
+6: for v∈Vs do  
+for finv.vertexFaces do  
+connect f.dualpoint  
+9: v.dualface = resulting polygon  
+if v.dualface > target domain then  
+clip v.dualface  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 8 =====  
+12: end if  
+end for  
+end for  
+15: end function  
+4.3 Semi-Discrete OT Now we can move on to the  
+main algorithm.  
+Algorithm 4.3. Semi-Discrete Optimal Transport  
+Map  
+function Semi-Discrete OT (Ω, P, ν)  
+Translate and scale Ω s.t. Ω ⊂P ;  
+3: for each v in Ω do  
+v.area += v.vertexfaces.area/3  
+end for  
+6: scale v.area s.t. sum is Ω area  
+Initialize a height vector h0  
+i = 1  
+2|vi|2  
+Call function Delaunay triangulation 4.1  
+9: Call function Dual Calculation 4.2  
+repeat  
+Compute gradient of energy E:  
+E(hn) =  
+∫ hn  
+0  
+k∑  
+i=1  
+vi.dualface.area dhi-  
+k∑  
+i=1  
+νihn  
+i  
+∇E(hn) = vi.dualface.area-vi.area  
+12: Compute the Hessian matrix for E(hn)  
+∂2E(hn))  
+∂hi∂hj  
+= ∂wi(hn)  
+∂hj  
+=- eij.length  
+eij.dualedge.length  
+∂2E(hn))  
+∂2hi  
+= ∂wi(hn)  
+∂hi  
+=-  
+∑  
+j:i̸=j  
+∂wj(hn)  
+∂hi  
+;  
+SolveHess(hn)d =∇E(hn)  
+Set initial step length λ = 1  
+15: hn+1←hn +λd;  
+Call Delaunay triangulation 4.1  
+if return is False then  
+18: Roll back, λ =λ/2  
+end if  
+if any power cell is empty then  
+21: Roll back, λ =λ/2  
+end if  
+Compute the error ϵ = ∑ v.targetarea -  
+v.area,  
+24: untilϵ≤ some threshold  
+v.coordinates = v.dualface.center  
+Output new Ω  
+27: end function  
+4.4 Image illustration We provide some image il-  
+lustrations. Figure 4 shows the input of the discrete  
+OT algorithm. On the left we have the face mesh in  
+3D, and in the middle is its conformal projection onto  
+the 2D plane. Our target domain in this case is a rect-  
+angle with all edges 1.1 times bigger than our source.  
+The target domain can be any convex shape.  
+Figure 4: OT algorithm input  
+Figure 5 represents the Delaunay triangulation of  
+the mesh after edge flipping, it is the 2D mesh in 3D  
+with our height vector. Delaunay triangulation is done  
+based on orientation in 3D.  
+Figure 5: Delaunay triangulation  
+The target mesh P is a 2D rectangular region while  
+the source mesh Ω is the input mesh after parameter-  
+ization (2D). Fig. 6 illustrates the concept of domain  
+Ω and the probability density ν. Suppose ν(x,y ) =  
+f (x,y )dxdy, we use the color temperature to visualize  
+the density function f (x,y ).  
+Figure 7 shows the unclipped upper envelop with an  
+infinity vertex added. The infinity vertex is used to help  
+calculate dual points of the boundary faces and dual  
+face of the boundary vertex. While figure 8 shows the  
+upper envelope clipped within the target domain using  
+Sutherland-Hodgman algorithm. It is also equivalent to  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 9 =====  
+Figure 6: Left: The source triangle mesh Ω in the  
+rectangular target shape P with target area ν. Right:  
+Color temperature representing the density. Red reflects  
+a higher density and yellow corresponds to lower.  
+a power diagram.  
+Figure 7: The final Brenier potential u(x) : Ω →  
+R, represented as the unclipped upper envelop of the  
+supporting planes. Its projection on the plane induces  
+the planar power diagram of the sample vertices.  
+5 Experimental Results  
+All the computational algorithms are implemented us-  
+ing generic C++ on Windows platform using Vi-  
+sual Studio 2022. All the experiments are conducted  
+on a laptop with Intel(R) Core(TM) CPU i9-12900H  
+@2.9GHz with 14 cores and 32GB of memory.  
+The testing 3D meshes include human facial sur-  
+faces (the Alex and Sophie) acquired by our 3D scan-  
+ning system based on phase-shifting structure light with  
+depth resolution 0.1 mm, and facial surfaces created by  
+modeling tool (the oldman model). The scanned models  
+are preprocessed to remove geometric and topological  
+noises. In order to test the robustness of our method,  
+the surface models are not remeshed and with the orig-  
+inal triangulation.  
+The input models are conformally mapped onto  
+Figure 8: The clipped final Brenier potential u(x) :  
+Ω → R and its projection onto the planar domain Ω,  
+which induces a power diagram of Ω, each power cell  
+is mapped to the target vertex, which gives the semi-  
+discrete optimal transportation map.  
+a planar rectangle using the Ricci flow algorithm for  
+extremal length [16]. First, four corner vertices on  
+the surface boundary are manually selected. Although  
+Wise et al [29] proposed several methods without the  
+need to pick points manually. However, it is difficult  
+to adopt this method to structured meshes due to the  
+topological barriers. Second, we set the target curvature  
+for all vertices: zeros for interior vertices, zeros for  
+boundary vertices except the four corners, and π/2's  
+for the corner vertices. Third, we use Ricci flow method  
+to conformally deform the Riemannian metric to realize  
+the target curvature. By discrete Ricci flow theory, the  
+solution exists and is unique. Then we isometrically  
+embed the surface onto the plane, the image is a planar  
+rectangle.  
+After we obtain the conformal mapping, we com-  
+pute the OT map. First, we enlarge the planar rectangle  
+by a factor 1 .1. Second, we normalize the total surface  
+area to the total area of the scaled rectangle. Then for  
+each vertexvi, we compute the areas of the adjacent tri-  
+angular faces and divide them by 3 to obtain the target  
+measureνi associated with the vertex. We use the con-  
+formal mapping image φ(vi) as the target point, then  
+construct the target measure as  
+ν =  
+n∑  
+i=1  
+νiδ(y-φ(vi)).  
+Fourth, we run the OT algorithm to compute the OT  
+map from the scaled rectangle the discrete measure ν.  
+This produces a power cell decomposition of Ω. Finally,  
+each vertex is mapped to the corresponding power cell  
+center.  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 10 =====  
+In order to quantitatively measure the quality of our  
+computational results, we have conducted the numerical  
+testings as follows: the optimal transportation map is  
+approximated by a piecewise linear map from the input  
+triangle mesh to the output mesh, we compute the ratio  
+between the area of the target triangle and the initial  
+triangle on the surface mesh, and plot the histogram of  
+the logarithm of the ratios. As shown in Fig. 9, it is  
+clear that the histogram highly is concentrated near the  
+0.54 point, showing that OT map preserves relative area  
+proportions despite a uniform scaling.  
+Figure 9: Histogram of log ratio of the areas of triangles  
+in Old man's face mesh.  
+The results of the experiment are summarized in  
+the table 1, which shows the complexity of the surfaces  
+and the corresponding run time.  
+We evaluated our proposed method on three facial  
+surfaces. As shown in Fig. 4, the left frame shows  
+the input Alex facial surface; the right frame shows  
+the conformal mapping image on the planar rectangle,  
+it is obvious that the mapping preserves local shapes.  
+Fig. 5 illustrates the initial condition for solving the OT  
+map, the Legendre dual of the initial Brenier potential  
+is u∗ (y) = 1 /2∥y∥2, the projection is the canonical  
+Delaunay triangulation. Fig. 7 shows the final result of  
+the desired Brenier potential and its projected power  
+diagram. Fig 8 illustrates the final clipped Brenier  
+potential and its projected power diagram. Fig. 13  
+demonstrates the optimization process. The upper left  
+frame is the initial conformal mapping result, the upper  
+right and lower left show the intermediate results during  
+the optimization, the lower right is the final result. We  
+can see that the area surrounding the nose is getting  
+larger and larger. Fig 11 illustrates the quad-meshes  
+based on the intermediate results. We can see the  
+density of the nose region is getting denser and denser.  
+A clearer depiction of the old man's facial features after  
+utilizing our method is provided in Figure 10.  
+The proposed mesh adaptation technique was eval-  
+uated on three facial models: Alex's face (Figure 11),  
+Sophie's face (Figure 12), and the face of an elderly man  
+(Figure 1). By applying scaling factors to targeted re-  
+gions, our approach successfully demonstrated its ability  
+to increase quad-mesh density in the central facial areas  
+while reducing it in adjacent regions. This controlled re-  
+distribution of density ensures better detail capture in  
+critical areas (such as the nose and eyes) while maintain-  
+ing computational efficiency by lowering density where  
+fewer details are needed. The results highlight the flexi-  
+bility of our OT-based framework in achieving adaptive  
+mesh refinement.  
+Figure 10: Old man's middle face area zoomed in.  
+6 Conclusion and F uture W ork  
+In this paper, we introduced a novel approach for ad-  
+justing the density of quad meshes using Optimal Trans-  
+port. By leveraging OT's ability to compute mass-  
+preserving mappings, our method ensures precise con-  
+trol over local density distributions while maintaining  
+the structural integrity of the mesh. The proposed  
+framework addresses limitations in traditional remesh-  
+ing techniques by offering a principled, metric-based  
+solution that adapts mesh densities according to spe-  
+cific criteria. Our results demonstrate that OT provides  
+a robust and flexible tool for selectively altering mesh  
+density, enabling smoother transformations and better  
+alignment with the intended design or modeling goals.  
+This contribution lays the groundwork for new advance-  
+ments in mesh optimization and geometric modeling by  
+providing a reliable framework for density manipulation.  
+This method can be applied to enhance the distribu-  
+tion of mesh density by incorporating curvature-based  
+criteria. Our future plan would be to develop an adap-  
+tive algorithm that increases mesh density in regions  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 11 =====  
+Model # Vertices # Faces OT runtime Quad-Mesh generation time  
+Alex 20956 41908 1.9s 1.2s  
+Sophie 21046 42088 2.0s 1.5s  
+Old Man 133604 389703 13.5s 6.8s  
+Table 1: Complexity of the surface and runtime of OT and quad-mesh generat ion  
+with high curvature and reduces it in flatter areas. This  
+extension will improve the efficiency of the mesh by con-  
+centrating detail only where necessary, making it par-  
+ticularly useful for applications like finite element anal-  
+ysis, surface parameterization, and high-quality render-  
+ing. Additionally, this method can be extended to sur-  
+faces with more complex topologies by employing spher-  
+ical OT and hyperbolic OT for genus zero surfaces and  
+high genus surfaces respectively. These approaches en-  
+able the handling of surfaces with complicated topolo-  
+gies and geometries, allowing for effective mesh adapta-  
+tion and distribution on non-Euclidean geometries.  
+(a) Conformal mapped Alex  
+face  
+(b) OT mapped Alex face  
+(c) OT mapped Alex's face  
+with increased density on  
+the nose  
+(d) OT mapped Alex's face  
+with further increased den-  
+sity and decreased density  
+on eyes and mouth  
+Figure 11: Increasing mesh density around nose.  
+(a) Conformal mapped So-  
+phie face  
+(b) OT mapped Sophie face  
+(c) OT mapped Sophie's  
+face with increased density  
+on the nose  
+(d) OT mapped Sophie's  
+face with further increased  
+density and decreased den-  
+sity on the forehead and  
+jaw.  
+Figure 12: Increasing mesh density around nose.  
+Figure 13: The corresponding OT map of Alex's face.  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 12 =====  
+Figure 14: The corresponding OT map of Sophie's face.  
+Figure 15: Alex's nose area zoomed in.  
+Figure 16: Sophie's nose area zoomed in.  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 13 =====  
+References  
+[1] D. An, N. Lei, T. Zhao, H. Si, and X. Gu , A  
+moving mesh adaption method by optimal transport ,  
+Proceedings of International Meshing Roundtable.  
+[2] D. Bommes, B. Levy, N. Pietroni, E. Puppo,  
+C. Silva, and D. Zorin , Quad-mesh generation and  
+processing: A survey , Computer Graphics Forum, 32  
+(2013).  
+[3] W. Chen, X. Zheng, J. Ke, N. Lei, Z. Luo,  
+and X. Gu , Quadrilateral mesh generation ii: Meoro-  
+morphic quartic differentials and abel-jacobi condition ,  
+Computer Methods in Applied Mechanics and Engi-  
+neering, 366.  
+[4]  
+, Quadrilateral mesh generation i: Metric based  
+method, Computer Methods in Applied Mechanics and  
+Engineering, 356 (2019), pp. 652-668.  
+[5] G. Coiffier and E. Corman , The method of moving  
+frames for surface global parametrization , ACM Trans.  
+Graph., 42 (2023).  
+[6] J. Docampo S ´anchez and R. Haimes , A regu-  
+larization approach for automatic quad mesh genera-  
+tion, in Proceedings of the 28th International Meshing  
+Roundtable, 2019.  
+[7] A. Dominitz and A. Tannenbaum , Texture map-  
+ping via optimal mass transport , IEEE Transactions  
+on Visualization and Computer Graphics, 16 (2010),  
+pp. 419-433.  
+[8] X. Du, D. M. Kaufman, Q. Zhou, S. Kovalsky,  
+Y. Yan, N. Aigerman, and T. Ju , Isometric energies  
+for recovering injectivity in constrained mapping , in  
+SIGGRAPH Asia 2022 Conference Papers, SA '22,  
+New York, NY, USA, 2022, Association for Computing  
+Machinery.  
+[9] M. Eisenberger, A. Toker, L. Leal-Taix ´e, and  
+D. Cremers , Deep shells: Unsupervised shape corre-  
+spondence with optimal transport , in Advances in Neu-  
+ral Information Processing Systems (NeurIPS), vol. 33,  
+2020, pp. 7693-7704.  
+[10] V. Garanzha, I. Kaporin, L. Kudryavtseva,  
+F. Protais, and D. Sokolov , In the quest for scale-  
+optimal mappings , ACM Trans. Graph., 43 (2024).  
+[11] X. Gu, R. Guo, F. Luo, J. Sun, and T. Wu , A  
+discrete uniformization theorem for polyhedral surfaces  
+ii, Journal of Differential Geometry (JDG), 109 (2018),  
+pp. 431-466.  
+[12] X. Gu, F. Luo, J. Sun, and T. Wu , A discrete uni-  
+formization theorem for polyhedral surfaces i , Journal  
+of Differential Geometry (JDG), 109 (2018), pp. 223-  
+256.  
+[13] X. Gu, F. Luo, J. Sun, and S.-T. Yau , Varia-  
+tional principles for minkowski type problems, discrete  
+optimal transport, and discrete monge-ampere equa-  
+tions, Asian Journal of Mathematics (AJM), 20 (2016),  
+pp. 383-398.  
+[14]  
+, Variational principles for minkowski type prob-  
+lems, discrete optimal transport, and discrete monge-  
+ampere equations , Asian Journal of Mathematics  
+(AJM), 20 (2016), pp. 383-398.  
+[15] X. Gu, Y. W ang, T. F. Chan, P. M. Thompson,  
+and S.-T. Yau, Genus zero surface conformal mapping  
+and its application to brain surface mapping , IEEE  
+Transactions on Medical Imaging (TMI), 23 (2004),  
+pp. 949-958.  
+[16] X. D. Gu and S.-T. Yau , Computational Geometry:  
+Algorithms and Applications , International Press of  
+Boston, Inc., 2008.  
+[17] L. Kantorovich , On the translocation of masses ,  
+Journal of Mathematical Science, (2006), pp. 1381-  
+1382.  
+[18] N. Lei and X. Gu , Computational Conformal Geom-  
+etry, International Press and Higher Education Press,  
+2021.  
+[19] N. Lei, Y. Zhu, X. Zheng, H. Si, Z. Luo, and  
+X. Gu, Why cross fields are not equivalent to quadrilat-  
+eral meshes, Computer Methods in Applied Mechanics  
+and Engineering, 417 (2023), p. 116442. A Special Is-  
+sue in Honor of the Lifetime Achievements of T. J. R.  
+Hughes.  
+[20] Z. Levi , Seamless parametrization with cone and par-  
+tial loop control , ACM Trans. Graph., 42 (2023).  
+[21] M. Li, Q. F ang, Z. Zhang, L. Liu, and X.-M. Fu ,  
+Efficient cone singularity construction for conformal  
+parameterizations, ACM Transactions on Graphics, 42  
+(2023), pp. 1-13.  
+[22] N. Nakajima, S. Tokumasu, and Y. Kunitomo ,  
+Feature-based heuristics for finite-element meshing us-  
+ing quadtrees and octrees , Computer-Aided Design, 24  
+(1992), pp. 677-690.  
+[23] S. J. Owen, M. L. Staten, S. A. Canann, and  
+S. Saigal , Q-morph: An indirect approach to advanc-  
+ing front quad meshing , International Journal for Nu-  
+merical Methods in Engineering, 44 (1999), pp. 1317-  
+1340.  
+[24] C. L. Phillips , A learning heuristic for space mapping  
+and searching self-organizing systems using adaptive  
+mesh refinement , Journal of Computational Physics,  
+272 (2014), pp. 799-813.  
+[25] N. Pietroni, M. Campen, A. Sheffer, G. Cherchi,  
+D. Bommes, X. Gao, R. Scateni, F. Ledoux,  
+J. Remacle, and M. Livesu , Hex-mesh generation  
+and processing: A survey , ACM Trans. Graph., 42  
+(2022).  
+[26] M. Rabinovich, R. Poranne, D. Panozzo, and  
+O. Sorkine-Hornung , Scalable locally injective map-  
+pings, ACM Trans. Graph., 36 (2017).  
+[27] Z. Shen, J. Feydy, P. Liu, A. H. Curiale, R. S. J.  
+Estepar, R. S. J. Estepar, and M. Niethammer ,  
+Accurate point cloud registration with robust optimal  
+transport, in Advances in Neural Information Process-  
+ing Systems (NeurIPS), vol. 34, 2021, pp. 5373-5389.  
+[28] K. Su, W. Chen, N. Lei, J. Zhang, K. Qian,  
+and X. Gu , Volume preserving mesh parameterization  
+based on optimal mass transportation, Computer-Aided  
+Design, 82 (2017), pp. 42 - 56. Isogeometric Design and  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 14 =====  
+Analysis.  
+[29] E. S. Wise, B. T. Cox, , and B. Treeby , Mesh den-  
+sity functions based on local bandwidth applied to mov-  
+ing mesh methods , Communications in Computational  
+Physics, (2017), pp. 1286-1308.  
+[30] S. Yau, X. Gu, J. Sun, and F. Luo , Variational  
+principles for minkowski type problems, discrete opti-  
+mal transport, and discrete monge-ampere equations ,  
+The Asian journal of mathematics, (2016), pp. 383-  
+398.  
+[31] X. Zhao, Z. Su, X. D. Gu, A. Kaufman, J. Sun,  
+J. Gao, and F. Luo , Area-preservation mapping us-  
+ing optimal mass transport , IEEE transactions on visu-  
+alization and computer graphics, 19 (2013), pp. 2838-  
+2847.  
+[32] X. Zheng, Y. Zhu, W. Chen, N. Lei, Z. Luo, and  
+X. Gu , Quadrilateral mesh generation iii : Optimiz-  
+ing singularity configuration based on abel-jacobi the-  
+ory, Computer Methods in Applied Mechanics and En-  
+gineering, (2021), pp. 114-146.  
+Copyright © 2025 by SIAM  
+Unauthorized reproduction of this article is prohibited

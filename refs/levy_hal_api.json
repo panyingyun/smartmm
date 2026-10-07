@@ -1,0 +1,14 @@
+{
+  "response":{
+    "numFound":1,
+    "start":0,
+    "maxScore":5.9532824,
+    "numFoundExact":true,
+    "docs":[{
+      "title_s":["A Fast and Accurate Plane Detection Algorithm for Large Noisy Point Clouds Using Filtered Normals and Voxel Growing"],
+      "uri_s":"https://minesparis-psl.hal.science/hal-01097361v1",
+      "fileMain_s":"https://minesparis-psl.hal.science/hal-01097361/document",
+      "files_s":["https://minesparis-psl.hal.science/hal-01097361/file/3DPVT_2010.pdf"]
+    }]
+  }
+}

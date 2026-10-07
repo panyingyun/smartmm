@@ -1,0 +1,1213 @@
+
+===== page 1 =====
+Integrable Frame Fields using Odeco Tensors
+Matt´ eo Couplet∗ Alexandre Chemin∗ Jean-Fran¸ cois Remacle∗
+Abstract
+We propose a method for computing integrable orthogonal
+frame fields on planar surfaces. Frames and their symmetries
+are implicitly represented using orthogonally decomposable
+(odeco) tensors. To formulate an integrability criterion, we
+express the frame field's Lie bracket solely in terms of the
+tensor representation; this is made possible by studying the
+sensitivity of the frame with respect to perturbations in the
+tensor. We construct an energy formulation that computes
+smooth and integrable frame fields, in both isotropic and
+anisotropic settings. The user can prescribe any size and
+orientation constraints in input, and the solver creates and
+places the singularities required to fit the constraints with
+the correct topology. The computed frame field can be
+integrated to a seamless parametrization that is aligned with
+the frame field.
+1 Introduction
+Meshes composed of quadrilaterals are known to offer
+superior performance than their triangular counterpart
+when used as a support in numerical simulations, how-
+ever quad meshers still do not meet the same level of
+robustness, flexibility and quality required for industrial
+applications as triangular meshes. In three dimensions,
+generating fully hexahedral meshes is an even more dif-
+ficult task, and their industrial use is consequently very
+limited despite a persistent demand from practitioners.
+Quadrilateral and hexahedral meshing are challeng-
+ing because they couple (a) a geometric problem, mini-
+mizing the distortion of the elements, and (b) a combi-
+natorial problem, achieving a conforming connectivity
+structure. If one also desires a multi-block structure, a
+layer of complexity is added, requiring (c) an adequately
+coarse block structure. The last two decades have seen
+the emergence of field-based approaches, which divide
+the problem in two main steps. (1) The combinatorial
+constraints are ignored and a frame field is computed; a
+frame is a set of 2/3 directions representing the orienta-
+tion (and sometimes the size) of a quad/hex. This frame
+field can be seen as a continuous extension of a mesh.
+(2) A mesh is generated using guidance from the frame
+field. This can be done through numerous approaches
+which we review below.
+∗University of Louvain, Belgium.
+An issue shared by most existing works is that no
+quad/hex mesh exactly follows the frame field computed
+a priori. This is due to the frame field not being
+integrable; we elaborate on this in section 2. This
+limitation of frame field-based methods means that the
+mesh deviates from the frame field and the user must
+compromise on element quality, control over element
+size and orientation, and control over the topology of
+the mesh. A more fundamental issue arises when the
+computed frame field has a global topology that is not
+meshable, making it unusable. This happens in the
+2D case when limit cycles appear; in 3D the singular
+structure is very often invalid due to the presence of
+non-meshable singular nodes.
+Our contribution overcomes this limitation in 2D
+and allows to generate frame fields on planar surfaces
+that are integrable (Figure 1, left); during this process
+the user can prescribe any orientation or size constraints
+along feature curves. Integrability guarantees that the
+frame field can be integrated to a seamless parametriza-
+tion that is exactly aligned with the frame field and re-
+spects the prescribed constraints (Figure 1, right). The
+parametrization can then be quantized to extract a quad
+mesh, or the frame field can be directly used as a guide
+to a frontal mesher; we illustrate the latter in our re-
+sults.
+Our approach relies on orthogonally decomposable
+(odeco) tensors which serve as an algebraic representa-
+tion for the frames. By studying the so-called eigenvalue
+sensitivity problem for tensors, we are able to formulate
+the problem completely in terms of this implicit alge-
+braic representation. This work is the first achieving
+integrability using odeco tensors. As they can be ex-
+tended to three dimensions, this contribution paves the
+way for hex-meshable frame fields, which are allegedly
+the key to the long-standing problem of robustly gener-
+ating optimal hexahedral meshes.
+1.1 Related work
+F rame field design.4-direction fields, i.e., assign-
+ments of four directions to every point of a surface, and
+their application to quad meshing have been studied
+extensively in the computer graphics community; paper
+[22] provides a review. Some important works [18, 5]
+assume the field topology to be known in advance and
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 2 =====
+Figure 1: Overview of the approach on a machine composed of a rotor and stator. (Left) An integrable frame field
+is computed respecting user-prescribed size constraints: size of 1 on the inner and outer arcs, and size of 0.3 on the
+other boundaries. The frames indicate the local size and orientation of the quadrilateral mesh elements. (Right)
+A seamless parametrization is computed by integrating the frame field. Black triangles represent singularities and
+thick lines form the cut graph.
+optimize for cross field smoothness. If the topology is
+unknown, it can be represented explicitly and optimized
+through integer variables such as in [2], which often
+leads to mixed-integer formulations. Alternatively, the
+topology can also be implicitly encoded in the field rep-
+resentation; our work fits in this category. Earlier works
+in this line of research include [17, 11]. A key challenge
+is being able to represent singularities while maintaining
+unit norm frames. More recently, this problem has been
+re-framed in the Ginzburg-Landau framework, which re-
+places the ill-posed unit norm constraint by a penalty
+term taken to the limit [1, 23].
+Field-guided meshing. As an intermediate step
+before generating a quad mesh, a global parametrization
+is often computed on the domain using the guidance
+from the frame field. Among notable works we can
+cite [10, 2] who integrate the frame field in a least-
+squares sense to find the parametrization that best
+aligns to the frame field, or [17], who perform a curl-
+reduction procedure a posteriori. Another approach,
+e.g., in [14], is to trace out parametric lines from the
+frame field to form quadrilateral patches. Getting a
+quad mesh from a global parametrization is typically
+done using quantization methods, where a T-mesh is
+traced out and its edges are given integer lengths; see,
+e.g., [3, 13].
+Obtaining a quad mesh from a frame field can also
+be achieved robustly using frontal method, by inserting
+points with guidance from the frame field. Remeshing
+and smoothing is often necessary a posteriori to fix
+regions of bad quality; see, e.g., [19], which we use as a
+quad mesher in our pipeline.
+In this work, the parametrization step is made
+trivial as an integrable frame field is equivalent to
+a seamless parametrization. Hence, integrating the
+frame field provides a parametrization that is exactly
+aligned and matches the sizing of the frame field. This
+confers the user a complete control over the sizing
+and orientation of the mesh, a desirable property that
+cannot be achieved through conventional cross field
+guided meshing.
+F rame representation. Computing frame fields
+with implicit topology requires a representation that is
+invariant to the ordering and symmetries of the frame
+vectors. The majority frame field-driven methods use
+representations of unit frames, or crosses, as they only
+care about the orientation of the mesh; a review can
+be found in [22]. One of the most prominent repre-
+sentations is the trigonometric pair (cos(4 θ), sin(4θ))
+(or, equivalently, the complex exponential ei4θ) which
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 3 =====
+effectively encodes rotational symmetries and is triv-
+ially normalized to unit norm [17, 15, 12, 11]. How-
+ever, this representation cannot encode sizes along with
+the directions. On the other hand, PolyVectors, intro-
+duced by [6], encode the frame vectors as the complex
+roots of a degree 4 polynomial. They have the advan-
+tage that they can represent non-orthogonal frames (as
+done in [21]), but they offer no straightforward exten-
+sion to volumetric frames. For representing 3D frames,
+a spherical function is often used that is maximal in the
+directions of the frame. This function is encoded by
+its coefficients in the basis of spherical harmonics [8].
+As highlighted by [4], it can also be interpreted as a
+4th-order tensor. Recently, Palmer et al. [16] have pro-
+posed an extension of these representations that encodes
+sizes along the directions, relying on the so-called or-
+thogonally decomposable (Odeco) tensors. As they are
+the only known representation that can encode three-
+dimensional orthogonal and scaled frames, we propose
+to use them in the 2D setting so that they can offer a
+3D extension for later work.
+Integrable frame fields. Motivated by the issue
+where the mesh is not aligned to the computed frame
+field, a handful of works have focused on computing
+frame fields that are integrable, i.e., the direction vectors
+are the gradients of a seamless parametrization. This
+property holds if the two vector fields are curl-free.
+Diamanti et al. [7] achieve this using PolyVector fields.
+Unlike our approach, the integrability condition cannot
+be expressed in terms of the PolyVector coefficients,
+and the optimization is done on the explicit direction
+vectors. In [21], PolyVector fields are used to construct
+so-called Chebyshev nets, i.e., quadrilateral meshes with
+a uniform size but not necessarily orthogonal. Our
+goal is slightly different (orthogonal quad meshing) but
+we address the same challenges regarding control of
+size and orientation. Like us, they optimize a frame
+field instead of a parametrization Jacobian, and express
+the integrability through the Lie bracket. The main
+advantage of odeco tensors compared to PolyVectors is
+that the former offer a natural extension to 3D frame
+fields.
+In [9], an integrable frame field is computed given a
+user-imposed (or pre-computed) singularity configura-
+tion. The frame fields are exactly integrable and the
+method can even remove limit cycles that appear in
+most field-based approaches. Having to specify singu-
+larities however is a significant limitation, especially in
+the 3D case where almost all existing frame field solvers
+produce invalid singular configurations.
+1.2 Overview In section 2 we review the mathemat-
+ical formalism behind parametrizations, their Jacobians
+and frame fields. We define the integrability property
+for frame fields and show how they are equivalent to
+seamless parametrizations. In section 3, we review the
+algebraic representation for our frames, which is the
+two-dimensional version of the odeco tensors proposed
+by [16]. In section 4, we present two contributions: (a)
+an expression for the sensitivity of a higher-order ten-
+sor's eigenvectors with respect to small perturbations
+of the tensor, and we use this result to show (b) an ex-
+pression of a frame field's Lie bracket only in terms of
+the tensor field coefficients and their derivatives. In sec-
+tion 5 we present a last contribution, an energy formu-
+lation that optimizes for smooth integrable frame fields,
+for both the isotropic and anisotropic cases. In sec-
+tion 6 we briefly present our pipeline to compute a seam-
+less parametrization from an integrable frame field, and
+in section 7 we demonstrate the effectiveness of the al-
+gorithm.
+2 Integrable frame fields
+Seamless parametrizations. The idea of
+parametrization-based quadrilateral meshing is to map
+a coordinate system onto the domain to be meshed.
+The coordinate lines of this map then provide, at least
+locally, a quadrilateral mesh on the domain. Consider
+a planar domain Ω; we wish to parametrize Ω by
+assigning to each point p of Ω a pair of coordinates
+(u(p), v(p)). In general, this parametrization cannot
+be defined as a global continuous function; cuts need to
+be introduced to obtain a disk topology on which u and
+v can be defined continuously. The parametrization is
+said to be seamless if across every cut, the coordinates
+transform through a rigid rotation of some multiple of
+90◦; if u′ and v′ are the coordinates on the other side
+of the cut, then the transformation is seamless if
+(2.1)
+u′
+v′
+
+=
+ 0 1
+-1 0
+
+| {z }
+R
+k 
+u
+v
+
++
+
+s
+t
+
+,
+for some k ∈ {0, 1, 2, 3} and fixed translation ( s, t). If,
+on top of being seamless, the translation ( s, t) is integer
+and the singularities lie at integer coordinates, then
+the parametrization is called an integer-grid map and
+exactly corresponds to a quadrilateral mesh.
+Computing seamless parametrizations is a challeng-
+ing task due to the discrete nature of the cut graph
+involved, which is unknown a priori. Instead, most ex-
+isting works focus on computing the Jacobian (∇u, ∇v)
+of a parametrization. Let ( du, dv) be a pair of vector
+fields on Ω; they form the Jacobian of a parametrization
+(and are said to be integrable) if they are curl-free:
+(2.2) ∇ ×du = 0, ∇ ×dv = 0,
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 4 =====
+and they transform through a 90 ◦-multiple rotation
+across cuts (which amounts to differentiating (2.1)):
+(2.3)
+du′
+dv′
+
+= Rk
+du
+dv
+
+.
+If these properties are verified then the vector fields
+(du, dv) are essentially equivalent to a seamless
+parametrization, up to a global rigid rotation of the co-
+ordinate map. Computing a parametrization's Jacobian
+is a more doable task, provided one can appropriately
+encode the symmetries in (2.3); we elaborate on that
+in section 3.
+F rame fields. Consider now the inverse of the
+parametrization r that maps a pair of coordinates to
+point of the domain: p = r(u, v). This map can only
+be defined locally since the parametrization can map
+different points to the same coordinates. The Jacobian
+matrix of r defines the coordinate vectors u and v:
+(2.4) Jr =
+
+∂r
+∂u
+∂r
+∂v
+
+=
+ u v 
+,
+forming a coordinate frame F =
+ u v 
+. Since r is
+the inverse of the parametrization, their Jacobians are
+inverse of one another, meaning that the coordinate
+frame is the inverse of the parametrization's Jacobian:
+(2.5) Jr-1 = (Jr)-1 ⇒
+∇u
+∇v
+
+= F-1.
+Note that, looking at the off-diagonal terms in F-1F =
+I, we have ∇u · v = ∇v · u = 0, meaning that the
+coordinate vectors u, v are orthogonal to the gradients
+of v, u, respectively, and therefore parallel to the isolines
+of v, urespectively. This shows how the frame field
+corresponds to a quad mesh through discrete isolines
+of the coordinate map u, v. Looking at the diagonal
+terms, we have ∇u · u = ∇v · v = 1, which indicates
+that the integer isolines are spaced out according to ∥u∥
+and ∥v∥. We illustrate the introduced concepts and
+notations on Figure 2.
+Orthogonal case. In this work we are interested
+in frames that are orthogonal: u ⊥ v. Let ˆ u= u/∥u∥
+and ˆ v= v/∥v∥; the frame matrix F is then diagonal in
+the local orthonormal basis ( ˆ u, ˆ v):
+(2.6)
+
+∇u
+∇v
+
+=
+
+∥u∥ 0
+0 ∥v∥
+-1
+=
+
+1/∥u∥ 0
+0 1 /∥v∥
+
+.
+The Jacobian of the coordinate map can thus be com-
+puted by simply scaling the frame's coordinate vectors:
+∇u = u/∥u∥2 and ∇v = v/∥v∥2.
+u
+v
+u/uni2032 
+v/uni2032 
+/uni2207u
+/uni2207v
+/uni2207u/uni2032 
+/uni2207v/uni2032 
+cut line
+Figure 2: A seamless parametrization across a cut.
+The isolines of the coordinate maps u(p) and v(p) are
+depicted in red and blue, respectively. Notice how the
+gradients ∇u, ∇v and the frame vectors u, v undergo a
+90◦ rotation as they cross the cut.
+F rame field integrability . Several previous
+works, e.g., [7], build upon the curl-free condition (2.2)
+and compute parametrizations by computing vector
+fields (du, dv). However, in our case we want to be able
+to express the integrability condition directly in terms
+of our implicit frame representation, and expressing the
+individual curls of du and dv is not possible as the two
+vectors are mixed in a single algebraic representation.
+Instead, we compute a frame field F and rely on the
+analogous statement: a frame field F =
+ u v 
+guides
+a parametrization (and is integrable) if its Lie bracket
+[u, v] vanishes:
+(2.7) [ u, v] = ∇uv - ∇vu = 0,
+where ∇u and ∇u are directional derivatives, and
+this parametrization is seamless if the frame vectors
+transform through 90◦ rotations across cuts, as in (2.3).
+We will see in section 4 how the Lie bracket can be
+expressed in terms of the implicit frame representation.
+3 Algebraic representation of frames
+Due to the topology of the domain Ω and the presence of
+singularities in the frame field, it is not possible to define
+a globally continuous frame field ( u, v). One needs to
+introduce cuts in the domain across which the frame
+vectors are symmetric according the rotations defined
+by (2.3). In order to compute a frame field without the
+need to introduce cuts, we extend the notion of frame
+such that it is invariant up to 90 ◦ rotations:
+(3.8) F = {(u, v), (v, -u), (-u, -v), (-v, u)}.
+These symmetries are illustrated in Figure 3. Given this
+equivalence class, one needs to introduce an algebraic
+representation that unambiguously represents a frame
+and supports arithmetic operations. To this end we re-
+sort to the class of two-dimensional orthogonally decom-
+posable (or Odeco) tensors, which were introduced by
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 5 =====
+uv v
+-u
+-v-u -v
+u
+Figure 3: Equivalence class of the 90 ◦ rotations of an
+orthogonal frame ( u, v).
+Palmer et al. [16] in the three-dimensional case. In this
+section we briefly lay out the theory of odeco tensors,
+and refer the reader to the paper for more details.
+Odeco tensors. Although the odeco theory ap-
+plies to tensors of arbitrary order, we restrict the def-
+initions to fourth-order tensors, as they are sufficient
+to represent frames. Let S4(Rn) be the space of
+n × n × n × n fully symmetric tensors , i.e., their real
+entries Ti1,i2,i3,i4 are invariant up to permutations of
+the indices i1, i2, i3, i4. n is the dimension of the tensor
+and corresponds to the dimension of the frame we wish
+to represent (2 or 3). A combinatorial inspection shows
+that tensor T has 5 independent components for n = 2,
+and 15 components for n = 3.
+Robeva et al. [20] have studied a special class of
+tensors T that are said to be orthogonally decomposable,
+or odeco for short, if they can be written as
+(3.9) T = λ1v⊗4
+1 + · · ·+ λnv⊗4
+n ,
+where v1, . . . ,vn form an orthonormal basis ofRn. Note
+that for second-order tensors, S2(Rn) is the space of real
+symmetric matrices; these are always orthogonally de-
+composable according to the spectral theorem. Higher-
+order tensors ( ≥ 3) however, admit rank-one decompo-
+sitions with more than n terms.
+The notion of eigenvector can be generalized to
+higher-order tensors: w is an eigenvector of T with
+eigenvalue λ if
+Tw3 = λw, or, in Einstein notation, (3.10)
+Ti,j2,j3,j4 wj2 wj3 wj4 = λwi.
+One can easily see that, for an odeco tensor T, the vec-
+tors vk in (3.9) are eigenvectors ofT with corresponding
+eigenvalue λk.
+As odeco tensors only form a small subset of the
+space of fully symmetric tensors, one needs to charac-
+terize what makes a tensor odeco. The major result of
+Robeva et al. [20] is the fact that odeco tensors form
+an algebraic variety defined by a set of homogeneous
+quadratic equations in the tensor coefficients. More pre-
+cisely, T is odeco if the contraction ( T ∗ T) defined by
+(3.11) ( T ∗ T)i1,i2,i3,j1,j2,j3 = Ti1,i2,i3,sTj1,j2,j3,s
+is a fully symmetric tensor, i.e.,
+(3.12) T ∗ T ∈ S6(Rn).
+F rames as odeco tensors. To represent a 2D
+orthogonal frame in a way that is invariant to the
+permutations in (3.8), we use an odeco tensor of which
+the eigenvalues and eigenvectors, as defined in (3.10),
+match the frame directions and sizes. Specifically, let
+u, v be the frame vectors, λ, µtheir norms and ˆ u, ˆ v
+their normalization such that u = λˆ u, v = µˆ v. Then
+the corresponding tensor is defined as
+(3.13) T = λˆ u⊗4 + µˆ v⊗4.
+Notice how this tensor remains the same when plugging
+in any of the rotations of (3.8). We can now justify
+the choice for a fourth-order tensor: an even order is
+required for the tensor to be invariant to the signs of
+the vectors, and order 2 cannot be chosen since, in the
+case λ = µ, the tensor degenerates to a multiple of the
+identity matrix, T = λI, and then any vector of R2 is
+an eigenvector of T and one loses the direction vectors
+ˆ u, ˆ v. Order 4 is therefore the lowest possible order for
+our purpose.
+Polynomial representation of tensors. There
+is a one-to-one correspondence between 4th-order fully
+symmetric tensors of dimension n, and degree 4 homo-
+geneous polynomials of n variables, given by
+(3.14) pT(x1, . . . , xn) = Ti1,i2,i3,i4 xi1 xi2 xi3 xi4 .
+Since it is homogeneous, one can restrict this polynomial
+to the sphere Sn-1, since
+(3.15) pT(x) = ∥x∥4 pT
+ x
+∥x∥
+
+.
+We can therefore define a function pT(θ) such that
+pT(x) = ∥x∥4 pT(θ); this function is periodic with
+period π, since pT(x) = pT(-x). Such a function can
+be conveniently visualized by taking a unit circle and
+virtually stretching it according to the value that pT
+takes on the circle; formally, one draws the parametric
+curve given by r(θ) = pT(θ) for θ ∈ [0, 2π[. We show
+this on Figure 4.
+A natural way to encode this polynomial is to
+decompose it into an orthonormal basis of functions on
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 6 =====
+Figure 4: Polynomial representation pT(θ) of (left) an
+arbitrary tensor, and (right) an odeco tensor, with the
+corresponding frame vectors. Green represents positive
+values for pT(θ) and magenta represents negative values.
+1√
+2π
+1√π cos(2θ)
+ 1√π sin(2θ)
+ 1√π cos(4θ)
+ 1√π sin(4θ)
+Figure 5: Orthonormal basis of circular harmonics used
+to represent odeco tensor polynomials. Green represents
+positive values for pT(θ) and magenta represents negative
+values.
+the sphere Sn-1. Considering the two-dimensional case
+n = 2, pT(θ) can be decomposed into the Fourier series
+(3.16)
+pT(θ) = 1√
+2π q0 + 1√π cos(2θ) q1 + 1√π sin(2θ) q2
++ 1√π cos(4θ) q3 + 1√π sin(4θ) q4,
+where q = ( q0, . . . , q4) fully describes the polynomial
+and its corresponding tensor. These basis functions,
+shown in Figure 5, correspond to two-dimensional spher-
+ical harmonics and are sometimes called circular har-
+monics. The number of five is not surprising since
+the original tensor has five independent components:
+T1111, T1112, T1122, T1222 and T2222. The change of ba-
+sis from T to q is done through a linear transformation,
+which can be derived by matching expressions (3.14)
+and (3.16).
+Eigenvectors and eigenvalues of higher-order ten-
+sors, defined in (3.10), can be interpreted in the polyno-
+mial representation through the following property: w
+is an eigenvector of T with eigenvalue λ if and only if
+(3.17) ∇pT(w) = 4 λ w.
+In other words, the eigenvectors of T correspond to the
+stationary points of pT(θ).
+Algebraic variety in the 2D case. A 2D fourth-
+order tensor is completely defined by a set of five
+Figure 6: Range of isotropic tensors, the middle one being
+odeco. All tensors have a set of 4 eigenvectors with the same
+eigenvalues.
+coefficients ( q0, . . . , q4). This tensor corresponds to a
+frame if the tensor is odeco, i.e., it lies on the algebraic
+variety defined by the set of quadratic equations (3.12).
+In the 2D case ( n = 2), we can write out this set
+of equations and change the basis to q, and derive
+the following set of linearly independent equations that
+define the variety:
+(3.18)
+
+
+
+c1(q) = q2
+0 - 18(q2
+3 + q2
+4) = 0
+c2(q) =
+√
+2q0q1 - 6q1q3 - 6q2q4 = 0
+c3(q) =
+√
+2q0q2 - 6q1q4 + 6q2q3 = 0
+Area of a frame. The optimization we perform on
+the frame field requires to normalize the integrability
+condition to make it independent of the size of the
+frame. We choose to do this normalization with the
+area of the frame, i.e., the product of the sizes a = λµ.
+This can be interpreted as the local area of the quad
+elements in the frame's neighborhood. One can show
+that it can be expressed only in terms of the circular
+harmonics coefficients q:
+(3.19) a(q) = λµ = 1
+π
+ 8
+9 q2
+0 - (q2
+1 + q2
+2)
+
+.
+We show later in Section 5 how this expression is used
+to normalize the integrability condition.
+Isotropic case. A frame is isotropic, i.e., its vec-
+tors have equal length λ = µ, if its degree 2 coefficients
+are zero: q1 = q2 = 0. The algebraic variety reduces
+to a single quadratic equation c1(q) = 0. When the de-
+gree 2 coefficients are zero, the tensor eigenvectors are
+always orthogonal, even if the tensor is not odeco. A
+range of isotropic tensors is illustrated on Figure 6. We
+see that in the general non-odeco case, this class has an
+additional degree of freedom depending on how close it
+is to a sphere. We explain in section 7 how this extra
+degree of freedom is beneficial as it allows to represent
+singularities.
+4 Integrability condition
+Since there is a one-to-one correspondence between
+frames (as defined in (3.8)) and orthogonally decom-
+posable (odeco) tensors with positive eigenvalues (as de-
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 7 =====
+fined in (3.13)), one can express the integrability condi-
+tion (2.7) solely in terms of the odeco tensor coefficients
+and their spatial derivatives. In this section we show
+how we derive the closed-form expression for the Lie
+bracket.
+Consider a frame F =
+
+Rk(u, v), k = 0, 1, 2, 3
+	
+,
+where R performs a 90◦ rotation as defined in (2.1) and
+illustrated in Figure 3. Every pair of vectors in F has
+the same Lie bracket, which we denote Lie( F):
+(4.20) Lie( F) = [Rku, Rkv], k = 0, 1, 2, 3.
+First we write the Lie bracket [ u, v] in index notation:
+(4.21) [ u, v]i = uα
+∂vi
+∂xα
+- vα
+∂ui
+∂xα
+.
+Let T denote the odeco tensor corresponding to F. We
+apply the chain rule to express the spatial derivatives
+on the tensor coefficients:
+(4.22)
+[u, v]i = uα
+∂vi
+∂Tj1j2j3j4
+∂Tj1j2j3j4
+∂xα
+-vα
+∂ui
+∂Tj1j2j3j4
+∂Tj1j2j3j4
+∂xα
+.
+In the remaining of the section we show how (a) the
+sensitivity terms ∂vi/∂Tj and ∂ui/∂Tj are derived, and
+(b) how the Lie bracket is completely expressed in terms
+of the tensor coefficients T.
+Eigenvalue sensitivity for tensors. Recall that
+u, v are eigenvectors of T as defined by (3.10). Finding
+the sensitivity terms ∂vi/∂Tj and ∂ui/∂Tj can be
+done by analyzing how the eigenvectors u, v change
+when adding an infinitesimal perturbation δT to the
+tensor. This analysis is well-known for matrices as the
+eigenvalue perturbation problem, but can be generalized
+to higher-order tensors, provided they are odeco. We
+leave the complete derivation in appendix A and retain
+the main result: if ( λ, ˆ w) is an eigenpair of odeco tensor
+T, then the sensitivity of w = λ ˆ wwith respect to a
+perturbation δT is given by
+(4.23) δw = (δT) ˆ w3.
+From this result we find that the partial derivatives are
+given by
+(4.24) ∂wi
+∂Tj1j2j3j4
+= δij1 ˆwj2 ˆwj3 ˆwj4 ,
+where δij is the Kronecker delta symbol. Note that an
+eigenvector's sensitivity only depends on itself and not
+on the other eigenvectors of the odeco tensor.
+Lie bracket in terms of tensor representa-
+tion. We now wish to find an expression for the Lie
+bracket (4.22) so that it only depends on the tensor co-
+efficients T and not on the frame directions u, v. Plug-
+ging in the sensitivity result (4.24) yields
+(4.25)
+[u, v]i = (∥u∥ˆuαˆvj2 ˆvj3 ˆvj4 - ∥v∥ˆvk ˆuj2 ˆuj3 ˆuj4 ) ∂Tij2j3j4
+∂xα
+.
+We see that an expression close to the odeco tensor
+definition (3.13) starts to appear. The last ingredient is
+to note that ˆ uand ˆ vare related by a 90◦ rotation, which
+can be written an ˆvi = ϵij ˆuj and ˆui = -ϵij ˆvj, where ϵij
+is the two-dimensional Levi-Civita symbol. Plugging
+this into the Lie bracket expression and identifying the
+tensor coefficients yields
+(4.26) Lie( T)i = ϵj2k2 ϵj3k3 ϵj4k4 Tαk2k3k4
+∂Tij2j3j4
+∂xα
+.
+As the tensor coefficients T are a linear transformation
+of the polynomial coefficients q, one can express the Lie
+bracket in terms of q only:
+(4.27) Lie( q)i = Cijkα qk
+∂qj
+∂xα
+,
+where the Cijkα are known coefficients. This expression
+is a key result of this work as it allows to compute
+an integrability metric that does not involve the frame
+vectors, but instead a quadratic function of the implicit
+tensor representation.
+5 Optimization
+We design an optimization formulation that aims at
+making the Lie bracket (4.27) as close to zero as
+possible, with odeco tensors (3.18) having positive sizes
+(λ, µ >0). To do so we define the following energy
+functionals on the domain Ω:
+ELie[q] =
+Z
+Ω
+∥Lie(q)∥2
+a(q)2 dx ,(5.28)
+Eodeco[q] =
+3X
+i=1
+Z
+Ω
+ci(q)2 dx,(5.29)
+ED[q] =
+5X
+j=1
+1
+2
+Z
+Ω
+∥∇qj∥2 dx .(5.30)
+The normalized Lie bracket energy ELie aims at making
+the frame field integrable, the odeco penalty Eodeco at
+keeping the tensors odeco, and the Dirichlet energy ED
+strives for smoothness of the frame field (Palmer et
+al. [16] have shown that, since the L2 distance on q
+corresponds to the L2 distance between the polynomials
+pT, the Dirichlet energy is an adequate proxy for the
+smoothness of the frame field). The area expression
+a(q) in the denominator of the Lie bracket energy acts
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 8 =====
+as a normalization: ELie does not depend on the global
+scale of the frame field, i.e., for a constant factor α,
+ELie(αq) = ELie(q). It also acts as a barrier, preventing
+the frame sizes λ and µ from becoming zero or negative,
+provided the initial solution has positive sizes. The Lie
+bracket energy and the odeco penalty are assembled
+in a Ginzburg-Landau-like functional, and the Dirichlet
+energy acts as a regularizer:
+(5.31)
+min
+q
+Eκ[q] = (1 - κ) ELie[q] + κ ED[q] + 1
+ϵ2 Eodeco[q].
+Parameter ϵ has units of length and, like in the
+Ginzburg-Landau functional, controls the size of the
+singularity neighborhoods where the frames drift away
+from the odeco variety. A schedule is set on κ such that
+it starts at 1, providing a smooth (but not integrable)
+frame field, and is gradually reduced to 0 to enforce
+integrability. As there is an infinite space of integrable
+solutions, we found that the Dirichlet regularization pre-
+vents the solver from drifting too far away from smooth
+solutions.
+Discretization. The frame field is discretized on a
+standard triangle mesh over Ω. At each node we store
+the five circular harmonics coefficients q = (q0, . . . , q4).
+The coefficients are then linearly interpolated on the
+mesh using continuous P1 triangular finite elements.
+The energy functionals are then evaluated using a
+standard 3-point quadrature rule on the triangles. Note
+that we are using a continuous approximation for the
+frame field even though the actual field is not defined at
+the singularities and therefore cannot be represented by
+our discretization. This justifies our weak enforcement
+of the odeco constraint through a penalty term: it allows
+the creation of singularities in a way that does not blow
+up the integrability energy ELie, by using tensors which
+have no preferential directions, i.e., a ball as in Figure 5,
+left.
+Behavior of ELie at singularities. Since we are
+using a continuous representation for the frame field,
+a legitimate concern is whether the Lie bracket energy
+ELie remains bounded around singularities. To analyze
+this we compute an exactly integrable frame field around
+a singularity of index i; this frame field is given in polar
+coordinates by
+(5.32)
+u(r, θ) = ri (cos((1 - i)θ) ˆ er - sin((1 - i)θ) ˆ eθ),
+v(r, θ) = ri (sin((1 - i)θ) ˆ er + cos((1 - i)θ) ˆ eθ).
+Notice that the size ri vanishes at the singularity for
+i >0 (valence 3 and less) and blows up fori <0 (valence
+5 and more). One can check that this frame field indeed
+has zero Lie bracket. We represent this frame field on
+finite element meshes of varying sizes and evaluate both
+10 2
+ 10 1
+0.000
+0.025
+0.050
+0.075
+0.100
+0.125
+0.150
+H(q) dx
+val 5
+val 3
+10 2
+ 10 1
+mesh size
+10 1
+100
+101
+102
+103
+maxx
+H(q)
+Figure 7: Convergence of the Lie bracket energy ELie
+around singularities of valence 5 and 3. H(q) denotes the
+integrand of ELie: H(q) = ∥Lie(q)∥2/a(q)2.
+the total energy ELie as well as the maximum value
+of the integrand; this is shown on Figure 7. We see
+that even though the value of the integrand blows up
+when refining the mesh, the energy remains bounded
+and converges to a fixed value for both singularities.
+The energy is higher for a valence 5 singularity than
+a valence 3 since the size is unbounded. This property
+makes it possible for our solver to introduce singularities
+whatever the mesh size, if they make the frame field
+more integrable.
+Recovering a frame field. The minimization
+of (5.31) provides a field of tensors that is odeco every-
+where except in the vicinity of singularities. We recover
+a frame at every node of the mesh in two steps: first,
+the tensors are projected onto the odeco variety using
+the projector of [16], using a semidefinite relaxation of
+the exact projection problem. This operation results in
+a set of frames of which we only keep the direction vec-
+tors ˆ u, ˆ v. In a second step, the sizes of the direction
+vectors are computed by contracting the tensor 4 times,
+as if they were eigenvectors:
+(5.33) λ = Tˆ u4, µ = Tˆ v4.
+We found that this approach for recovering sizes pro-
+vided better results than using the sizes given by the
+projector; this is because the Lie bracket is expressed in
+terms of the eigenvectors and eigenvalues of the odeco
+tensor field.
+The optimization procedure to compute an inte-
+grable frame field is summarized in Algorithm 1.
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 9 =====
+Algorithm 1 Integrable frame field solver
+Input: A triangle mesh on a planar geometry, with
+size and/or orientation constraints on boundaries
+Output: A smooth integrable frame field
+On boundaries, assign frames respecting constraints.
+In interior, assign zero frames.
+Compute T and q using (3.13).
+for κ in [1, 10-1, 10-2, 10-3, 10-4, 0] do
+q ← argminqEκ[q] using L-BFGS. (5.31)
+end for
+for each node do
+Recover directions ˆ u, ˆ vusing projection of [16].
+Recover frame sizes λ, µusing (5.33).
+end for
+6 F rame field guided parametrization and
+meshing
+We briefly review how a seamless parametrization is
+computed from the frame field F(x) obtained through
+the optimization of (5.31); for a more detailed treatment
+we refer to, e.g., [2].
+We compute a field-guided seamless parametriza-
+tion with the following steps:
+Singularity detection. Singular triangles are identi-
+fied by calculating the turning number of the frames
+around a given triangle; this number is +1 /4 or
+-1/4 for a singularity of valence 3 and 5, respec-
+tively.
+Cut graph. The triangle mesh is "cut open" such that
+a closed curve cannot turn around a singularity
+without crossing the cut graph. The singular trian-
+gles also belong to the cut graph (the parametriza-
+tion is not defined on them).
+F rame vectors assignment. Thanks to the cut
+graph, two vectors u and v can be chosen from
+each frame to form two continuous vector fields
+u(x) and v(x).
+Integration. The vector fields are integrated to scalar
+potentials u(x) and v(x) by solving the least-
+squares problem
+(6.34)
+min
+u(x)
+v(x)
+Z
+Ω
+
+
+∇u - u
+∥u∥2
+
+2
++
+∇v - v
+∥v∥2
+
+2
+ dx .
+During this optimization, the parametrization is
+constrained to be seamless, meaning that (i) on
+the boundary, one of the potentials u or v is
+constant, and (ii) along each cut, the matching
+potential gradients are equal (which amounts to
+impose (2.3)). These seamlessness constraints can
+be written as linear constraint on the unknowns
+which are straightforward to impose.
+We call the residual of the optimization objec-
+tive (6.34) the integration error ; it quantifies how in-
+tegrable the frame field was, and in general how well
+the parametrization aligns to the prescribed frame field.
+Achieving a small integration error means we can ade-
+quately control the size and orientation constraints in
+the seamless parametrization process.
+Different approaches, reviewed earlier in section 1,
+exist to generate a fully quadrilateral mesh from a
+seamless parametrization. In this work we use the quasi-
+structured quadrilateral mesher of [19], which consists in
+a frontal point insertion coupled with cavity remeshing
+and mesh smoothing.
+7 Results and Discussion
+To demonstrate the validity of our method, we compare
+smooth frame fields against integrable frame fields for a
+set of geometries where the frame orientations and sizes
+are fixed on the boundaries. For each frame field we
+compute a parametrization as described in the previous
+section, and measure the integration error. For the
+integrable frame field we also generate a quadrilateral
+mesh using the previously described frontal mesher.
+Parameter settings. For each test case we use
+a fixed odeco parameter ϵ that has the order of mag-
+nitude of the maximum mesh size. The initial so-
+lution of the optimization is a smooth field of ten-
+sors that are not constrained to be odeco, i.e., κ =
+1 and ϵ = ∞. Then a schedule is started on the
+reguarization parameter κ, using the following sequence:
+(1, 10-1, 10-2, 10-3, 10-4, 0). The first iteration (κ = 1)
+corresponds to a pure Ginzburg-Landau functional (this
+is the solution we use for smooth frame fields), and at
+the last iteration ( κ = 0) the regularizer is removed to
+obtain the most integrable frame field. To solve each
+optimization problem (5.31) we use a standard quasi-
+Newton L-BFGS solver. The integral calculations are
+done in parallel over the triangles. For the following
+results, the triangular meshes have between 1000 and
+4000 nodes. All results have been obtained in less than
+3 minutes on a 2 GHz Intel Core i5 CPU on 4 threads.
+Comparison. The results of this comparison are
+illustrated in Figure 8. On average, the integrable frame
+field achieves an integration error 8.6 times smaller than
+the smooth frame field. The smooth frame fields do not
+have the correct singularity configuration to perform the
+required size transition. This causes the corresponding
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 10 =====
+Smooth frame field Smooth param . Integrable frame field Integrable param. Quad mesh
+(a) Size is 1 at bottom, 2 at top, and varies linearly on the sides.
+integ. error: 0.0194898 integ. error: 0.00313874
+(b) Size is 1 at bottom, 10 at top, and varies linearly on the sides.
+integ. error: 0.034417 integ. error: 0.00328246
+(c) Size is 4 on the inside and 1 on the outside.
+integ. error: 0.891866 integ. error: 0.100973
+(d) Size is 1 on the inside, 2 on the left outside and 1 on the left outside.
+integ. error: 0.172476 integ. error: 0.019616
+Figure 8: Comparison of smooth frame fields and integrable frame fields when sizes are imposed on boundaries. For
+each frame field the corresponding parametrization is illustrated, and a quad mesh is computed using guidance
+from the integrable frame field. All frame fields are isotropic. For cases (a) and (b) we also illustrate the
+polynomials pT(θ) corresponding to the frames.
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 11 =====
+Isotropic frames Anisotropic frames
+einteg = 0.003 einteg = 0.001
+einteg = 0.016 einteg = 0.002
+einteg = 0.035 einteg = 0.009
+Figure 9: Seamless parametrizations computed for var-
+ious models, including the nautilus (bottom) in the
+isotropic and anisotropic settings. einteg denotes the
+integration error. Boundary size conditions are
+(top) 1 at bottom and 2 at top,
+(middle) 1 on inner boundary and 2 on outer boundary,
+(bottom) 1 on inner and outer boundaries.
+parametrizations to be very anisotropic, even though
+the frames are fully isotropic. On the other hand,
+the integrable frame fields have a set of singularities
+that ensure the size transitions, and this is reflected in
+the parametrizations where the isolines remain globally
+isotropic and have the correct sizes at the boundaries.
+We also see on testcase (d) that the solver is able to
+represent abrupt size transitions through a tight pair of
+singularities.
+Singularities. These results also exhibit how the
+field of tensors behaves in the vicinity of singularities.
+As expected, the tensors become non-odeco as they nar-
+row the singularities; this allows the solver to represent
+singularities in a way that is not too costly in terms of
+integrability energy. However it also brings a limitation:
+as the tensors are not odeco, the assumptions needed
+for the integrability energy fail, causing the frame field
+to not be exactly integrable close to singularities. In
+practice, one needs to tune parameter ϵ to achieve an
+appropriate trade-off between singularity cost and inte-
+grability.
+Isotropic vs anisotropic frames. Figure 9 com-
+pares the isotropic and anisotropic frame fields ob-
+tained with our solvers on additional examples. The
+anisotropic solver produces a very distinct singular-
+ity configuration compared to the isotropic solver, and
+achieves a much smaller integration error thanks to the
+additional degrees of freedom.
+Limit cycles. Conventional frame field-driven
+quad meshing methods fail due to the presence of limit
+cycles in the frame field, which are the consequence of
+a non-meshable topology. A standard test case where a
+limit cycle appears is the nautilus model, for which we
+show our results on Figure 9, bottom. Our method suc-
+cessfully produces singularity configurations the are free
+of limit cycles, and a valid quad mesh can be extracted.
+Existence of integrable frame fields. Given a
+set of boundary conditions, an exactly integrable frame
+field does not exist in general; in our case, by imposing
+sizes strongly on the boundaries, an integrable isotropic
+frame field very often does not exist. We refer to [9] and
+the Abel-Jacobi framework for a complete treatment
+of these aspects. The non-existence of an integrable
+frame field can explain why a Lie bracket of zero is
+not achievable. Moreover, the smaller integration error
+achieved by allowing anisotropic frames (as illustrated
+in Figure 9) shows that the boundary conditions truly
+obstruct the integrability. This can be alleviated either
+by relaxing the boundary conditions or the isotropy
+constraint.
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 12 =====
+8 Conclusion and F uture W ork
+In this work, we have shown how to leverage the theory
+of orthogonally decomposable tensors to produce inte-
+grable frame fields. We have studied the tensor eigen-
+value perturbation problem and found simple expres-
+sions for the eigenvalue sensitivity of tensors. This re-
+sult enables us to write a frame field's Lie bracket (and
+thus, the integrability optimization problem) solely in
+terms of its tensor representation. The integrable frame
+field can be integrated to a seamless parametrization
+of which we have full control over size and orientation
+through the frame field optimization; this is a feature
+that is often overlooked in field-based meshing meth-
+ods. We believe this contribution is an important step
+towards a robust, flexible (in terms of size and orienta-
+tion prescriptions) and optimal quadrilateral mesher.
+Integrable non-odeco fields. An important lim-
+itation of our approach is that the tensor field is as-
+sumed to be odeco for the Lie bracket expression to be
+valid. This causes the frame field to not be exactly inte-
+grable near singularities. A possible solution for this is
+to remove the odeco assumption when writing out the
+eigenvalue perturbation problem. This makes it possi-
+ble to write a Lie bracket that remains valid even if the
+tensor field is non-odeco (at least in the isotropic case).
+The price to pay is that the integrability condition be-
+comes a more complex, rational expression of the tensor
+coefficients. We leave the investigation of this approach
+for future work.
+The 3D case. The major advantage of our
+methodology is that it offers a natural extension to com-
+pute 3D integrable frame fields; indeed, the theory of
+odeco tensors, as well as the results on eigenvalue sen-
+sitivity, remain valid in arbitrary dimensions. The only
+obstacle remaining is to express the integrability con-
+dition in terms of the algebraic frame representation
+We are confident that a solution can be found in future
+work.
+Acknowledgments
+Matt´ eo Couplet is a Fellow of the Belgian Fund for
+Scientific Research (F.R.S.-FNRS).
+Appendix A Eigenvalue sensitivity for odeco
+tensors
+Let T be a fully symmetric fourth-order orthogo-
+nally decomposable tensor of dimension n, i.e., T =Pn
+i=1 λiˆ v4
+i , or, in index notation,
+(1.35) Tj1j2j3j4 = λiˆvi,j1 ˆvi,j2 ˆvi,j3 ˆvi,j4 ,
+with orthogonal unit vectors ˆ vi. Consider the contrac-
+tion of T with one of its eigenvectors, ˆ vk:
+(1.36)
+Tj1j2j3j4 ˆvk,j4 = λiˆvi,j1 ˆvi,j2 ˆvi,j3 ˆvi,j4 ˆvk,j4 ,
+= λiˆvi,j1 ˆvi,j2 ˆvi,j3 δik
+= λk ˆvk,j1 ˆvk,j2 ˆvk,j3 ,
+or, written compactly, Tˆ vk = λkˆ v3
+k. Contracting
+again and following the same procedure we find that
+Tˆ v2
+k = λkˆ v2
+k and Tˆ v3
+k = λkˆ vk, the latter being the
+definition of a tensor eigenvector. Consider now a
+specific eigenpair ( λ, w), with w having unit norm. We
+wish to express the variation of the eigenpair ( δλ, δw)
+given some perturbation of the tensor δT. We write the
+remainder of the proof in compact notation for brevity
+but the same steps can be performed in index notation.
+Since the eigenvectors have unit norm, any eigenvector
+is orthogonal to its variation:
+(1.37) ( w + δw) · (w + δw) = 1 ⇒ w · δw = 0,
+neglecting the higher-order terms (δw·δw). Writing the
+eigenvector definition Tw3 = λw for the new eigenpair,
+we find
+(1.38)
+(T + δT)(w + δw)3 = λw + δ(λw)
+Tw3 + 3Tw2δw + δTw3 = λw + δ(λw)
+3λw2δw + δTw3 = δ(λw)
+We have used, respectively, the eigenvector definition,
+the contraction property Tw2 = λw2 and the orthog-
+onality property w · δw = 0. This gives the desired
+sensitivity expression.
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited
+===== page 13 =====
+References
+[1] Pierre-Alexandre Beaufort, Jonathan Lambrechts,
+Fran¸ cois Henrotte, Christophe Geuzaine, and Jean-
+Fran¸ cois Remacle. Computing cross fields A PDE ap-
+proach based on the Ginzburg-Landau theory.Procedia
+Engineering, 203:219-231, 2017.
+[2] David Bommes, Henrik Zimmer, and Leif Kobbelt.
+Mixed-integer quadrangulation. ACM Transactions on
+Graphics, 28(3):77:1-77:10, July 2009.
+[3] Marcel Campen, David Bommes, and Leif Kobbelt.
+Quantized global parametrization. ACM Transactions
+on Graphics, 34(6):1-12, November 2015.
+[4] Alexandre Chemin, Fran¸ cois Henrotte, Jean-Fran¸ cois
+Remacle, and Jean Van Schaftingen. Representing
+Three-Dimensional Cross Fields Using Fourth Order
+Tensors. In Xevi Roca and Adrien Loseille, edi-
+tors, 27th International Meshing Roundtable , volume
+127, pages 89-108. Springer International Publishing,
+Cham, 2019.
+[5] Keenan Crane, Mathieu Desbrun, and Peter Schr¨ oder.
+Trivial Connections on Discrete Surfaces. Computer
+Graphics Forum, 29(5):1525-1533, September 2010.
+[6] Olga Diamanti, Amir Vaxman, Daniele Panozzo, and
+Olga Sorkine-Hornung. Designing N -PolyVector
+Fields with Complex Polynomials. Computer Graph-
+ics Forum, 33(5):1-11, August 2014.
+[7] Olga Diamanti, Amir Vaxman, Daniele Panozzo, and
+Olga Sorkine-Hornung. Integrable PolyVector fields.
+ACM Transactions on Graphics, 34(4):1-12, July 2015.
+[8] Jin Huang, Yiying Tong, Hongyu Wei, and Hujun Bao.
+Boundary aligned smooth 3D cross-frame field. ACM
+Transactions on Graphics, 30(6):1-8, December 2011.
+[9] Jovana Jezdimirovi´ c, Alexandre Chemin, and Jean-
+Fran¸ cois Remacle. Integrable cross-field generation
+based on imposed singularity configuration - the 2D
+manifold case -, September 2022.
+[10] Felix K¨ alberer, Matthias Nieser, and Konrad Polthier.
+QuadCover - Surface Parameterization using Branched
+Coverings. Computer Graphics Forum , 26(3):375-384,
+2007.
+[11] Felix Kn¨ oppel, Keenan Crane, Ulrich Pinkall, and
+Peter Schr¨ oder. Globally optimal direction fields.
+ACM Transactions on Graphics, 32(4):1-10, July 2013.
+[12] Nicolas Kowalski, Franck Ledoux, and Pascal Frey. A
+PDE Based Approach to Multidomain Partitioning and
+Quadrilateral Meshing. In Xiangmin Jiao and Jean-
+Christophe Weill, editors, Proceedings of the 21st Inter-
+national Meshing Roundtable , pages 137-154. Springer
+Berlin Heidelberg, Berlin, Heidelberg, 2013.
+[13] M. Lyon, M. Campen, and L. Kobbelt. Quad Lay-
+outs via Constrained T-Mesh Quantization. Computer
+Graphics Forum, 40(2):305-314, May 2021.
+[14] Ashish Myles, Nico Pietroni, and Denis Zorin. Robust
+field-aligned global parametrization. ACM Transac-
+tions on Graphics , 33(4):1-14, July 2014.
+[15] Jonathan Palacios and Eugene Zhang. Rotational
+symmetry field design on surfaces. ACM Transactions
+on Graphics, 26(3):55, July 2007.
+[16] David Palmer, David Bommes, and Justin Solomon.
+Algebraic Representations for Volumetric Frame
+Fields. ACM Transactions on Graphics , 39(2):1-17,
+April 2020.
+[17] Nicolas Ray, Wan Chiu Li, Bruno L´ evy, Alla Sheffer,
+and Pierre Alliez. Periodic global parameterization.
+ACM Transactions on Graphics , 25(4):1460-1485, Oc-
+tober 2006.
+[18] Nicolas Ray, Bruno Vallet, Wan Chiu Li, and Bruno
+L´ evy. N-symmetry direction field design.ACM Trans-
+actions on Graphics , 27(2):1-13, April 2008.
+[19] Maxence Reberol, Christos Georgiadis, and Jean-
+Fran¸ cois Remacle. Quasi-structured quadrilateral
+meshing in Gmsh - a robust pipeline for complex CAD
+models. arXiv:2103.04652 [cs] , March 2021.
+[20] Elina Robeva. Orthogonal Decomposition of Symmet-
+ric Tensors. SIAM Journal on Matrix Analysis and
+Applications, 37(1):86-102, January 2016.
+[21] Andrew O. Sageman-Furnas, Albert Chern, Mirela
+Ben-Chen, and Amir Vaxman. Chebyshev nets from
+commuting PolyVector fields. ACM Transactions on
+Graphics, 38(6):1-16, December 2019.
+[22] Amir Vaxman, Marcel Campen, Olga Diamanti,
+Daniele Panozzo, David Bommes, Klaus Hildebrandt,
+and Mirela Ben-Chen. Directional Field Synthesis,
+Design, and Processing. Computer Graphics Forum ,
+35(2):545-572, May 2016.
+[23] Ryan Viertel and Braxton Osting. An Approach to
+Quad Meshing Based on Harmonic Cross-Valued Maps
+and the Ginzburg-Landau Theory. SIAM Journal on
+Scientific Computing, 41(1):A452-A479, January 2019.
+Copyright © 2023 by SIAM
+Unauthorized reproduction of this article is prohibited

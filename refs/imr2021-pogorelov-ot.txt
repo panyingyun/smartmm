@@ -1,0 +1,1179 @@
+  
+===== page 1 =====  
+EFFICIENT APPROXIMATION OF OPTIMAL  
+TRANSPORTATION MAP BY POGORELOV MAP  
+Dongsheng An 1 Na Lei 2B Wei Chen 2 Zhongxuan Luo 2 Tong Zhao3  
+Hang Si 4 Xianfeng Gu 1  
+1Stony Brook University, NY, U.S.A. {doan, gu }@cs.stonybrook.edu  
+2Dalian University of Technology, Liaoning, China. {nalei, zxluo }@dlut.edu.cn,  
+wei.chen@mail.dlut.edu.cn  
+3Universit´ e Cˆ ote d'Azur, Inria, France. tong.zhao@inria.fr  
+4Weierstrass Institute for Applied Analysis and Stochastics (WIAS), Berlin, Germany. si@wias-berlin.de  
+ABSTRACT  
+Optimal transportation (OT) finds the most economical way to transport one measure to another and plays an im-  
+portant role in geometric modeling and processing. Based on the Brenier theorem, the OT problem is equivalent to  
+the Alexandrov problem, which is the dual to the Pogorelov problem. Although solving the Alexandrov/Pogorelov  
+problem are both equivalent to solving the Monge-Amp` ere equation, the former requires second type boundary condi-  
+tion and the latter requires much simpler Dirichlet boundary condition. Hence, we propose to use the Pogorelov map  
+to approximate the OT map. The Pogorelov problem can be solved by a convex geometric optimization framework,  
+in which we need to ensure the searching inside the admissible space. In this work, we prove the discrete Alexandrov  
+maximum principle, which gives an apriori estimate of the searching. Our experimental results demonstrate that the  
+Pogorelov map does approximate the OT map well with much more e cient computation.  
+Keywords: Optimal transport, Monge-Amp` ere equation, Pogorelov problem, Alexandrov maximum  
+principle  
+1. INTRODUCTION  
+Recently, optimal transportation has become one of  
+the fundamental tools in geometric modeling and pro-  
+cessing, since it can find the most economical way to  
+transfer one probability measure to another, and mea-  
+sure the Wasserstein distance between the measures.  
+It has been applied for area-preserving parameteriza-  
+tions [1], 3D surface registration and comparison [2],  
+medical image registration [3] and so on. It has been  
+applied broadly in generative models in deep learn-  
+ing, e.g. WGAN [4], where the generator computes  
+the optimal transportation map, and the discrimina-  
+tor calculates the Wasserstein distance. It is also used  
+for reflector and refractor design in optics field [5, 6].  
+1.1 Brenier Problem, Alexandrov Problem  
+and Pogorelov Problem  
+According to Brenier's theory [7], the optimal trans-  
+portation map, under the quadratic Euclidean dis-  
+tance cost function, is the gradient map of a convex  
+function, the so-called Brenier potential. The Brenier  
+potential satisfies the Monge-Amp` ere equation. Re-  
+cently, [8] point out that the Brenier theorem is equiv-  
+alent to the classical Alexandrov theorem in convex  
+geometry. The Alexandrov theorem states that a con-  
+vex polyhedron is fully determined , uniquely up to a  
+vertical translation, by its face normals and face areas.  
+The Alexandrov polyhedron is in fact equivalent to the  
+graph of the Brenier potential. The famous Pogorelov  
+problem can be treated as the Legendre dual to the  
+Alexandrov problem, which claims that a convex poly-  
+117  
+===== page 2 =====  
+hedron is determined by the discrete curvature at the  
+given points.  
+The Brenier optimal transportation problem (or equiv-  
+alently the Alexandrov problem), and the Pogorelov  
+problem are reduced to solving the Monge-Amp` ere  
+equation with di↵erent boundary conditions. Sup-  
+pose the source measure is dµ = f (x)dx with the sup-  
+port ⌦ ⇢ Rd and the target measure is d⌫ = g(y)dy  
+with the support ⌦ ⇤ 2 Rd, the Briener potential is  
+u :⌦ ! R, which satisfies the Monge-Amp` ere equa-  
+tion with the second type boundary condition:  
+detD2u = f (x)  
+g  r u(x) ,s . t . ru(⌦) = ⌦ ⇤.  
+We call the solution u to the Pogorelov problem as  
+the Pogorelov potential, its gradient is called the  
+Pogorelov map. The Pogorelov potential also satis-  
+fies the Monge-Amp` ere equation but with the Dirich-  
+let boundary condition,  
+u(x)= h(x), 8x 2 @⌦.  
+The Dirichlet boundary condition is much easier than  
+the second type boundary condition, hence Pogorelov  
+problem can be solved more e ciently. Since the  
+boundary @⌦ has zero measure, the Pogorelov map is  
+also measure-preserving, and can replace the optimal  
+transportation maps for many applications in practice  
+for its e ciency and simplicity.  
+1.2 Discrete Alexandrov Maximum Princi-  
+ple  
+The work of [8] generalizes the Brenier theory to the  
+discrete setting, which leads to a geometric variational  
+algorithm to solve these problems. The algorithm op-  
+timizes a convex energy within a convex admissible  
+solution space.  
+Fig. 1 shows an area-preserving parameterization ex-  
+ample using this method.  
+The algorithm starts with an initial temporary solu-  
+tion. At each step, the algorithm finds a temporary  
+solution uk and the update direction dk using New-  
+ton's method. Then we set an initial step length   and  
+update the temporary solution to uk+1  uk +  dk .I f  
+uk+1 exceeds the admissible space, the algorithm cuts  
+the step length to a half     /2. We then adjust  
+uk+1 accordingly, and verify again whether uk+1 is in  
+the admissible space. This "damping process" is re-  
+peated until the updated temporary solution uk+1 is  
+admissible. The damping procedure is the most time  
+consuming step in the whole algorithm pipeline.  
+In the theory of Monge-Amp` ere equation, a priori es-  
+timate is an estimate for the size of a solution or its  
+derivatives by the source and target measure, the ge-  
+ometry of the source and the target domain, without  
+solving the PDE. If one has a priori estimate at the  
+beginning, during the optimization the algorithm can  
+utilize the estimate to restrict the range of the tempo-  
+rary solution, verify the admissibility of the temporary  
+solution, hence improve the e ciency and robustness.  
+The Alexandrov maximum principle is one of the most  
+important priori estimate in the Monge-Amp` ere equa-  
+tion theory.  
+1.3 Contributions  
+In this work, we focus on solving the Pogorelov prob-  
+lem and proving the discrete version of the Alexan-  
+drov maximum principle, which is further used to im-  
+prove the computational e ciency of the proposed al-  
+gorithm:  
+1. We develop a practical and e cient algorithm  
+to solve the Pogorelov problem. The Pogorelov  
+maps can be applied as a good approximation of  
+the optimal transportation maps.  
+2. We generalize the classical Alexandrov maximum  
+principle from the smooth setting to the discrete  
+setting in theorem 3.5, and use it to improve the  
+e ciency of the proposed algorithm.  
+3. We also conduct numerical experiments to test  
+the e ciency of our algorithm when solving the  
+Pogorelov problem, and verify the discrete ver-  
+sion of the Alexandrov maximum principle.  
+The work is organized in the following way: in sec-  
+tion 2, we briefly review the theory, computational  
+algorithms and direct applications of optimal trans-  
+portation maps; in section 3, we briefly recall the Bre-  
+nier theorem in optimal transportation, the Alexan-  
+drov and Pogorelov theorems in convex geometry, and  
+the geometric variational theorem. Then we prove the  
+discrete Alexandrov maximum principle and formulate  
+it as theorem 3.5; in section 4, we explain the details  
+for solving the Pogorelov problem utilizing the Alexan-  
+drov maximum principle; the experimental results are  
+reported in section 5. Finally the work is concluded in  
+section 6.  
+2. RELATED WORK  
+This section briefly reviews the theory, algorithms and  
+applications of optimal transportation. We refer read-  
+ers to [9, 10] for a comprehensive review of the theory  
+and [11] for computational algorithms.  
+2.1 Theory  
+Monge raised the optimal transportation map prob-  
+lem as finding the most economical way to transfer  
+118  
+===== page 3 =====  
+(a). The original surface (b). Area-preserving (c). The Brenier (d). The Legendre  
+parameterization potential u dual u⇤  
+Figure 1 :T h e a r e a - p r e s e r v i n g p a r a m e t e r i z a t i o n b a s e d o n o p t i m a l t r a n s p o r t a t i o n m a p . ( a ) s h o w s t h e o r i g i n a l B u d d h a  
+surface (S, g). The surface is conformally mapped onto the unit disk ' :( S, g) ! D2. The mapping pushes forward  
+the surface area element to a measure ⌫ on D2.T h e o p t i m a l t r a n s p o r t a t i o n m a p i s c a l c u l a t e dT :( D2,µ ) ! (D2,⌫ ),  
+where µ is the uniform distribution. (c) shows the Brenier potential u : D2 ! R, T = ru.( d ) s h o w s t h e L e g e n d r e d u a l  
+u⇤(y)=s u p x2D2 {hx, yi  u(x)}.  
+one measure to the other in [12]. Kantorovich relaxed  
+the transportation maps to transportation plans and  
+solved the problem using linear programming [13, 14].  
+Brenier [7] discovered that the OT map is the gradi-  
+ent of a convex function, which satisfies the Monge-  
+Amp` ere equation. Benamou-Brenier [15] developed  
+the theory for solving OT maps using fluid dynamics.  
+Comprehensive theories on optimal transportation can  
+be found in [10, 16] and so on.  
+2.2 Algorithms  
+There are many methods for solving the optimal trans-  
+portation problem, which can be classified into three  
+main categories: Kantorovich approach, Brenier ap-  
+proach and Fluid dynamics approach.  
+The first approach is based on Kantorovich theorem,  
+the optimal transportation problem is solved by us-  
+ing linear programming. De Goes [17] proposed the  
+point-to-simplex algorithm which is similar to linear  
+programming. Sinkhorn [18] method added an entropy  
+regularizer to the Kantorovich prime problem and  
+greatly improved the computational e ciency. The  
+heat kernel was later used in [19, 20] to approximate  
+the Wasserstein distance.  
+The second approach is based on the Brenier theorem,  
+and the Brenier potential can be found by geometric  
+optimization. Aurenhammer et al. [21] connected the  
+OT map with power diagram in computational geom-  
+etry. Then Gu et al. [8] connected the Brenier theory  
+and the Alexandrov theory together, and proposed a  
+geometric variational approach to solve the OT prob-  
+lem. De Goes et al. found the equivalence between  
+capacity-constrained Voronoi tessellation and the OT  
+problem in [22]. Levy [23] and Merigot et al. [24] pro-  
+posed multi-scale approaches to accelerate the com-  
+putation based on the Brenier theory for large-scale  
+optimal transportation problems. The computational  
+optimal transportation methods through solving the  
+Monge-Amp` ere equation have been generalized to the  
+spherical cases by [5, 6, 25].  
+The third approach is based on Fluid dynamic the-  
+ory. Benamou and Brenier developed a method [26] to  
+solve the Monge-Amp` ere equation by minimizing the  
+kinetic energy of flow field. Haker and Tananbaum [3]  
+developed a method to compute the OT maps using  
+fluid dynamics by removing the curl component from  
+the vector field. However, it is still unclear whether  
+Haker's method can obtain the optimal transportation  
+map for high dimensional cases.  
+2.3 Direct Applications  
+The optimal transportation has been used for the fol-  
+lowing applications: 2D shape reconstruction and sim-  
+plification in [17], deformable 3D surface registration  
+in [2], area-preserving surface parameterization [27],  
+volume-preserving parameterization [28] and spheri-  
+cal texture mapping in [29]. The OT maps can also be  
+applied for medical image registration [30], where the  
+pixel intensity functions are treated as measure densi-  
+ties, area-preserving brain mappings [31], [32] and so  
+on. Also, the OT maps can be used for virtual mag-  
+nifier [1] and blue noise processing [22]. Furthermore,  
+OT maps can be applied for reflector and refractor  
+design [6, 33, 5], [34] and [35]. Optimal transporta-  
+tion also plays an essential role in deep learning field  
+related to generative models [36, 37, 38, 39, 40, 41].  
+In most of the above applications, the optimal trans-  
+portation maps can be replaced by other measure-  
+preserving maps. The Pogorelov map is a good candi-  
+date due to its computational simplicity and e ciency.  
+Currently, most existing algorithms aim at solving the  
+optimal transportation problem, or equivalently the  
+119  
+===== page 4 =====  
+Alexandrov problem, and few of them choose to tackle  
+the Pogorelov problem. In contrast, our work in this  
+paper focuses on solving the Pogorelov problem. Fur-  
+thermore, we haven't found any existing works that  
+utilize the Alexandrov maximum principle in the ge-  
+ometric modeling and processing fields, which is an-  
+other focus of the current work.  
+3. THEORETICAL FOUNDATION  
+In this section, we briefly review the theoretical foun-  
+dation of optimal transportation and convex geometry,  
+including the Brenier theorem, the Alexandrov theo-  
+rem, and the Pogorelov theorem. We then prove the  
+discrete version of the Alexandrov maximum principle.  
+3.1 Optimal Transportation  
+Suppose ⌦ , ⌦⇤ ⇢ Rd are domains in an Euclidean  
+space, with probability measures µ and ⌫ respectively  
+satisfying the equal total mass condition: µ(⌦) =  
+⌫(⌦⇤). The density functions are dµ = f (x)dx and  
+d⌫ = g(y)dy. The transportation map T :⌦ ! ⌦⇤ is  
+measure preserving, if for any Borel set B ⇢ ⌦⇤,  
+Z  
+T  1 (B)  
+dµ(x)=  
+Z  
+B  
+d⌫(y),  
+denoted as T#µ = ⌫. Monge raised the optimal trans-  
+portation problem :g i v e n t h etransportation cost func-  
+tion c :⌦ ⇥ ⌦⇤ ! R+, find a measure preserving map  
+T :⌦ ! ⌦⇤ that minimizes the total transportation  
+cost,  
+(MP )m i n  
+⇢Z  
+⌦  
+c(x, T (x))dµ(x): T#µ = ⌫  
+   
+.  
+The above equation gives the Monge problem (MP)  
+and the minimizer is called the optimal transportation  
+map (OT map). The transportation cost of the OT  
+map is called the OT cost between the measures.  
+Theorem 3.1 (Gu et al. [7]) . Suppose the measures  
+µ and ⌫ are with compact supports ⌦, ⌦⇤ ⇢ Rd respec-  
+tively, and they have equal total mass µ(⌦) = ⌫(⌦⇤).  
+Assume the corresponding density functions are given  
+by f, g 2 L1(Rd),a n dt h ec o s tf u n c t i o ni sc(x, y)=  
+1  
+2 |x   y|2,t h e nt h eo p t i m a lt r a n s p o r t a t i o nm a pf r o mµ  
+to ⌫ exists and is unique. It is the gradient of a convex  
+function u :⌦ ! R,t h es o - c a l l e dB r e n i e rp o t e n t i a l ,u  
+is unique up to adding a constant, and the OT map is  
+given by T = ru.  
+If the Brenier potential is C2, then by measure preserv-  
+ing condition, it satisfies the Monge-Amp` ere equation,  
+detD2u(x)= f (x)  
+g  r u(x) ,s . t . r(⌦) = ⌦ ⇤, (1)  
+where D2u is the Hessian matrix of u and the unique  
+OT map is given by T = ru.  
+3.2 Geometric Variational Method  
+If u is not smooth, we can still define the Alexandrov  
+solution. The sub-gradient of a convex function u at  
+x is defined as  
+@u(x): =  
+n  
+p 2 Rd : u(z)  h p, z   xi + u(x), 8z 2 ⌦  
+o  
+The sub-gradient defines a set-valued map: @u :⌦ !  
+⌦⇤, x 7! @u(x). We can use the sub-gradient map to  
+replace the gradient map in the Monge-Amp` ere equa-  
+tion Eqn. (1), and define the Alexandrov Solution as  
+follows:  
+Definition 3.1 (Alexandrov Solution [42]) . If a con-  
+vex function u :⌦ ! R satisfies the equation  
+(@u)#µ = ⌫,o re q u i v a l e n t l yµ((@u) 1(B)) = ⌫(B),  
+for all Borel set B ⇢ ⌦⇤,t h e n u is called an Alexan-  
+drov solution to the Monge-Amp` ere equation Eqn. (1).  
+The Alexandrov problem aims at finding a convex  
+polyhedron with prescribed face normals and face ar-  
+eas. In smooth case, the Alexandrove problem finds  
+the convex surface with prescribed Gaussian curva-  
+ture. Both the Alexandrove problem and the Bre-  
+nier problem are governed by the same Monge-Amp` ere  
+equation. Therefore, solving the Alexandrov prob-  
+lem is equivalent to computing the Brenier potential,  
+which is given by the Alexandrov Solution. The work  
+of [8] proves a geometric variational approach for com-  
+puting the Alexandrov solution of the semi-discrete  
+optimal transportation problem.  
+3.3 Semi-discrete Optimal Transportation  
+As shown in Fig. 2, suppose the source measure is  
+(⌦,µ ), ⌦ is a compact convex domain with non-empty  
+interior in Rd, the density function f (x)i sc o n t i n u o u s .  
+In practice, the target measure (⌦ ⇤,⌫ )i su s u a l l yd i s -  
+cretized as ⌫ = Pn  
+i=1 ⌫i (y   pi), where p1,...,p n ⇢  
+Rd are distinct n points and ⌫1,...,⌫ n > 0s ot h a tPn  
+i=1 ⌫i = µ(⌦). In this situation, the discrete Brenier  
+potential is a piecewise linear convex function. In fact,  
+there exists a height vector h =( h1,...,h n) 2 Rn,  
+so that the upper envelope uh of the hyper-planes  
+⇡i(x): = hx, pii + hi defined as  
+uh(x)=  
+n  
+max  
+i=1  
+{hx, pii + hi}, (2)  
+gives the discrete Brenier potential,as shown in the  
+top frame of Fig. 2(c). The projection of the envelope  
+Env({⇡i}n  
+i=1) induces a power diagram (the bottom  
+frame of Fig. 2(c)),  
+Rd =  
+n[  
+i=1  
+Wi(h),W i(h): = {x 2 Rd : ruh = pi}.  
+The µ-volume of each cell µ(Wi(h)\⌦) = ⌫i,t h es e m i -  
+discrete optimal transportation map is given by ruh,  
+120  
+===== page 5 =====  
+(a) Source measure (b) Target measure (c) Upper envelope (d) Convex hull  
+(⌦,µ) {(pi,⌫i)}n  
+i=1 Env(⇡i(x)) Conv( {(pi, hi)}n  
+i=1)  
+Figure 2:( a ) T h e c o n t i n u o u s s o u r c e d o m a i n⌦is with uniform distribution µ.( b ) T h e d i s c r e t e t a r g e t m e a s u r e i s  
+⌫:=Pn  
+i=1⌫i (y pi)withpist h ev e r t i c e s . ( c )T h eB r e n i e rp o t e n t i a lu:⌦!Ris the upper envelope of the planes  
+⇡i(x)=hpi,xi+hi, as shown in the top frame. The cell decomposition induced by the Brenier potential gives the OT  
+map, each cellWiin⌦(shown in the bottom frame) is mapped to the corresponding piwithµ(Wi)=⌫i.( d ) T h e  
+Legendre dualu⇤of the Brenier potentialuis the convex hull of points {(pi, hi)}n  
+i=1. Please zoom in/out for better  
+visualization.  
+or equivalentlyWi(h)\⌦7!pi. The discrete Brenier  
+potential can be obtained by optimizing the following  
+convex energy:  
+Theorem 3.2 (Gu et al. [8]: Alexandrov) .Let  
+⌦be a compact convex domain in Rd,{p1,. . . ,pn}  
+be a set of distinct points in Rdandf:⌦ !R  
+be a positive continuous function. Then for any  
+⌫1,...,⌫n>0withPn  
+i=1⌫i=  
+R  
+⌦f(x)dx,t h e r ee x -  
+istsh=(h1,h2,...,hn)2Rn,u n i q u eu pt oa d d i n ga  
+constant(c, c, . . . , c),s ot h a t  
+µ(Wi(h)\⌦) =  
+Z  
+Wi(h)\⌦  
+f(x)dx=⌫i 8i=1,2,...,n .  
+(3)  
+The height vectorhis exactly the minimal solver of  
+the convex function  
+E(h)=  
+Zh  
+0  
+nX  
+i=1  
+µ(Wi(h)\⌦)dhi   
+nX  
+i=1  
+hi⌫i (4)  
+on the open convex set (the admissible solution space)  
+H={h2Rn|µ(Wi(h)\⌦)>0,i2{1,2,...,n}}  
+\  
+(nX  
+i=1  
+hi=0  
+)  
+(5)  
+Furthermore, the gradient map ruhminimizes the  
+quadratic cost1  
+2  
+R  
+⌦|x T(x)|2f(x)dxamong all the  
+measure preserving transportation mapsT:( ⌦,µ)!  
+(Rd,⌫=Pn  
+i=1⌫i (y pi)),T#µ=⌫.  
+According to [43],E(h)i sc o n t i n u o u sa n daC2func-  
+tion on the admissible space, since its Hessian matrix  
+is continuous.  
+3.4 Convex Geometry  
+The Brenier potential in the optimal transportation  
+theory can be reformulated as the classical Alexandrov  
+problem and the Pogorelov problem, both of them sat-  
+isfying the Monge-Amp´ ere equation. In the discrete  
+version, the Alexandrov problem aims at finding a con-  
+vex polyhedron with user prescribed face normals and  
+areas.  
+Theorem 3.3(Alexandrov 1950).Given a compact  
+convex domain⌦⇢Rd,a n dp1,··· ,pnare distinct  
+points inRd,⌫1,⌫2,··· ,⌫n>0,s u c ht h a tP⌫i=  
+Vo l(⌦),t h e r ee x i s t sap i e c e w i s el i n e a r( P L )c o n v e x  
+function  
+u(x): =m a x{hx, pii+hi,i2{1,2,...,n}}  
+unique up to translation such that  
+Vo l(Wi)=Vo l({x|ru(x)=pi})=⌫i.  
+The graph ofu(x) is called the Alexandrov polyhe-  
+dron, which is an open convex polyhedron with infinite  
+boundary faces. Alexandrov's proof is topological, not  
+variational. In fact, the Alexandrov potential is ex-  
+actly the discrete Brenier potential. Hence, theorem  
+3.2 also gives the solution to the Alexandrov problem.  
+The Pogorelov problem is very similar to the Alexan-  
+drov problem, and it is equivalent to solving the  
+Monge-Amp` ere equation with the Dirichlet boundary  
+condition:  
+detD2u(x)= f(x)  
+g ru(x),s . t . u(x)=h(x)8x2@⌦.  
+Basically, the supporting planes of the infinite bound-  
+ary faces of the Alexandrov polyhedron are fixed and  
+the slopes of the other supporting planes are fixed,  
+121  
+===== page 6 =====  
+but their heights can be changed. Given any desired  
+positive ⌫is, there exists a set of unique heights his,  
+such that the area of the i-th face equals to ⌫i.G u e t  
+al. [8] also proved a variational approach to solve the  
+Pogorelov problem:  
+Theorem 3.4 (Gu et al. [8]: Pogorelov) .  
+Suppose ⌦= Conv(v1, ··· ,v m) is a d-  
+dimensional compact convex polytope in Rd so  
+that vi 62 Conv(v1,...,v i 1,v i+1,...,v m) for all  
+i 2{ 1, 2,...,m } and p1,...,p n are in the interior  
+of ⌦.F o r a n y g1,...,g m 2 R and ⌫1,⌫ 2,...,⌫ n > 0,  
+there exists a convex cell decomposition T having  
+vi and pj as vertices and a piecewise linear con-  
+vex function u :( ⌦ ,T ) ! R so that u(vi)= gi,  
+i 2{ 1, 2,...,m } and the Lebesgue measure of the  
+sub-gradient of u at pj is ⌫j , j 2{ 1, 2,...,n }.I n  
+fact, the solution u is the Legendre dual of  
+max{hx, pj i+hj , hx, vii gi| i 2{ 1, 2,...,m }; j 2{ 1, 2,...,n }}  
+and h =( h1,h 2,...,h n) is the unique critical point of  
+as t r i c t l yc o n v e xf u n c t i o n ,  
+E(h)=  
+Z h  
+0  
+nX  
+j=1  
+µ(Wj (h))dhj    
+nX  
+j=1  
+hj ⌫j , (6)  
+on the open set (admissible solution space)  
+H = {h 2 Rn|Wj (h) 6= ;, 8j 2{ 1, 2,...,n }}. (7)  
+The detailed di↵erence between the solutions of the  
+Alexandrov problem and the Pogorelov problem can  
+be found in Fig. 3.  
+3.5 Discrete Alexandrov Maximum Princi-  
+ple  
+Definition 3.2 (Convex Piecewise Linear Function) .  
+Let P = {p1,p 2,...,p n}⇢ Rd be a set of distinct  
+points, ⌦ := Conv( {p1,p 2,...,p n})b et h ec o n v e xh u l l  
+of P . Given a discrete function u : P ! R, u(pi)i s  
+denoted as ui,i tc a nb ee x t e n d e dt oac o n v e xp i e c e w i s e  
+linear function ˆu :⌦ ! R. The graph of ˆ u is the  
+convex hull of points {(p1,u 1), (p2,u 2),..., (pn,u n)}.  
+Note that the triangulations of di↵erent piecewise lin-  
+ear functions are di↵erent. Given two discrete func-  
+tions u, v : P ! R,i f ui <v i, 8pi 2 P ,t h e n  
+ˆu(x) < ˆv(x), 8x 2 Conv(P ).  
+Lemma 3.1 (Monotonicity of sub-gradient) . Let P =  
+{p1,p 2,...,p n}⇢ Rd be a set of distinct points, ⌦: =  
+Conv({p1,p 2,...,p n}) be the convex hul l of P .L e t  
+{pi1 ,p i2 , ··· ,p il }⇢ P , O = Conv({pi1 ,p i2 , ··· ,p il })  
+be an open bounded set, and u, v : P ! R be two  
+discrete functions defined on P ,a n dt h e i re x t e n t i o n s ,  
+the convex piecewise-linear functions ˆu, ˆv :⌦ ! R,  
+satisfying: ⇢ ˆu =ˆv on @O  
+ˆu  ˆv in O  
+Then the images of the sub-gradient maps satisfy  
+@ˆv(O) ⇢ @ ˆu(O),  
+and in particular, µˆu(O)   µˆv (O),w h e r e  
+µˆu(E): =  
+   [  
+x2E  
+@ ˆu(x)  
+  .  
+|·| representing the Lebesgue measure.  
+Proof. Let p 2 @ˆv(x) for some x 2 O,t h e nt h ea   n e  
+function lx,p(z): =ˆ v(x)+ hp, z   xi touches ˆv from  
+below at x.S i n c eˆu  ˆv,t h ec o n s t a n t  
+a := max  
+z2 ¯O  
+lx,p(z)   u(z)  
+is non-negative and that lx,p   a touches ˆu from below  
+at some point x0 2 ¯O. There are two cases here:  
+case 1. x0 2 O,t h e nw := ˆu   (lx,p   a)a t t a i n sal o c a l  
+minimum at x0,w h i c hi sa l s oag l o b a lm i n i m u mb y  
+the convexity of w,n a m e l y  
+lx,p   a  u in ⌦ lx,p(x0)   a = u(x0),  
+and p 2 @ ˆu(x0) ⇢ @ ˆu(O), as desired.  
+case 2: x0 2 @O.S i n c eˆu =ˆv on @O and x0 2 @O,w e  
+obtain that a = 0. Therefore,  
+lx,p  u  v in O.  
+As lx,p(x)=ˆ v(x), this gives lx,p(x)=ˆ u(x). So lx,p  
+touches ˆu from below at x and p 2 @u(x), which con-  
+cludes the proof.  
+A consequence of the monotonicity result is the dis-  
+crete Alexandrov maximum principle.  
+Theorem 3.5 (Discrete Alexandrov Maximum Prin-  
+ciple). Let P = {p1,p 2,...,p n}⇢ Rd be a set of dis-  
+tinct points, ⌦: = Conv({p1,p 2,...,p n}) be the convex  
+hull of P ,a n dl e t u :⌦ ! R be a piecewise-linear con-  
+vex function such that u =0 on @⌦.T h e n t h e r e e x i s t s  
+ad i m e n s i o n a lc o n s t a n tCd > 0 such that  
+|u(x)|d  Cddiam(⌦)d 1dist(x, @⌦)|@u(⌦)|8 x 2 ⌦.  
+(8)  
+Proof. Let pi 2 P ,( pi,u i) be a point on the graph of  
+u, and consider the convex cone function y 7! Cpi (y),  
+with vertex at ( pi,u i)t h a tv a n i s h e so n@⌦. By the  
+convexity of u,w eh a v eu  Cpi in ⌦. The monotonic-  
+ity of subdi↵erential 3.1 implies  
+|@Cpi (pi)|| @Cpi (⌦)|| @u(⌦)|;( 9 )  
+122  
+===== page 7 =====  
+In the following, we bound |@Cpi (pi)| from below.  
+Step 1. @Cpi (pi)c o n t a i n st h eb a l lB⇢(0) with ⇢ :=  
+|ui|/diam(⌦). Take q with |q| < |ui|/diam(⌦), and  
+consider the a ne function  
+lpi ,q (z): = ui + hq, z   pii.  
+Then we have lpi ,q (pi)= ui = Cpi (pi)a n d  
+lpi ,q (z)  ui+|q||z pi| ui+|q|diam(⌦)  0 8z 2 @⌦,  
+By convexity lpi ,q  Cpi inside ⌦. Hence, lpi ,q  
+touches Cpi from below at pi,w h i c hi m p l i e st h a t  
+q 2 @Cpi (pi). By the arbitrariness of q, this proves  
+that @Cpi (pi)   B⇢(0), as desired.  
+Step 2. @Cpi (pi) contains a vector of norm  
+|ui|/dist(x, @⌦). Consider a point pj 2 @⌦, such that  
+|pi   pj | =d i s t (pi,@ ⌦), and set  
+q := pj   pi  
+|pj   pi|  
+|ui|  
+dist(pi,@ ⌦) .  
+Then lpi ,q (z): = ui + hq, pi   zi satisfies  
+lpi ,q (pj )= ui + hq, pj   pii = ui + |ui| =0 ,  
+and the hyperplane {lpi ,q =0 } is tangent to ⌦ at pj .  
+This implies that lpi ,q  0= Cpi on @⌦. In fact, given  
+any z 2 @⌦, we have that dist( pi,@ ⌦) | z   pi|,s o  
+lpi ,q (z)  ui  
+✓  
+1   z   pi  
+dist(pi,@ ⌦)  
+◆  
+ 0.  
+Arguing as in Step 1, this shows that q 2 @Cpi (pi).  
+Step 3. By Step 1 and Step 2, we know that  
+@Cpi (pi)   B⇢(0) [{ q}, (10)  
+where ⇢ = |ui|/diam(⌦) and |q| = |ui|/dis(pi,@ ⌦). Let  
+⌃⇢ denote the intersection of B⇢(0) with the hyper-  
+plane passing through the origin and orthogonal to q,  
+⌃⇢ := B⇢(0) \{ z : hz, qi =0 }.  
+Since @Cpi (pi)i sc o n v e x ,b yE q n . ( 1 0 )i tc o n t a i n st h e  
+cone C generated by q and ⌃ ⇢.H e n c e  
+|@Cpi (pi)| | C | = Cd|q|⇢d 1 = Cd  
+|ui|d  
+diam(⌦)d 1dist(pi,@ ⌦) ,  
+where Cd > 0 is the dimensional constant, C2 =1a n d  
+Cd = 1  
+d  
+⇡  
+d 1  
+2  
+ ( d 1  
+2 +1 )  
+Now, assume x is an arbitrary point in ⌦, we can re-  
+peat the same argument and the inequality (8) still  
+holds. This concludes the proof.  
+4. COMPUTATIONAL ALGORITHMS  
+This section explains the algorithmic details to solve  
+the Monge-Amp` ere equation with with the Dirichlet  
+boundary condition, namely the Pogorelov problem.  
+The algorithm is implemented using computational ge-  
+ometric method, hence we start with the fundamental  
+concepts in computational geometry [44].  
+4.1 Basic Concepts from Computational  
+Geometry  
+A hyperplane in Rd+1 is represented as ⇡(x): = hp, xi+  
+h, x 2 Rd, h 2 R. Given a family of hyperplanes  
+{⇡i(x)= hpi,x i+hi}n  
+i=1,t h e i rupper envelope denoted  
+as Env( {⇡i}n  
+i=1) is the graph of the function  
+u(x): =  
+n  
+max  
+i=1  
+{hpi,x i + hi} .  
+The Legendre dual of u is defined as  
+u⇤(y): =m a x  
+x2Rd  
+{hx, yi  u(x)}.  
+Each hyperplane ⇡i(x)h a sad u a lp o i n ti n Rd+1,  
+⇡⇤  
+i := (pi,  hi), and the graph of u⇤ is the lower convex  
+hull of the dual points {⇡⇤  
+i }n  
+i=1,w h i c hi st h em i n i m a l  
+convex set containing {⇡⇤  
+i }n  
+i=1. The projection of the  
+upper envelope induces a nearest power diagram D(⌦)  
+of ⌦,  
+⌦=  
+n[  
+i=1  
+Wi(u),W i(u): = {x 2 ⌦|ru(x)= pi} .  
+The projection of the lower convex hull u⇤ induces a  
+nearest weighted Delaunay triangulation T (⌦⇤)o f⌦ ⇤.  
+D(⌦) and T (⌦⇤) are dual to each other, namely pi  
+connects pj in T (⌦⇤)i fa n do n l yi f Wi(u) is adjacent  
+to Wj (u). Fig. 1 and Fig. 2 show these basic concepts.  
+4.2 Algorithm Pipeline  
+The algorithm mainly optimizes the energy E(h)o f  
+Eqn. (6) in the admissible solution space H in Eqn. (7)  
+using Newton's method. Assume the interior vertices  
+are {pi}n  
+i=1 and the boundary vertices are {qj }m  
+j=1.A t  
+the beginning, the height vector h0 is initialized as  
+hi = 1  
+2 (|pi|2   1) for each interior vertex pi,a n da st h e  
+fixed constant gj for each boundary vertex qj respec-  
+tively. At each step, the convex hull of {(pi,  hi)}n  
+i=1 [  
+{(qj , +gj )}m  
+j=1 is constructed. The lower convex hull  
+is projected to induce a nearest weighted Delaunay  
+triangulation T of {pi}[{ vj }. Each interior vertex  
+on the convex hull vi(h)=( pi,  hi) corresponds to a  
+supporting plane ⇡i(h,x )= hpi,x i + hi,e a c hb o u n d -  
+ary vertex vj =( qj ,g j ) corresponds to a supporting  
+plane ⇡i(h,x )= hqj ,x i  gj . Each face [ vi,v j ,v k ]i n  
+the convex hull is dual to the vertex in the envelope,  
+123  
+===== page 8 =====  
+which is the intersection point of ⇡i,⇡ j and ⇡k .T h e  
+lower convex hull is dual to the upper (lower) enve-  
+lope. The projection of the upper envelope induces  
+the nearest power diagram. The relationship is given  
+in Fig. 2(c) and Fig. 2(d).  
+Algorithm 1: Solving Pogorelov Problem  
+Input: ⌦=C o n v (q1,q 2,...,q m), boundary  
+values  
+(g1,g 2,...,g m),{(pi,⌫ i)}n  
+i=1 ⇢ ⌦ ⇥ R  
+Output: The height vector h of the Pogorelov  
+Polyhedron uh  
+Initialize u(qj )= gj , hi = 1  
+2 (|pi|2   1);  
+while true do  
+Compute the lower convex hull of  
+{(pi,  hi)}n  
+i=1 [{ (qj , +gj )}m  
+j=1;  
+Compute the upper envelope of the planes  
+{hpi,x i + hi}n  
+i=1 [{ hqj ,x i  gj }m  
+j=1;  
+Project the upper envelope to the plane to get  
+a nearest power diagram  
+⌦= Sn  
+i=1 Wi(h) Sm  
+j=1 Uj (h), where Wi(h)'s  
+are finite, Uj (h)'s are infinite cells;  
+Compute the µ-volume of each finite cell  
+wi(h)= µ(Wi(h)) using Eqn. (11);  
+Compute the gradient of the energy E(h)  
+using Eqn. (12), rE(h)=( ⌫i   wi(h));  
+if krE(h)k <" then  
+return h ;  
+end  
+Compute the µ-lengths of the power Voronoi  
+edges Wi(h) \ Wj (h);  
+Construct the Hessian matrix of the energy  
+E(h):  
+Hess(E(h)) := @2E(h)  
+@hi@hj  
+= µ(Wi(h) \ Wj (h))  
+|pi   pj |  
+Solve the linear system:  
+Hess(E(h))d = rE(h);  
+   1;  
+repeat  
+if h +  d violates the Alexandrov  
+maximum principle then  
+   1  
+2  ;  
+continue;  
+end  
+Compute the nearest power diagram  
+D(h +  d);  
+until no empty power cell ;  
+Update the height vector h  h +  d;  
+end  
+Then we compute the µ-volume of each power cell us-  
+ing  
+wi(h): =  
+Z  
+Wi (h)  
+f (x)dx, (11)  
+and the gradient of the energy Eqn. (6) is given by  
+rE(h)=( ⌫1   w1(h),⌫ 2   w2(h),...,⌫ n   wn(h)).  
+(12)  
+The Hessian matrix Hess( E(h)) can be constructed as  
+follows: for o↵ diagonal elements,  
+@2E(h)  
+@hi@hj  
+= @wi(h)  
+@hj  
+=  1  
+|pi   pj |  
+Z  
+Wi (h)\Wj (h)  
+f (x)dx =   µ(¯eij )  
+|eij | .  
+(13)  
+where eij is the edge in the weighted Delaunay tri-  
+angulation T (h)c o n n e c t i n gpi and pj ,¯ eij is the dual  
+edge in the power diagram D(h); and for diagonal el-  
+ements,  
+@2E(h)  
+@h2  
+i  
+= @wi(h)  
+@hi  
+=  
+X  
+j2N (i)  
+µ(¯eij )  
+|eij | . (14)  
+where N (i) is the set of the neighbours of the ith ver-  
+tex. Then we solve the following linear system to find  
+the update direction,  
+Hess(E(h))d = rE(h). (15)  
+Finally we need to determine the step length  ,s u c h  
+that h +  d is still in the admissible solution space H,  
+H = {h 2 Rn|µ(Wi(h)) > 0,i =1 , 2,...,n }. (16)  
+We initially set the step length   to be  1, if h +  d  
+violates the Alexandrov maximum principle, then we  
+cut   to a half,    1/2 , and iterate again. Then we  
+further compute the power diagram D(h+ d). If some  
+cells disappear in the power diagram, meaning h +  d  
+exceeds the admissible space, then we cut   by half  
+and iterate again. We repeat this process, until we find  
+an appropriate step length   so that h +  d is in the  
+admissible space (Eqn. (7)) and satisfies the discrete  
+Alexandrov maximum principle Thm. 3.5. Then we  
+update h as h +  d. We repeat the above procedures  
+until the norm of the gradient of the energy is less  
+than a prescribed threshold ". Each nearest power cell  
+Wi(h) corresponding to the sample point pi will be of  
+the desired measure ⌫i. We conclude our algorithm for  
+solving the Pogorelov problem in Alg. 1.  
+During the optimization, the connectivity of the power  
+diagram keeps changing. Instead of constructing the  
+convex hull from scratch at every step, we can locally  
+modify the connectivity through a variation of Law-  
+son's edge flip algorithm [45] to improve the e ciency.  
+Furthermore, in order to improve the numerical sta-  
+bility, we can use adaptive arithmetic during the con-  
+struction of convex hulls.  
+5. EXPERIMENTS  
+We conduct experiments to test the e cacy and e -  
+ciency of the proposed Pogorelov map algorithm, and  
+verify the discrete Alexandrov maximum principle.  
+124  
+===== page 9 =====  
+(a) OT Brenier potential (b) Pogorelov Brenier potential  
+Figure 3:T h e p o t e n t i a l s o f t h e O T p r o b l e m a n d t h e P o g o r e l o v p r o b l e m . T h e b l u e c u r v e s g i v e t h e b o u n d a r y o f t h e  
+potentials.  
+5.1 Experimental setup  
+All the algorithms are developed using generic C++  
+compatible with Windows and Linux platforms. We  
+mainly use Eigen [46] for the numerical computa-  
+tions and OpenGL for the user interface. The surface  
+meshes are represented by the half-edge data struc-  
+ture. All the experiments are conducted on a Win-  
+dows laptop with Intel Core i7-7700HQ CPU and 16  
+GB memory.  
+5.2 Source and Target Measures  
+In order to test the proposed Pogorelov map algorithm  
+Alg. 1 and verify that the solution does satisfy the  
+Alexandrov maximum principle, we conduct several  
+experiments. The source measure dµ=fd xis the  
+uniform distribution defined on the planar unit disk  
+⌦=D2. We set three target measures (⌦⇤,⌫).  
+Case 1. As shown in Fig. 5, the male facial sur-  
+face (S,g) in frame (a) is represented as a triangle  
+mesh with 14,358 vertices and 28,328 faces. The sur-  
+face is conformally mapped to the unit disk via dis-  
+crete surface Ricci flow [47], the mapping is denoted as  
+':S!D2. The conformal mapping image is shown  
+in frame (b). The images of the boundary vertices are  
+qj='(vj),vj2@S,j2{1,2,...,m}.T h e c o n v e x  
+hull ofqj's is Conv({qj}m  
+j=1). The images of the inte-  
+rior vertices arepi='(vi),vi62@S,i2{1,2,...,n}.  
+The images of the interior vertices, fall inside the con-  
+vex hull of the images of the boundary vertices, namely  
+{pi}n  
+i=1⇢Conv({qj}m  
+j=1). The target domain ⌦ ⇤is  
+the union of the images of interior vertices,  
+⌦⇤:={p1,p2,...,pn}.  
+The discrete measure⌫icorresponding to an interior  
+vertexviis the area of the neighborhood of vion the  
+surface, computed as  
+⌫i=1  
+3  
+X  
+[vi,vj,vk]2S  
+area([vi,vj,vk]) (17)  
+where [vi,vj,vk] represents a face adjacent to vion  
+the original mesh in R3. The target measure is the  
+summation of Dirac measures⌫=Pn  
+i=1⌫i (y pi).  
+The measure for the boundary vertices is irrelevant.  
+For the purpose of visualization, the summation of  
+the discrete measures is normalized to the area of ⌦,  
+namely⇡. In this case, the solution to the Pogorelov  
+problem gives us an area-preserving map of the facial  
+surface.  
+Case 2. The discrete measure ⌫ifor each interior  
+vertexviis set to be 1/n, wherenis the number of  
+the interior vertices, namely target measure ⌫is the  
+uniform distribution on ⌦⇤.  
+Case 3. The discrete measures for the interior  
+vertices are randomly sampled from the uniform  
+distribution. Then we normalize the target measure  
+so that the summation of the discrete measures is  
+equal to the area of the source domain.  
+5.3 Discrete Alexandrov Maximum Princi-  
+ple  
+For the Pogorelov map, we initialize the heights to be  
+0 for each the boundary vertexqjand1  
+2(|pi|2 1) for  
+each interior vertexpi. Fig. 3 shows the Brenier poten-  
+tial for the traditional optimal transportation map in  
+the left frame, and the Pogorelov potential in the right  
+frame. From the figure, we can see that the boundary  
+value (the height) of the Brenier potential for the OT  
+map has changes prominently, while the boundary of  
+the Pogorelov potential is fixed with zero height.  
+We numerically verified whether the solutions to the  
+Pogorelov problem satisfy the discrete Alexandrov  
+125  
+===== page 10 =====  
+(a) The surface area measure. (b) The uniform measure. (c) The random measure.  
+Figure 4 :T h e v e r i fi c a t i o n o f t h e A l e x d r o v m a x i m u m p r i n c i p l e w i t h d i ↵ e r e n t t a r g e t m e a s u r e s .  
+maximum principle, the testing results are reported in  
+Fig. 4. In the experiment, we randomly sample 15 , 000  
+points within the convex hull of ⌦ ⇤ and compute their  
+corresponding u-values. The horizontal axis is the  
+squared Euclidean distance from the sample point pi  
+to the origin, namely |pi|2. The green curve shows the  
+graph of the function of |u(pi)|2, namely the left hand  
+side of the inequality of Eqn. (8). The red curve shows  
+the graph of the function defined by the right hand side  
+of Eqn. (8), where the dimensional constant c2 =1 ,t h e  
+diameter of ⌦ is diam(⌦) = 2, the total target mea-  
+sure |@u(⌦)| = ⇡ for our experiments. It is obvious  
+that the red curve is above the green curve, and their  
+di↵erence monotonously decreases. This shows that  
+the discrete Alexandrov maximum principle holds.  
+5.4 Measure Preserving Property of  
+Pogorelov Maps  
+In this part, we show that the solution to the Pogorelov  
+problem induces a measure preserving map. For the  
+male model shown in Fig. 5(a) and its conformal map-  
+ping image in Fig. 5(b), we define the target measure  
+as in the case 1 of Sec. 5.2. Fig. 5(c) shows the re-  
+sult of optimal transportation map using the method  
+in [2]. Fig. 5(d) shows the Pogorelov map using our  
+proposed algorithm.  
+Fig. 6 shows the histogram of the area distortion fac-  
+tors for the interior vertices in di↵erent iterations. For  
+each interior vertex vi 62 @S , the area distortion factor  
+is defined as  
+log µ(Wi(h))   log ⌫i,i 2{ 1, 2,...,n }.  
+From the histograms, it is obvious that the proposed  
+algorithm converges very fast, and for nearly all the  
+interior vertices, the area distortion factor is close to  
+zero, namely µ(Wi(h)i sc l o s et o⌫i and the histogram  
+looks like a Dirac function concentrated at the origin.  
+This shows that the Pogorelov mapping are measure-  
+preserving, and has the potential to replace optimal  
+transportation maps for practical applications due to  
+its e ciency and simplicity.  
+To measure the running time of the proposed method,  
+we define the relative error to be  
+"i := |µ(Wi)   ⌫i|/⌫i  
+and set the maximum relative error tolerance as 1 e   8  
+in Alg. 1. We report the number of the iterations for  
+convergence, the corresponding running time, the total  
+transportation cost of the OT map and the Pogorelov  
+map, the root mean square eror (RMSE) between the  
+OT map and the Pogorelov map in Tab. 1.  
+The first two rows show the results of the OT map with  
+the second type boundary condition, the third and the  
+forth rows demonstrate the results of the Pogorelov  
+map with the Dirichlet boundary condition. In the  
+first column, the target measure is the surface area  
+measure defined in case 1 in subsection 5.2; in the sec-  
+ond column, the target measure is the uniform mea-  
+sure defined in case 2; in the last three columns, the  
+target measures are the random measure defined in  
+case 3. From the table, we can see that Pogorelov  
+map algorithm converges much faster than the optimal  
+transportation map algorithm with slightly greater to-  
+tal transportation cost. Additionally, the root mean  
+square error (RMSE) between the Pogorelov map and  
+the OT map is very small.  
+Furthermore, by testing the Alexandrov maximum  
+principle in the damping process, the robustness is  
+greatly improved. Especially, when the temporary  
+solution is close to the boundary of the admissible  
+space, the original algorithm without maximum prin-  
+ciple testing causes big fluctuations and become un-  
+stable. By adding the testing, the damping process is  
+stabler and converges faster.  
+6. CONCLUSION  
+In this work, we introduce a practical algorithm to  
+solve the classical Pogorelov problem, and propose to  
+126  
+===== page 11 =====  
+(a) 3D surface (b) The Conformal mapping (c) The OT mapping (d) The Pogorelov mapping.  
+Figure 5:T h e r e s u l t s o f t h e A l e x m o d e l .  
+Figure 6: The histogram of the area distortion of the male facial model in di↵erent iterations.  
+use the measure-preserving Pogorelov map to approx-  
+imate the optimal transportation map, due to its sim-  
+plicity and e ciency. We also prove a discrete version  
+of the classical Alexandrov maximum principle, which  
+gives an apriori estimate for the solution to the Monge-  
+Amp` ere equation with Dirichlet boundary condition.  
+Our experimental results demonstrate the e ciency  
+and accuracy of the Pogorelov map, and verify the dis-  
+crete Alexandrov maximum principle. Furthermore,  
+the experiments also show that the robustness of the  
+proposed algorithm can be improved by adding maxi-  
+mum principle testing.  
+In the future, we plan to generalize the algorithm  
+to other geometric problems related to the Monge-  
+Amp` ere equation, and use more apriori estimates on  
+the discrete settings to further improve the e ciency  
+and accuracy of the proposed algorithms.  
+AcknowledgementThis research was partially sup-  
+ported by the Science Challenge Project of China  
+(TZZT2019-B1), the National Natural Science Foun-  
+dation of China (61720106005, 61772105, 61936002),  
+NSF CMMI-1762287 collaborative research: compu-  
+tational framework fordesigning conformal stretchable  
+electronics, and NSF DMS-1737812 collaborative re-  
+search: ATD:theory and algorithms for discrete curva-  
+tures on network data from human mobility and mon-  
+itoring.  
+References  
+[1]Zhao X., Su Z., Gu X., Kaufman A. "Area-  
+Preservation Mapping using Optimal Mass Trans-  
+port."IEEE Transactions on Visualization and  
+Computer Graphics.,v o l .1 9 ,n o .1 2 ,2 8 3 8-2 8 4 7 ,  
+2013  
+[2]Su Z., Wang Y., Shi R., Zeng W., Sun J., Luo  
+F., Gu X. "Optimal Mass Transport for Shape  
+Matching and Comparison." Pattern Analysis  
+and Machine Intelligence, IEEE Transactions on,  
+vol. 37, no. 11, 2246-2259, 2015  
+[3]Haker S., Zhu L., Tannenbaum A., Angenent  
+S. "Optimal mass transport for registration and  
+warping."International Journal of computer vi-  
+sion,v o l .6 0 ,n o .3 ,2 2 5 - 2 4 0 ,2 0 0 4  
+[4]Arjovsky M., Chintala S., Bottou L. "Wasser-  
+stein generative adversarial networks."Proceed-  
+ings of the 34th International Conference on Ma-  
+chine Learning-Volume 70,p p .2 1 4 - 2 2 3 .2 0 1 7  
+[5]Wang X.J. "On the design of a reflector antenna  
+II."Calculus of Variations and Partial Di↵eren-  
+tial Equations,v o l .2 0 ,n o .3 ,3 2 9 - 3 4 1 ,2 0 0 4  
+[6]Wang X.J. "On the design of a reflector antenna."  
+Inverse problems,v o l .1 2 ,n o .3 ,3 5 1 ,1 9 9 6  
+[7]Brenier Y. "Polar Factorization and Mono-  
+tone Rearrangement of Vector-Valued Func-  
+tions."Communications on Pure and Applied  
+Mathematics,v o l .4 4 ,n o .4 ,3 7 5 - 4 1 7 ,1 9 9 1  
+127  
+===== page 12 =====  
+Table 1:C o m p a r i s o n b e t w e e n t h e O p t i m a l T r a n s p o r t a t i o n M a p a n d t h e P o g o r e l o v M a p .  
+OT  
+Iterations 8 13 12 13 13  
+Time(s) 3.142 4.851 4.43 4.537 4.961  
+Cost 0.0697 0.0671 0.0889 0.0666 0.0745  
+Pogorelov  
+Iterations 5 12 10 12 11  
+Time(s) 1.705 4.143 3.495 4.201 3.768  
+Cost 0.0701 0.0674 0.0893 0.0674 0.0754  
+RMSE 0.0313 0.0285 0.0150 0.0386 0.0167  
+[8] Gu X., Luo F., Sun J., Yau S.T. "Varia-  
+tional principles for Minkowski type problems,  
+discrete optimal transport, and discrete Monge-  
+Amp` ere equations."Asian Journal of Mathemat-  
+ics,v o l .2 0 ,n o .2 ,3 8 3 - 3 9 8 ,2 0 1 6  
+[9] Villani C. Topics in optimal transportation .5 8 .  
+American Mathematical Soc., 2003  
+[10] Villani C. Optimal transport: old and new ,v o l .  
+338. Springer Science & Business Media, 2008  
+[11] Peyr´ e G., Cuturi M., et al. "Computational Op-  
+timal Transport: With Applications to Data Sci-  
+ence." Foundations and Trends ® in Machine  
+Learning,v o l .1 1 ,n o .5 - 6 ,3 5 5 - 6 0 7 ,2 0 1 9  
+[12] Monge G. "M´ emoire sur la th´ eorie des d´ eblais et  
+des remblais." Histoire de l'Acad´ emie Royale des  
+Sciences de Paris ,1 7 8 1  
+[13] Kantorovich L. "On a problem of Monge." Us-  
+pekhi Mat. Nauk. ,v o l .3 ,2 2 5 - 2 2 6 ,1 9 4 8  
+[14] Kantorovich L.V. "On a problem of Monge."  
+Journal of Mathematical Sciences ,v o l .1 3 3 ,n o .4 ,  
+1383-1383, 2006  
+[15] Benamou J.D., Brenier Y. "A computational fluid  
+mechanics solution to the Monge-Kantorovich  
+mass transfer problem." Numerische Mathematik,  
+vol. 84, no. 3, 375-393, 2000  
+[16] Santambrogio F. "Optimal transport for applied  
+mathematicians." Birk¨ auser, NY,v o l .5 5 ,n o .5 8 -  
+63, 94, 2015  
+[17] De Goes F., Cohen-Steiner D., Alliez P., Desbrun  
+M. "An optimal transport approach to robust  
+reconstruction and simplification of 2d shapes."  
+Computer Graphics Forum ,v o l .3 0 ,p p .1 5 9 3 -  
+1602. Wiley Online Library, 2011  
+[18] Cuturi M. "Sinkhorn distances: Lightspeed com-  
+putation of optimal transport." Advances in  
+neural information processing systems ,p p .2 2 9 2 -  
+2300. 2013  
+[19] Solomon J., Rustamov R., Guibas L., Butscher  
+A. "Earth mover's distances on discrete surfaces."  
+ACM Transactions on Graphics (TOG) ,v o l .3 3 ,  
+no. 4, 67, 2014  
+[20] Solomon J., De Goes F., Peyr´ e G., Cuturi M.,  
+Butscher A., Nguyen A., Du T., Guibas L. "Con-  
+volutional Wasserstein distances: E cient opti-  
+mal transportation on geometric domains." ACM  
+Transactions on Graphics (TOG) ,v o l .3 4 ,n o .4 ,  
+66, 2015  
+[21] Aurenhammer F. "Power diagrams: properties,  
+algorithms and applications." SIAM Journal on  
+Computing,v o l .1 6 ,n o .1 ,7 8 - 9 6 ,1 9 8 7  
+[22] De Goes F., Breeden K., Ostromoukhov V., Des-  
+brun M. "Blue noise through optimal transport."  
+ACM Transactions on Graphics (TOG) ,v o l .3 1 ,  
+no. 6, 171, 2012  
+[23] L´ evy B., Schwindt E.L. "Notions of optimal  
+transport theory and how to implement them on a  
+computer." Computers & Graphics ,v o l .7 2 ,1 3 5 -  
+148, 2018  
+[24] M´ erigot Q. "A multiscale approach to optimal  
+transport." Computer Graphics Forum ,v o l .3 0 ,  
+pp. 1583-1592. Wiley Online Library, 2011  
+[25] Cui L., Qi X., Wen C., Lei N., Li X., Zhang  
+M., Gu X. "Spherical optimal transportation."  
+Computer-Aided Design,v o l .1 1 5 ,1 8 1 - 1 9 3 ,2 0 1 9  
+[26] Benamou J., Brenier Y., Guittet K. "The Monge-  
+Kantorovitch mass transfer and its computational  
+fluid mechanics formulation." International Jour-  
+nal for Numerical Methods in Fluids ,2 0 0 2  
+[27] Su K., Cui L., Qian K., Lei N., Zhang J., Zhang  
+M., Gu X.D. "Area-preserving mesh parameteri-  
+zation for poly-annulus surfaces based on optimal  
+mass transportation." Computer Aided Geomet-  
+ric Design ,v o l .4 6 ,7 6 - 9 1 ,2 0 1 6  
+[28] Su K., Chen W., Lei N., Zhang J., Qian K.,  
+Gu X. "Volume preserving mesh parameteri-  
+zation based on optimal mass transportation."  
+Computer-Aided Design,v o l .8 2 ,4 2 - 5 6 ,2 0 1 7  
+128  
+===== page 13 =====  
+[29] Dominitz A., Tannenbaum A. "Texture map-  
+ping via optimal mass transport." Visualization  
+and Computer Graphics, IEEE Transactions on ,  
+vol. 16, no. 3, 419-433, 2010  
+[30] ur Rehman T., Haber E., Pryor G., Melonakos  
+J., Tannenbaum A. "3D nonrigid registration via  
+optimal mass transport on the GPU." Medical  
+image analysis ,v o l .1 3 ,n o .6 ,9 3 1 - 9 4 0 ,2 0 0 9  
+[31] Su Z., Zeng W., Shi R., Wang Y., Sun J., Gu X.  
+"Area preserving brain mapping." Proceedings of  
+the IEEE Conference on Computer Vision and  
+Pattern Recognition,p p .2 2 3 5 - 2 2 4 2 .2 0 1 3  
+[32] Nadeem S., Su Z., Zeng W., Kaufman A.E., Gu  
+X. "Spherical Parameterization Balancing Angle  
+and Area Distortions." IEEE Trans. Vis. Com-  
+put. Graph. ,v o l .2 3 ,n o .6 ,1 6 6 3 - 1 6 7 6 ,2 0 1 7  
+[33] Guan P., Wang X.J., et al. "On a Monge-Ampere  
+equation arising in geometric optics." J. Di↵.  
+Geom,v o l .4 8 ,n o .4 8 ,2 0 5 - 2 2 3 ,1 9 9 8  
+[34] Guti´ errez C.E., Huang Q. "The refractor problem  
+in reshaping light beams." Archive for rational  
+mechanics and analysis ,v o l .1 9 3 ,n o .2 ,4 2 3 - 4 4 3 ,  
+2009  
+[35] Meyron J., M´ erigot Q., Thibert B. "Light in  
+power: a general and parameter-free algorithm  
+for caustic design." SIGGRAPH Asia 2018 Tech-  
+nical Papers,p .2 2 4 .A C M ,2 0 1 8  
+[36] Courty N., Flamary R., Tuia D., Rakotomamonjy  
+A. "Optimal transport for domain adaptation."  
+IEEE transactions on pattern analysis and ma-  
+chine intelligence ,v o l .3 9 ,n o .9 ,1 8 5 3 - 1 8 6 5 ,2 0 1 6  
+[37] Chizat L., Bach F. "On the global convergence  
+of gradient descent for over-parameterized mod-  
+els using optimal transport." Advances in neural  
+information processing systems ,p p .3 0 3 6 - 3 0 4 6 .  
+2018  
+[38] Kandasamy K., Neiswanger W., Schneider J.,  
+Poczos B., Xing E.P. "Neural architecture search  
+with bayesian optimisation and optimal trans-  
+port." Advances in neural information processing  
+systems,p p .2 0 1 6 - 2 0 2 5 .2 0 1 8  
+[39] Genevay A., Peyr´ e G., Cuturi M. "Learning gen-  
+erative models with sinkhorn divergences." Inter-  
+national Conference on Artificial Intelligence and  
+Statistics,p p .1 6 0 8 - 1 6 1 7 .2 0 1 8  
+[40] An D., Guo Y., Lei N., Luo Z., Yau S.T., Gu  
+X. "AE-OT: A new generative model based on  
+extended semi-discrete optimal transport." In-  
+ternational Conference on Learning Representa-  
+tions.2 0 1 9  
+[41] An D., Guo Y., Zhang M., Qi X., Lei N., Gu  
+X. "AE-OT-GAN: Training GANs from data spe-  
+cific latent distribution." European Conference on  
+Computer Vision (ECCV) ,p .5 4 8 - 5 6 4 .2 0 2 0  
+[42] Alexandrov A.D. Convex polyhedra. Springer Sci-  
+ence & Business Media, 2005  
+[43] Gu X., Luo F., Sun J., Yau S.T. "Variational  
+principles for Minkowski type problems, discrete  
+optimal transport, and discrete Monge-Ampere  
+equations." arXiv preprint arXiv:1302.5472 ,2 0 1 3  
+[44] Berg M.d., Cheong O., Kreveld M.v., Over-  
+mars M. Computational Geometry: Algorithms  
+and Applications. Springer-Verlag TELOS, Santa  
+Clara, CA, USA, 3rd ed. edn., 2008  
+[45] Lawson C.L. "Transforming triangulations." Dis-  
+crete Mathematics ,1 9 7 2  
+[46] Guennebaud G., Jacob B., et al. "Eigen v3."  
+http://eigen.tuxfamily.org, 2010  
+[47] Zeng W., Samaras D., Gu D. "Ricci Flow for  
+3D Shape Analysis." IEEE Trans. Pattern Anal.  
+Mach. Intell. , vol. 32, no. 4, 662-677, Apr. 2010  
+129

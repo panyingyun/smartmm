@@ -1,0 +1,156 @@
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.022
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0.001
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.008
+Refining mesh...
+Refinement seconds:  0.011
+Smoothing vertices...
+Mesh smoothing seconds:  0.009
+Improving mesh...
+Mesh improvement seconds:  0.001
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.054
+Statistics:
+
+  Input points: 642
+  Input facets: 1280
+  Input segments: 1920
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 859
+  Mesh tetrahedra: 3088
+  Mesh faces: 6816
+  Mesh faces on exterior boundary: 1280
+  Mesh faces on input facets: 1280
+  Mesh edges on input segments: 1920
+  Steiner points inside domain: 217
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.005
+Creating surface mesh ...
+Surface mesh seconds:  0.001
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0.001
+Recovering Delaunayness...
+Delaunay recovery seconds:  0
+Refining mesh...
+Refinement seconds:  0.007
+Smoothing vertices...
+Mesh smoothing seconds:  0.006
+Improving mesh...
+Mesh improvement seconds:  0.001
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.022
+Statistics:
+
+  Input points: 642
+  Input facets: 1280
+  Input segments: 1920
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 804
+  Mesh tetrahedra: 2716
+  Mesh faces: 6072
+  Mesh faces on exterior boundary: 1280
+  Mesh faces on input facets: 1280
+  Mesh edges on input segments: 1920
+  Steiner points inside domain: 162
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.002
+Creating surface mesh ...
+Surface mesh seconds:  0.001
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0.001
+Recovering Delaunayness...
+Delaunay recovery seconds:  0
+Refining mesh...
+Refinement seconds:  0.006
+Smoothing vertices...
+Mesh smoothing seconds:  0.008
+Improving mesh...
+Mesh improvement seconds:  0.001
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.02
+Statistics:
+
+  Input points: 642
+  Input facets: 1280
+  Input segments: 1920
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 821
+  Mesh tetrahedra: 2873
+  Mesh faces: 6386
+  Mesh faces on exterior boundary: 1280
+  Mesh faces on input facets: 1280
+  Mesh edges on input segments: 1920
+  Steiner points inside domain: 179
+
+================================================================================
+shape = peanut
+  n_verts=859 (bnd 642, int 217)  n_tets=3088  vol=3.33538
+  radial BC: spherical tri area min=9.123e-03 max=1.181e-02 std/mean=0.086  sum=12.56637 (4pi=12.56637)
+  [A] harmonic + radial BC : ratio mean=2.4684 std=2.0934 min=1.9285e-01 max=8.8809
+      flipped=0/3088 (0.000%)   J<0.5=16.483%
+  [B] VSEM (radial BC)     : ratio mean=1.2591 std=0.2387 min=0.172495 max=4.130994
+      flipped=0   E_V-1.5V(f)=1.739e+00  iters=80
+  [C] authalic/conformal spherical BC: NOT attempted here (use SphericalAEM.m or spherical_conformal_map.m, see report sec. 2)
+================================================================================
+shape = wedge
+  n_verts=804 (bnd 642, int 162)  n_tets=2716  vol=6.84198
+  radial BC: spherical tri area min=9.123e-03 max=1.181e-02 std/mean=0.086  sum=12.56637 (4pi=12.56637)
+  [A] harmonic + radial BC : ratio mean=0.5471 std=0.2442 min=6.6610e-03 max=2.7101
+      flipped=0/2716 (0.000%)   J<0.5=52.761%
+  [B] VSEM (radial BC)     : ratio mean=0.6066 std=0.1178 min=0.014054 max=2.082598
+      flipped=0   E_V-1.5V(f)=-2.366e+00  iters=80
+  [C] authalic/conformal spherical BC: NOT attempted here (use SphericalAEM.m or spherical_conformal_map.m, see report sec. 2)
+================================================================================
+shape = crinkly
+  n_verts=821 (bnd 642, int 179)  n_tets=2873  vol=4.27868
+  radial BC: spherical tri area min=9.123e-03 max=1.181e-02 std/mean=0.086  sum=12.56637 (4pi=12.56637)
+  [A] harmonic + radial BC : ratio mean=0.8515 std=0.5880 min=1.0019e-02 max=3.7213
+      flipped=0/2873 (0.000%)   J<0.5=33.832%
+  [B] VSEM (radial BC)     : ratio mean=0.9956 std=0.4218 min=0.012621 max=4.456797
+      flipped=0   E_V-1.5V(f)=5.409e-01  iters=80
+  [C] authalic/conformal spherical BC: NOT attempted here (use SphericalAEM.m or spherical_conformal_map.m, see report sec. 2)

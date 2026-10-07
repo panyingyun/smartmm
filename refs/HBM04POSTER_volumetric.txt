@@ -1,0 +1,88 @@
+
+===== page 1 =====
+This paper introduces a volumetric harmonic map method. First we map the volumetric boundary conformally onto a sphere. Then with this boundary condition, 
+we compute its harmonic map in the object interior with a heat flow method. Our work is general enough to be easily generalized  to higher dimensional cases,or to 
+other organ systems than brain, e.g. for representing cardiac motion. We suggest that 3D harmonic mapping of volume can provide a canonical coordinate system 
+for feature identification and registration for medical imaging.
+References: [1] Gu X. Wang Y., Chan T.F., Thompson P.M., and Yau S.-T., Genus zero surface conformal mapping and its application to brain surface mapping, 
+Information Processing in Medical Imaging, pages 172-184, Ambleside, UK, July 2003
+Volumetric Harmonic Brain Mapping Using a Variational 
+Method
+Volumetric Harmonic Brain Mapping Using a Volumetric Harmonic Brain Mapping Using a Volumetric Harmonic Brain Mapping Using a Variational Variational Variational 
+MethodMethodMethod
+Yalin Wang1, Xianfeng Gu2, Tony F. chan1, Paul M. Thompson3, Shing-Tung Yau4
+1Mathematics Department, UCLA
+2Computer Science, State University of New York, Stony Brook 
+3Laboratory of Neuro Imaging, Brain Mapping Division, Department of Neurology, UCLA School of Medicine
+4Mathematics Department, Harvard University
+INTRODUCTION
+Brain surface conformal mapping research has been successful.  We extended our algorithm [1] to find a 3D volumetric harmonic m ap from a 3D brain volumetric model to a 
+solid sphere.  We use mesh structure to represent both surface and volumetric data.  We proposed a new algorithm, sphere carvin g algorithm, which can build 3D tetrahedral 
+mesh from a set of images with topology preservation.  Experimental results on both synthetic data and real data are reported.
+METHODS
+CONCLUSION
+For more information, please contact: Yalin Wang,  ylwang@math.ucla.edu
+We extend our cortical surface 
+conformal mapping work to 
+volumetric 3D volumetric harmonic 
+map from a 3D brain volumetric 
+model to a solid sphere.
+RESULTS
+Harmonic Map
+O The map minimizes the stretching energy
+O Geodesics are harmonic maps from a circle to 
+the surface
+O In general, harmonic maps may not exist, or 
+unique
+O Depends on the Riemannian metrics.  
+Independent of the embeddings
+O For 3-manifold, the existence of harmonic 
+maps, the uniqueness of harmonic maps, the
+diffeomorphic properties of harmonic maps are 
+extremely difficult theoretic problems
+O Between convex 3-disk, harmonic map exists 
+and is most likely diffeomorphism
+Sphere Carving Algorithm
+O Input (a sequence of volume images and a desired surface 
+genus number)
+O Output (a tetrahedral mesh whose surface has the desired 
+genus number)
+Build a solid handle body tetrahedral mesh consisted of
+tetrahedra, such that the sphere totally enclose the 3D data.  Let 
+the boundary of the solid sphere be S.  We cut the model until we 
+get the object 3D tetrahedral model.
+Volumetric Harmonic Map Algorithm 
+Details
+O Harmonic energy
+O Minimize Harmonic Energy
+∑
+∈
+->==<
+Kvu
+vfufvukfffE
+},{
+2||)()(||),(,)(
+∑
+=
+=
+n
+i
+iilvuk
+1
+)cot(12
+1),( θ
+Volumetric Harmonic Map Method
+O Initialization: We conformally map the volume surface 
+to a sphere surface.  The internal parts are mapped to 
+the sphere center.
+O Energy Minimization: steepest descent method with a 
+fixed boundary condition.
+Volumetric Harmonic Map on 
+Synthetic Data
+Volumetric Parameterization
+Sphere Carving Algorithm 
+on Brain Model
+Sphere Carving Algorithm 
+on Prostate Model
+Volumetric Brain Harmonic Map
+More Volumetric Harmonic Map Examples 

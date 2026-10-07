@@ -1,0 +1,1258 @@
+  
+===== page 1 =====  
+Optimal Surface Quadrilateral Mesh Generation  
+Zhou Zhao∗ Siyu Fang† Na Lei‡ Yuanpeng Liu∗ Yiming Zhu†  
+Chander Sadasivan∗ Apostolos Tassiopoulos∗ Shikui Chen∗ Xianfeng Gu∗  
+Abstract  
+Structured mesh generation has fundamental importance,  
+but controlling the qualities of structured meshes remains a  
+challenge. This work proposes a rigorous and practical algo-  
+rithm to generate quadrilateral meshes on topological poly-  
+annuli with the least number of singularities. It is shown  
+that each quad-mesh with 4 k vertex degree induces a holo-  
+morphic differential. All the holomorphic differentials form  
+a finite-dimensional linear space. A geometric distortion en-  
+ergy is proposed to measure the local area distortion. One  
+can achieve quad-meshes as uniformly as possible by opti-  
+mizing the distortion energy in the linear space. Experimen-  
+tal results show the proposed algorithm is able to improve  
+the uniformity of the quad-meshes, and the method has the  
+potential to be generalized to handle quad-meshes with other  
+constraints.  
+1 Introduction  
+Structured mesh generation plays a fundamental role  
+in CAE fields such as CAD, FEA, CFD, and FSI.  
+These fields also play a critical role in medicine to help  
+understand the etiology of various diseases, to facilitate  
+prognosis, and, especially, to optimize medical devices  
+for improved patient outcomes. In engineering practice,  
+it is critical to control the quality of the generated  
+meshes, such as conformality and uniformity. Intuitively  
+speaking, the conformality criteria require each quad-  
+face on the mesh to be similar to a planar square,  
+and the uniformity criteria require that the sizes of the  
+quad-faces be as uniform as possible. Despite years of  
+intensive research, controlling the quality of structured  
+meshes remains a great challenge.  
+1.1 Optimization in Quad-mesh Space Recently,  
+Lei et al. [4, 18, 33] introduced a novel theoretic frame-  
+work for surface quad-mesh generation, which bridges  
+the quad-meshes with meromorphic quatic differentials  
+on the Riemann surface, namely a meromorphic section  
+of a special holomorphic line bundle, such that the sin-  
+∗Stony Brook University.  
+†Corresponding author, siyu.fang@stonybrook.edu, Stony  
+Brook University.  
+‡Dalian University of Technology.  
+gularities of the quad-mesh are governed by the Abel-  
+Jacobi theorem. This work can generate quad-meshes  
+with high conformality. Furthermore, this framework  
+shows that quad-meshes satisfying special constraints  
+form a finite-dimensional linear space. Therefore, it is  
+possible to optimize the mesh quality within this space  
+using the standard energy minimization method. This  
+work focuses on the simplest situation, the quad-meshes  
+with the minimal number of singularities, namely the  
+valence of all vertices of the quad-mesh are 4 k, k ≥ 1  
+is a positive integer. In this situation, each quad-mesh  
+induces a holomorphic differential (one-form).  
+Theorem 1.1. Suppose (S, g) is an oriented, closed  
+surface with an Riemannian metric g, Q is a quadri-  
+lateral mesh of S with genus g >1, if all vertices have  
+valence 4k, k ∈ Z+, then Q induces a Riemann surface  
+RQ, and a holomorphic one-form ω on the RQ.  
+Proof. Given a quad-mesh Q on the surface, if we treat  
+each face as the planar unit square, then Q induces a  
+Riemannian metric gQ on the surface, and a conformal  
+structure of the surface as shown in the proofs of the  
+theorems 4.6 and 4.7 in [18].  
+According to theorem 4.7 in [18], the quad-mesh Q  
+induces a mermorphic quartic differential ωQ. Suppose  
+the singularities of Q are p1, p2, . . . , pn with valences  
+4k1, 4k2, . . . ,4kn respectively, where ki ≥ 2 for i =  
+1, 2, . . . , n. Then according to the theorem 4.11 in [18],  
+the divisor of ωQ is  
+(ωQ) =  
+nX  
+i=1  
+(4ki - 4)pi.  
+Suppose ω0 is an arbitrary holomorphic one-form on  
+RQ, by Abel-Jacobi condition  
+(ωQ) - 4(ω0) =  
+nX  
+i=1  
+4(ki - 1)pi - 4(ω0)  
+= 4  
+ nX  
+i=1  
+(ki - 1)pi - (ω0)  
+!  
+= 0,  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 2 =====  
+this shows there is a meromorphic 1-form ω′  
+Q whose  
+divisor is  
+(ω′  
+Q) =  
+nX  
+i=1  
+(ki - 1)pi.  
+Since ki - 1 > 0, hence all the singularities of ω′  
+Q are  
+zeros, no poles, ω′  
+Q is a holomorphic one-form.  
+According to the Riemann-Roch theorem [5], all holo-  
+morphic 1-forms form a g complex dimensional linear  
+space on a closed genusg Riemann surface R, denoted as  
+Ω1(R). Suppose {ω1, ω2, . . . , ωg} form a basis of Ω1(R),  
+any holomorphic one-form ω ∈ Ω1(R) is a complex lin-  
+ear combination of the bases,  
+ω = λ1ω1 + λ2ω2 + · · ·+ λgωg.  
+The holomorphic 1-form ω induces a flat metric with  
+cone singularities, denoted as gλ. We can define an  
+energy to measure the distance between gλ and the  
+original metric g then find the optimal ( λ1, λ2, . . . , λg)  
+to minimize the energy. For example, let T be a  
+triangulation of the input surface ( S, g), and we define  
+the energy to measure the area distortions of the faces  
+of T ,  
+min  
+λ  
+X  
+∆∈T  
+(|∆|g - |∆|gλ )2 ,  
+where ∆ represents a triangular face in T and |∆|g is  
+the area of ∆ under the metric g.  
+1.2 Holomorphic Differential Basis In order to  
+construct a basis of the space of all holomorphic dif-  
+ferentials, we use the Hodge decomposition method [7].  
+Given a closed Riemannian surface ( S, g), we first com-  
+pute the basis of the surface homology group H1(S, Z),  
+{γ1, γ2, . . . , γ2g}; then dual basis of the cohomology  
+group H 1(S, Z), {eta1, η2, . . . , η2g}; thirdly, the basis of  
+harmonic differential group H∆(S, R), {ω1, ω2, . . . , ω2g},  
+such that ωi is in the cohomology class of ηi, ωi ∈  
+[ηi]; finally, for each harmonic 1-form ωi, we com-  
+pute its conjugate harmonic 1-form ⋆ωi, and pair them  
+to form a holomorphic 1-form φi = ωi + √-1⋆ωi,  
+{φ1, φ2, . . . , φ2g} form a basis of Ω 1(S).  
+For surfaces with boundary components, the com-  
+putational algorithm is more complicated. For the cur-  
+rent work, we focus on an oriented, genus zero surface  
+with multiple boundary components, namely topologi-  
+cal poly-annulus S with boundary  
+∂S = γ0 - γ1 - · · · -γn,  
+where γ0 is the exterior boundary component, γi, i =  
+1, 2, . . . , nare the interior ones. For harmonic 1-forms,  
+we need to compute both exact harmonic 1-forms and  
+non-exact harmonic 1-forms. For each interior bound-  
+ary component γi, we compute a harmonic function  
+fi : S → R with Dirichlet boundary condition, such  
+that the restriction of fi on γi is 1, and the restric-  
+tions on other γj's are 0. Then d fi gives us the exact  
+harmonic 1-forms. Suppose the basis of H 1(S, R) are  
+{η1, η2, . . . , ηn}, such that  
+R  
+γi  
+ηj = δij. For each ηi we  
+find a function ui : S → R, such that ∆ ui = δηi with  
+Neumann boundary condition. Then ωi = ηi+dui is the  
+non-exact harmonic 1-form. The conjugate harmonic 1-  
+form ⋆ωi is also harmonic, conventional algorithm rep-  
+resent  
+⋆ωi =  
+nX  
+j=1  
+λid fi +  
+nX  
+k=1  
+µkωk.  
+We observe that the conjugate harmonic 1-form ⋆ωi is  
+exact, therefore  
+⋆ωi =  
+nX  
+j=1  
+λid fi,  
+this reduces the computational complexity by half.  
+Theorem 1.2. Suppose (S, g) is a poly-annulus, ∂S =  
+γ0 - γ1 - . . . γn, where γ0 is the exterior boundary  
+component, γi's are interior boundary components, i =  
+1, 2, . . . , n, suppose fi's are harmonic functions with  
+Dirichlet boundary condition fi|γj = δij; ωi's are  
+non-exact harmnoic 1-forms with Neumann boundary  
+condition, and  
+R  
+γj  
+ωi = δij. Then the harmonic 1-form  
+⋆ωi conjugate to ωi is exact, therefore  
+⋆ωi = λ1d f1 + λ2d f2 + · · ·+ λnd fn, λ i ∈ R.  
+Proof. By our construction, ωi is dual to a harmonic  
+tangential vector field vi, ⋆ωi is dual to ⋆vi, where  
+⋆vi(p) = n(p) × vi(p),  
+where n(p) is normal to the surface at p. Along the  
+boundary γj, the vector field vi is parallel to the tangent  
+direction of γj, hence ⋆vi is orthogonal to the tangent  
+direction of γj, therefore  
+Z  
+γj  
+⋆vi = 0, 1 ≤ i, j≤ n.  
+Since ωi is harmonic, ⋆ωi is harmonic, therefore ⋆ωi  
+is closed. The above equation shows ⋆ωi is an exact  
+harmonic 1-form, hence can be represented as the linear  
+combination of d fi's.  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 3 =====  
+1.3 Contributions This work proposes a novel  
+method for generating quadrilateral meshes that are as  
+uniform as possible on topological poly-annulus surfaces  
+with the least number of singularities. In detail:  
+• Propose a framework that formulates the problem  
+of controlling quad-mesh qualities as an optimiza-  
+tion problem in a finite-dimensional linear subspace  
+of the meromorphic quadratic differentials;  
+• Prove in theorem 1.1 that quadrilateral meshes  
+with 4 k degree vertices, k ∈ Z+ induce harmonic  
+1-forms;  
+• Prove in theorem 1.2 that the conjugate harmonic  
+1-form of non-exact harmonic 1-form on a poly-  
+annulus must be exact, this reduces the computa-  
+tional complexity of Hodge star operator by half;  
+• Propose a quartic polynomial energy for optimiza-  
+tion to generate the quad-mesh as uniform as pos-  
+sible.  
+2 Previous W ork  
+Quadrilateral mesh generation holds a significant posi-  
+tion in the fields of science and engineering owing to its  
+attractive properties, including tensor-product nature  
+and smooth surface approximation. There is a plethora  
+of literature on quad meshing. For a more compre-  
+hensive and thorough literature review, we recommend  
+readers to refer to [2]. In the following, we only review  
+the main methods of quadrilateral mesh generation.  
+Converting T riangulation Method The first  
+commonly used method is converting a triangle mesh  
+into a quad mesh. The process generally includes  
+steps such as edge matching, vertex insertion, and  
+optimization to achieve desired quad mesh properties.  
+The simplest way is that two neighboring triangles can  
+be combined into a single quadrilateral, resulting in the  
+formation of a quad mesh [8, 25, 28, 30]. This method  
+can only produce unstructured quad-meshes, and the  
+disadvantages of converting a triangle mesh to a quad  
+mesh include complexity, potential quality degradation,  
+loss of geometric detail, challenges with boundaries, and  
+irregular shapes.  
+Patch-based Method Another method is the  
+patch-based approach. This method involves dividing  
+data or an area into smaller segments or patches for  
+analysis and processing, commonly used in fields like im-  
+age processing, computer graphics, and machine learn-  
+ing to manage complex data efficiently. The cluster-  
+ing method used to create the skeleton involves merg-  
+ing neighboring triangle faces into patches, employing  
+techniques like normal-based and center-based methods  
+[1, 3]. The computation of these patches is facilitated  
+through the use of poly-cube maps [32, 31, 21, 9].  
+Parameterization Based Method Another  
+common method is the quad-meshing algorithm based  
+on parameterization. The Parameterization-Based  
+Approach is a methodology that relies on creating  
+parameterizations or mappings of geometric data to  
+facilitate various tasks in computer graphics, computer-  
+aided design, and related fields. The spectral surface  
+quadrangulation method [6, 10] is applied to the input  
+mesh. Techniques like global conformal parameteriza-  
+tion [7], discrete harmonic forms [29], periodic global  
+parameterization [23], branched covering methods [13]  
+and discrete surface Ricci flow [12, 26, 27], all utilize  
+parameterization as a foundational element for quad  
+mesh generation.  
+F rame Field MethodIn addition to these, one of  
+the most popular approaches is cross-field guided quad-  
+mesh generation. In this method, cross fields are used  
+to guide the generation of quadrilateral (quad) meshes  
+on complex surfaces. By aligning or orienting the quads  
+along the directions provided by the cross fields, it be-  
+comes possible to create structured quad meshes, which  
+are valuable in various applications like finite element  
+analysis, 3D modeling, and simulation. Each approach  
+needs to initially decide on a method for representing  
+a cross. Some examples are: N-RoSy representation  
+[22, 15], period jump technique [20] and complex value  
+representation [14]. Subsequently, these approaches  
+commonly create a continuous and smooth cross field us-  
+ing energy minimization techniques. Field smoothness  
+is typically measured using a discrete form of the Dirich-  
+let energy [11]. Finally, relying on the established cross  
+field, these methods produce quad meshes by employ-  
+ing either streamline tracing techniques [24] or parame-  
+terization methods [2]. Cross-field-based methods offer  
+structured quad mesh generation and improved align-  
+ment but can be computationally complex, algorithm-  
+sensitive, and may require manual intervention with  
+output quality dependent on the input. Lei et al. [19]  
+proved the sufficient and necessary conditions for the  
+existence of a cross field in terms of singularity configu-  
+rations. Furthermore, they pointed out that cross fields  
+are not equivalent to quad-meshes and gave an expla-  
+nation using fiber bundle theory.  
+Method Based On Abel-Jacobi Theory Chen  
+et al. [4] gave the sufficient and necessary conditions for  
+a Riemannian metric induced by a quad-mesh, includ-  
+ing the Gauss-Bonnet condition for the curvatures, the  
+holonomy condition, boundary alignment condition and  
+the finite streamline condition. Lei et al. [18] proved  
+that the holonomy condition can be formulated using  
+the Abel-Jacobi equation in algebraic geometry. Zheng  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 4 =====  
+et al. [33] gave a practical algorithm to optimize the sin-  
+gularity configurations to satisfy the Abel-Jacobi condi-  
+tion. These works show that the surface quad-meshes  
+are equivalent to meromorphic quartic differentials and  
+can be treated as a meromorphic global section of a spe-  
+cial holomorphic line bundle on the Riemann surface,  
+and the singularities of the quad-meshes are the charac-  
+teristic class of the line bundle. Therefore, the singular-  
+ities and their indexes are governed by the Abel-Jacobi  
+equations. These works laid down the theoretic founda-  
+tion for structured mesh generation. Furthermore, Lei  
+et al. [16, 17] also proposed to generalize the method  
+to hexahedral mesh generation based on surface folia-  
+tions, which are special cases of meromorphic quartic  
+differentials.  
+Our current work is mainly based on this frame-  
+work - the Abel-Jacobi theorem gives the conditions of  
+the configurations of singularities of quad-meshes. Fur-  
+thermore, given special constraints, the solutions to the  
+Abel-Jacobi equations are not unique but form a finite-  
+dimensional space. We propose a method to perform  
+optimization within the solution space to improve the  
+quad-mesh quality.  
+3 Theoretic Background  
+In this section, we briefly introduce the basic concepts  
+and theorems in conformal geometry related to the  
+holomorphic differential.  
+3.1 Riemann Surface  
+Definition 3.0.1. (Holomorphic Function)  
+Suppose a complex function f : C → C,  
+f (x + iy) = u + iv, satisfying the Cauchy-Riemann  
+equation  
+∂u  
+∂x = ∂v  
+∂y , ∂u  
+∂y = - ∂v  
+∂x ,  
+then f is called holomorphic. If f is invertible and the  
+inverse f -1 is also holomorphic, then f is called bi-  
+holomorphic.  
+Definition 3.0.2. (Riemann Surface)Suppose S is  
+a topological surface with an open covering S ⊂ S  
+α Uα,  
+each open set has a local coordinates system φα : Uα →  
+C, if Uα ∩ Uβ ̸= ∅, then the transition map  
+φαβ : φα(Uα ∩ Uβ) → φβ(Uα ∩ Uβ), φαβ = φβ ◦ φα  
+is biholomorphic. Then the atlas A = {(Uα, φα)}  
+is called a complex structure of the surface, and the  
+surface S with the complex structure is called a Riemann  
+surface.  
+Definition 3.0.3. (Isothermal Coordinates)  
+Suppose S is a topological surface with a Riemannian  
+metric g, and U is a neighborhood U ⊂ S with the local  
+coordinates (u, v), such that the Riemannian metric  
+has a special form  
+g(u, v) = e2λ(u,v)(du2 + dv2),  
+then (u, v) are called the isothermal coordinates on U  
+and λ : U → R is called the conformal factor function.  
+According to classical surface differential geometry, all  
+oriented metric surfaces are Riemann surfaces.  
+Theorem 3.1. Suppose S is an oriented surface with  
+a Riemannian metric g, then for each point p ∈ S,  
+there is a neighborhood p ∈ U (p), such that U (p) has  
+an isothermal coordinates system. All such isothermal  
+coordinate systems form a complex structure. Hence, S  
+is a Riemann surface.  
+3.2 Hodge Theorem Suppose S is a surface with a  
+conformal structure {Uα, zα}. A real differential 0-form  
+is a function f : S → R; a differential 1-form has local  
+representation,  
+ω = fα(xα, yα)dxα + gα(xα, yα)dyα,  
+on the local chart (Uβ, zβ), it has representationfβdxβ +  
+gβdyβ, satisfying  
+   
+fα gα  
+   dxα  
+dyα  
+   
+=  
+   
+fβ gβ  
+   
+ ∂xβ  
+∂xα  
+∂xβ  
+∂yα  
+∂yβ  
+∂xα  
+∂yβ  
+∂yα  
+!  dxα  
+dyα  
+   
+therefore  fα gα  
+   
+=  
+ fβ gβ  
+   
+Dφαβ  
+where Dφαβ is the Jacobian matrix of the transition  
+map φαβ. The differential 2-form has local representa-  
+tion,  
+hα(xα, yα)dxα ∧ dyα = hβ(xβ, yβ)dxβ ∧ dyβ,  
+hα = hβdetDφαβ. The exterior differential operator d  
+is defined as follows: for a 0-form f ,  
+d0fα(xα, yα) := ∂fα  
+∂xα  
+dxα + ∂fα  
+∂yα  
+dyα,  
+for a 1-form ω,  
+d1ω =  
+  ∂g  
+∂xα  
+- ∂f  
+∂yα  
+   
+dxα ∧ dyα.  
+for a 2-form,  
+d2hαdxα ∧ dyα = 0.  
+The k-th de Rham cohomology group is defined as:  
+H k  
+dR(S, R) := Kerdk  
+Imgdk-1 .  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 5 =====  
+For a genus g closed surface, its first dimensional  
+cohomology group H 1  
+dR(S, R) is 2 g dimensional.  
+On a metric surface ( S, g) with isothermal coordi-  
+nates, the Hodge star operator is given by  
+∗dxα = dyα, ∗dyα = -dxα,  
+∗1 =e2λdxα ∧ dyα, ∗e2λdxα ∧ dyα = 1.  
+The co-differential operator is defined as δ := ∗d∗. The  
+Laplace-Beltrami operator is defined as ∆ g = dδ + δd.  
+For 0-forms, the operator has local representation:  
+∆g := 1  
+e2λ  
+  ∂2  
+∂x2α  
++ ∂2  
+∂y 2α  
+   
+.  
+Definition 3.1.1. (Harmonic Differential)  
+Suppose ω is a differential k-form on (S, g), then ω is  
+harmonic if and only if ∆gω = 0.  
+If ω is a differential 1-form, then ω is harmonic if and  
+only if  
+dω = 0, δω = 0.  
+Theorem 3.2. (Hodge)Each de Rham cohomology  
+class has a unique harmonic form.  
+The group of all harmonic k-forms is denoted as  
+H k  
+∆(S, R), according to Hodge theory, the harmonic k-  
+form group is isomorphic to the k-dimensional de Rham  
+cohomology group,  
+H k  
+∆(S, R) ∼= H k  
+dR(S, R).  
+Suppose ω is a harmonic 1-form, then ∗ω is also a  
+harmonic 1-form.  
+3.3 Holomorphic Differential  
+Definition 3.2.1. (Holomorphic Differential)  
+Suppose φ is a complex different form, on each  
+local chart (Uα, zα), φ has local representation  
+φ = fα(zα)dzα, where fα is a holomorphic function.  
+On another intersecting chart (Uβ, zβ), Uα ∩ Uβ ̸= ∅,  
+φ = fβ(zβ)dzβ, such that  
+fα = fβ(zβ(zα)) dzβ  
+dzα  
+,  
+then φ is globally defined, and called a holomorphic  
+differential.  
+Suppose at a point p ∈ S, φ(p) = 0 (locally,  
+fα(p) = 0, for any local chart ( Uα, zα) ), then p is  
+called a zero of the holomorphic 1-form φ. The local  
+representation of φ in the neighborhood of a zero point  
+p is  
+φ = znp  
+α dzα,  
+where zα(p) = 0. np is called the order of φ at p,  
+denoted as µp(φ). The total order of zeros equals the  
+Euler characteristic number:  
+X  
+φ(p)=0  
+µp(φ) = χ(S).  
+In general, there are 2 g - 2 zeros for a holomorphic 1-  
+form.  
+Each holomorphic 1-form φ can be decomposed into  
+two conjugate harmonic 1-forms, namely,  
+φ = ω +  
+√  
+-1∗ω,  
+where ω is a real harmonic differential form.  
+Given a holomorphic 1-form φ, for any point on  
+the surface p ∈ S, a tangent direction v ∈ TpS is  
+called a horizontal direction , if φ(v) ∈ R is a real  
+number; similarly if φ(v) is an imaginary number, then  
+v is called a vertical direction. A curve γ is called a  
+horizontal trajectory of φ, if its tangent directions are  
+horizontal everywhere except at the zeros of φ. The  
+vertical trajectories of φ are defined similarly.  
+For any non-zero point p ∈ S of φ, there is  
+a unique horizontal (vertical) trajectory through it.  
+For a zero point p with order np, there are np + 1  
+horizontal (vertical) trajectories through it. Such a kind  
+of horizontal trajectory is called a critical horizontal  
+trajectory.  
+4 Computational Algorithm  
+Data Structure The surfaces are represented as tri-  
+angle meshes (simplicial complex) M (V, E, F), where  
+V, E, Fare the set of vertices, edges and faces respec-  
+tively. We use [ v0, v1, . . . , vn] to represent a simplex  
+with vertices v0, v1, . . . , vn, the orientation of the sim-  
+plex is given by the order of the vertices. A k-chain is  
+a linear combination of k-dimensional simplexes,  
+σ =  
+X  
+i  
+λiσi, λ i ∈ Z,  
+σi is a k-dimensional simplex. The linear space of  
+all k-dimensional chains is denoted as Ck(M, Z). The  
+boundary operator ∂k : Ck(M, Z) → Ck-1(M, Z) is  
+defined as  
+∂k[v0, v1, . . . , vk] :=  
+kX  
+i=0  
+(-1)i[v0, . . . , vi-1, vi+1, . . . , vk].  
+A k-dimensional simplicial σ is a linear map σ :  
+Ck(M, Z) → Z. The k-dimensional co-chain space  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 6 =====  
+C k(M, Z) consists of all the k-dimensional co-chains.  
+The coboundary operator dk : C k(M, Z) → C k+1(M, Z)  
+is defined as the dual operator of ∂k+1. For example,  
+suppose ω is a 1-form, σ is a 2-chain, then  
+dω(σ) = ω(∂σ).  
+The simplicial integration is calculated using summa-  
+tion. Suppose given a 1-chain γ, γ = P  
+k[vik , vik+1 ],  
+then Z  
+γ  
+ω =  
+X  
+k  
+ω([vik , vik+1 ]).  
+The wedge product of two simplicial 1-forms ω1, ω2 on  
+a 2-simplex σ is given by the following formula:  
+(4.1) ω1 ∧ ω2(σ) = 1  
+6  
+        
+ω1(ei) ω1(ej) ω1(ek)  
+ω2(ei) ω2(ej) ω2(ek)  
+1 1 1  
+        
+where σ is a face with three edges ei, ej, ek sorted  
+counter-clock-wisely.  
+The triangulation of M is dual to a cell decomposi-  
+tion M ⋆ as follows:  
+1. Each face f ∈ M is dual to a vertex f ⋆ ∈ ⋆M , f ⋆  
+is the circum-center of f ;  
+2. Each edge e ∈ M shared by two faces (from right to  
+left) fi, fj ∈ M is adjacent to an edgee⋆ = [f ⋆  
+i , fj  
+⋆];  
+3. Each vertex v ∈ M is adjacent to faces  
+f0, f1, . . . , fk ∈ M , ordered counter-clock-wisely,  
+dual to a cell  
+v⋆ = [f ⋆  
+0 , f⋆  
+1 , . . . , f⋆  
+k ].  
+The Hodge star operator ⋆ : C k(M, Z → C 2-k( ¯M ,Z  
+is defined as follows, suppose ω is a k-form, σ is a k-  
+simplex, then  
+⋆ω(σ⋆)  
+|σ⋆| = ω(σ)  
+|σ| .  
+Given two simplicial 1-forms ω1 and ω2, the 2-form  
+ω1 ∧ ∗ω2 on each face σ = [vi, vj, vk] is evaluated as  
+ω1 ∧ ∗ω2(σ) = 1  
+2 [ cotθiω1(ei)ω2(ei)+  
+cot θjω1(ej)ω2(ej)+  
+cot θkω1(ek)ω2(ek)]  
+(4.2)  
+In the current project, all the differential forms are  
+approximated as simplicial forms (simplicial co-chains).  
+Given a 0-form f : V → R, the value of f at a vertex vi,  
+f (vi) is stored on the vertex; similarly, given a 1-form  
+ω : E → R, the value on each oriented edge e, ω(e) is  
+stored on e. For a complex 1-form φ : E → C, the value  
+on an oriented edge e, φ(e) is stored on e.  
+γ0  
+γ2  
+γ1  
+γ3  
+τ1  
+τ2  
+τ3  
+S  
+(a). input mesh (b). cuts  
+Figure 1: The input mesh and the shortest paths from  
+interior boundaries to the exterior boundary.  
+Input The input is a genus zero surface S with multiple  
+boundaries, represented as a triangle mesh,  
+∂S = γ0 - γ1 - γ2 - · · · -γn,  
+where γ0 is the exterior boundary component, γi,  
+i = 1 , 2, . . . , n, are interior boundary components, as  
+shown in the Fig. 1 frame (a).  
+Cuts For each interior boundary component γi,  
+i = 1 , . . . , n, we compute the shortest path τi from  
+γi to the exterior boundary component γ0. Basically,  
+for each vertex vk ∈ γi, we use breadth-first search to  
+traverse the triangle mesh and find the shortest path  
+to γ0, then we choose the one with the minimal length  
+as τi. Fig. 1 frame (b) shows the shortest paths (cuts)  
+computed this way on the input mesh.  
+Exact Harmonic F orms For each interior boundary  
+component γi, i = 1 , . . . , n, we compute a unique  
+harmonic function fi with Dirichlet boundary condition,  
+the restriction of fi on γi equals to 1, the restriction of  
+fi on other boundary components equal to zero. This  
+boils down to solving the Laplace-Beltrami equation:  
+for i = 1, 2, · · ·, n,  
+(4.3)  
+  
+  
+  
+∆gfi = 0  
+fi|γi = 1  
+fi|γj = 0 j ̸= i  
+The equation ∆ gfi = 0 is equivalent to δd fi = 0.  
+By using the Finite Element Method, this equation is  
+converted to a large sparse linear system.  
+For each edge eij = [vi, vj], we compute the cotan-  
+gent edge weight wij as follows: suppose eij is shared  
+by two faces [ vi, vj, vk] and [ vj, vi, vl] the corner angles  
+against eij are θij  
+k and θji  
+l , then the edge weight is the  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 7 =====  
+summation of the cotangent of both corner angles; if  
+eij is on the surface boundary, and only adjacent to one  
+face [vi, vj, vk], then the edge weight equals to cotangent  
+of θij  
+k ,  
+wij :=  
+  cot θij  
+k + cot θji  
+l eij ̸∈ ∂S  
+cot θij  
+k eij ∈ ∂S  
+For each interior vertex vj ̸∈ ∂S , we have a linear  
+equation δfi(vj) = 0,  
+δfi(vj) =  
+X  
+vk∼vj  
+wjk (fi(vk) - fi(vj)) = 0,  
+where vk ∼ vj means the vertex vk is connected with  
+vj via ejk . For boundary vertex vj ∈ ∂S , fi(vj)  
+is fixed. The stiffness matrix of the linear system  
+is positive definite. The linear system can be solved  
+using conjugate gradient method efficiently. Fig. 2 left  
+columns visualize n exact harmonic 1-forms by using  
+texture mapping.  
+Non-exact Harmonic F orms For each interior  
+boundary component γi, i = 1 , 2, . . . , n, we compute  
+a non-exact harmonic form ωi, such that  
+Z  
+γj  
+ωi = δij, i, j = 1, 2, . . . , n.  
+For each interior boundary component γi ∈ ∂S , we slice  
+the surface S along the shortest cut τi to obtain ¯Si, τi is  
+split into two boundary components τ +  
+i , τ-  
+i ∈ ∂ ¯Si. We  
+then define a function gi : ¯Si → R,  
+(4.4) gi(vk) =  
+  
+  
+  
+1 vk ∈ τ +  
+i  
+0 vk ∈ τ -  
+i  
+rand otherwise  
+For each edge e ∈ τi, the corresponding edges e+ ∈ τ +  
+i  
+and e- ∈ τ -  
+i , and  
+dgi(e+  
+i ) = dgi(e-  
+i ) = 0,  
+hence dgi is a 1-form defined on the original surface S,  
+denoted as ηi. By the construction ηi is closed, and  
+Z  
+γj  
+ηi = δij,  
+hence {η1, η2, . . . , ηn} form a basis of H 1(S, R).  
+According to Hodge theorem 3.2, for each cohomol-  
+ogy class, there is a unique harmonic form. We can find  
+a function hi : S → R, such that ωi = ηi + dhi is har-  
+monic, and satisfies the equation ∆ gωi is zero, namely  
+dωi = 0 and δωi = 0. By the construction of ωi, the  
+first closedness condition is satisfied automatically. We  
+only need to ensure the second condition. This gives us  
+the following equation:  
+(4.5) δdhi = ∆ghi = -δωi,  
+with the Neumann boundary condition ∂hi/∂n = 0,  
+where n is the exterior normal on the surface boundary.  
+Namely, for each vertex vj ∈ S, we have  
+X  
+vk∼vj  
+wjk (hi(vk) - hi(vj)) = -  
+X  
+vk∼vj  
+ηi([vj, vk]).  
+(a) f1 (b) ω1  
+(c) f2 (d) ω2  
+(e) f3 (f) ω3  
+Figure 2: Exact (left) and non-exact (right) harmonic  
+differentials.  
+The linear coefficient matrix is positive definite  
+on the linear subspace P  
+k hi(vk) = 0, therefore, it  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 8 =====  
+can be efficiently solved using the conjugate gradient  
+method. The solutions give the non-exact harmonic 1-  
+forms ωi = ηi + dhi. Fig. 2 right columns visualize n  
+non-exact harmonic 1-forms by using texture mapping.  
+Conjugate Harmonic F orms So far, we have com-  
+puted n exact harmonic 1-forms {d f1, d f2, · · ·, d fn} and  
+n non-exact harmonic 1-forms {ω1, ω2, · · ·, ωn}, then  
+we compute the conjugate their harmonic 1-forms. In  
+theory, the conjugate harmonic 1-form of a non-exact  
+harmonic 1-form is an exact harmonic 1-form, and the  
+conjugate of an exact harmonic 1-form is a non-exact  
+harmonic 1-form. Hence, we can construct the equa-  
+tions:  
+(4.6) ⋆ωi = λi1d f1 + λi2d f2 + · · ·+ λind fn  
+therefore, we obtain the linear equation group:  
+(4.7)  
+  
+  
+  
+Z  
+S  
+ω1 ∧ ⋆ωi = λi1ω1 ∧ d f1 + · · ·λinω1 ∧ d fn  
+Z  
+S  
+ω2 ∧ ⋆ωi = λi2ω2 ∧ d f1 + · · ·λinω2 ∧ d fn  
+· · · · · · · · ·Z  
+S  
+ωn ∧ ⋆ωi = λi1ωn ∧ d f1 + · · ·λinωn ∧ d fn  
+The left-hand side of Eqn. 4.7 can be calculated using  
+the formula in Eqn. 4.2, the right-hand side can be  
+evaluated using the formula in Eqn. 4.1. There are n  
+equations for n unknowns, and the linear system is non-  
+degenerated, so we can solve the coefficients λij's and  
+obtain the conjugate harmonic 1-form ⋆ωi. Then we  
+obtain n holomorphic 1-forms:  
+(4.8) φi = ωi +  
+√  
+-1⋆ωi, i = 1, 2, . . . , n.  
+Fig. 3 show the basis of the holomorphic 1-form  
+group φ1, φ2 and φ3. The frame (d) shows the linear  
+combination φ1 - φ2 + φ3.  
+Another way to change the holomorphic 1-forms is  
+to alter the boundary condition in Eqn. 4.3, then the  
+same algorithm pipeline will produce different holomor-  
+phic 1-forms.  
+Optimization of Holomorphic 1-forms  
+Given a basis of the group of all holomorphic 1-  
+forms ωk, k = 1, . . . , n, ωk = αk +√-1βk, where αk and  
+βk are the real and imaginary parts of ωk respectively,  
+we represent each ωk as a simplicial 1-form defined on  
+edges ωk : E → C. Any holomorphic 1-form ω is a linear  
+combination of ωk's,  
+ω = λ1ω1 + λ2ω2 + · · ·+ λnωn,  
+where λk's are the coefficients. Applying ω to an edge  
+e ∈ E, we have ω(e) = Pn  
+k=1 λk(αk(e) + √-1βk(e)).  
+The holomorphic 1-form ω induces a Riemannian metric  
+|ω|2, denoted as gλ.  
+(a). φ1 (b). φ2  
+(c). φ3 (d). φ1 - φ2 + φ3  
+Figure 3: holomorphic 1-form basis.  
+For a triangle ∆k ∈ F with edges ek  
+1, ek  
+2, e3  
+3, its area  
+under the metric induced by ω is given by  
+|∆k|gλ : = 1  
+2 ω(ek  
+1) × ω(ek  
+2)  
+= 1  
+2  
+nX  
+i=1  
+λiαi(ek  
+1)  
+nX  
+j=1  
+λjβj(ek  
+2)  
+- 1  
+2  
+nX  
+i=1  
+λiβi(ek  
+1)  
+nX  
+j=1  
+λjαj(ek  
+2)  
+= 1  
+2  
+nX  
+i,j=1  
+λiλj  
+      
+αi(ek  
+1) βi(ek  
+1)  
+αj(ek  
+2) βj(ek  
+2)  
+      
+which is a quadratic function in variables λk's. The  
+total energy is defined as  
+(4.9) E(λ) :=  
+X  
+∆k∈F  
+(|∆k|gλ - |∆k|g)2  
+after expansion  
+(4.10) E(λ) =  
+X  
+∆k∈F  
+  
+ 1  
+2  
+nX  
+i,j=1  
+ckλiλj - |∆k|g  
+  
+  
+2  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 9 =====  
+where  
+ck :=  
+      
+αi(ek  
+1) βi(ek  
+1)  
+αj(ek  
+2) βj(ek  
+2)  
+     .  
+The partial derivative is  
+(4.11)  
+∂E (λ)  
+∂λi  
+= 2  
+X  
+∆k∈F  
+  
+ 1  
+2  
+nX  
+i,j=1  
+λiλjck - |∆k|g  
+  
+  
+  
+  
+nX  
+j=1  
+λjck  
+  
+  
+Figure 4: holomorphic 1-forms.  
+Quad-mesh generation Suppose we have obtained a  
+holomorphic 1-form φ, we need to locate the zeros of the  
+differential form. In general, there are n-1 zeros on the  
+surface. For each vertex vi, we estimate the conformal  
+factor at vi,  
+(4.12) u(vi) := 1  
+ni  
+X  
+vj ∼vi  
+|φ([vi, vj])|2  
+|vj - vi|2 ,  
+where ni is the topological valence of vi. Then we sort  
+all the u(vi)'s in the ascending order and choose the  
+smallest n - 1 vertices as the zeros.  
+Suppose v is a zero point of φ, its one right neigh-  
+boring vertices {v0, v1, . . . , vk} sorted counter-clock-  
+wisely form a loop γ. We immerse the loop to the  
+complex plane with z(v) = 0, z(vi) = φ([v, vi]), i =  
+0, 1, . . . , k, then the winding number of the image z(γ)  
+equals to the order of v plus one, µv(φ) + 1. The real  
+axis intersects z(γ). Suppose the positive real axis in-  
+tersects z(γ) at the edge [vi, vi+1], then we immerse the  
+neighborhood of [ vi, vi+1] and extend the positive real  
+axis to find the next intersection point. By repeating  
+this procedure, we can extend the horizontal trajectory  
+until it hits the boundary of the surface or returns to  
+the zero point v again, then we have traced a critical  
+horizontal trajectory through v. Similarly, we can also  
+trace the critical vertical trajectory through v. All the  
+critical horizontal and vertical trajectories partition the  
+surface into patches {Ω1, Ω2, . . . ,Ωk}, by integrating φ,  
+we can embed each patch Ω i on the complex plane. We  
+tessellate the critical trajectories, then quadrangulate  
+the planar image of each patch Ω i with the tessellation  
+of the critical trajectories as the boundary constraints to  
+obtain a quad-mesh Qi. The union of the quad-meshes  
+Qi's form the quad-meshQ of the input surfaceS. Fig. 5  
+shows two quad-meshes induced by the holomorphic 1-  
+forms in Fig. 4. The details of the algorithm pipeline  
+can be found in Alg. 1.  
+Furthermore, the quad-element size can be treated  
+as one of the input parameters. The algorithm computes  
+the Jacobin matrix of the conformal mapping, and  
+tessellated the parameter domain into quad-meshes,  
+such that the mean quad edge length multiply the  
+square root of the determinant of the Jacobin matrix  
+equals to the input size parameter.  
+Figure 5: Quadrilateral meshes.  
+The final mesh quality depends on the initial tri-  
+angular mesh. The computation of harmonic differen-  
+tials is to solve the Laplace-Beltrami equation on the  
+surface. According to the Finite element theory, the  
+convergence, approximation accuracy of the discrete so-  
+lutions depend on the triangle mesh quality.  
+5 Experimental Results  
+All algorithms have been developed using generic C++  
+under Visual Studio 2022 on the Windows platform. All  
+the experiments are conducted on a laptop with Intel(R)  
+Core(TM) i7-10750H CPU @2.60GHz with 6 cores and  
+64GB of memory.  
+We have tested our proposed method in medical  
+imaging applications. Pretreatment Computed Tomog-  
+raphy Angiography (CTA) scans of abdominal aor-  
+tic aneurysm (AAA) patients treated with endovascu-  
+lar aneurysm repair (EV AR) were retrospectively and  
+anonymously collected with Institutional Review Board  
+approval. The scanned images were segmented, and  
+the blood vessel surfaces were reconstructed. Each  
+vessel surface is a topological poly-annulus with many  
+branches.  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 10 =====  
+Figure 6: The energy E(λ) monotonously decreases  
+during the optimization.  
+Fig. 6 shows the optimization process for an ab-  
+dominal aortic aneurysm model. The horizontal axis  
+shows the number of iterations, and the vertical axis  
+shows the energy. It can be seen clearly that the energy  
+monotonously decreases and converges to the minimum  
+during the process.  
+As shown in Fig. 10, the aneurysm model has 9  
+branches, 10 boundary components, 26165 vertices, and  
+50000 faces. The computation of holomorphic 1-form  
+basis takes about 165 .61 seconds, but the optimization  
+takes only about 2144 ms. From the figure, it is easy  
+to visually see that the uniformity of the checkers is  
+improved prominently during the optimization. In the  
+beginning, the checkers on thin branches are relatively  
+sparse, while those on the top part of the main trunk are  
+much denser. In the final stage, the checker density on  
+the thin branches and that on the main trunk are much  
+more uniform. Fig 7 shows the quad-mesh resulting  
+from the optimization. It can be seen that the quad  
+faces on both the thin branches and the main trunk are  
+evenly distributed and suitable for simulation purposes.  
+Fig. 8 shows the histograms of corner angles and the  
+logarithms of the ratios between adjacent edge lengths  
+of the quad-mesh in Fig. 7, which demonstrates the good  
+quality of the mesh.  
+Fig. 11 and Fig. 9 show another blood vessel exam-  
+ple, which has 7 branches and 8 boundary components.  
+The vessel mesh is with 77242 vertices, 228481 edges,  
+and 151242 faces. The computation of holomorphic dif-  
+ferential basis takes about 303 .74 seconds, and the op-  
+timization takes about 5510 ms. From the figures, we  
+can see that during the optimization, the uniformity of  
+the checkers is monotonously increasing, and the final  
+quad-mesh has high quality.  
+We have tested about 8 blood vessel models with  
+branches about 7 - 9. The whole computational process  
+is fully automatic without human intervention. The  
+optimized quad-meshes are with high uniformity, and  
+conformality to the input geometry, all the quad-faces  
+are similar to the planar square. The quad-meshes are  
+used to generate hex-meshes of the blood vessel wall as  
+thin cells and applied for fluid dynamic simulation. The  
+numerical computation process is stable and converges  
+fast. These experiments demonstrate the practical value  
+of the proposed quad-mesh optimization algorithms.  
+(a). front view (b). back view  
+(c). zoomed view (d). zoomed view  
+Figure 7: The quad-meshes obtained from the optimal  
+result in Fig. 10.  
+Figure 8: The histograms of the corner angles (left)  
+and the logarithms of ratios between the adjacent edge  
+lengths of the quad-mesh in Fig. 7.  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 11 =====  
+(a). front view (b). back view  
+(c). zoomed view (d). viewed view  
+Figure 9: The quad-meshes obtained from the optimal  
+result in Fig. 11.  
+6 Conclusion  
+This work proposes a practical algorithm for generating  
+quadrilateral meshes as uniformly as possible on topo-  
+logical poly-annulus surfaces with the least number of  
+singularities. We prove that quadrilateral meshes with  
+4k degree vertices, k ∈ Z+ induce holomorphic 1-forms,  
+therefore the space of all such kinds of quad-meshes is  
+finite dimensional. Hence in order to control the quad-  
+mesh qualities, we propose to optimize a quartic poly-  
+nomial energy to improve the uniformity. The experi-  
+mental results demonstrate the efficiency and efficacy of  
+the proposed method.  
+In our future works, we will improve the proposed  
+method and validate its practical application by han-  
+dling more complex engineering models with intricate  
+constraints.  
+Acknowledgement  
+This work was supported by NIH grant# R21EB029733  
+and NSF grant# 2213852, NSFC T2225012, 61936002.  
+Figure 10: Optimization of the first blood vessel model,  
+from top to bottom, left to right, during the process,  
+the uniformity of the quadrilaterals increases.  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 12 =====  
+Figure 11: Optimization of the second blood vessel  
+model, from top to bottom, left to right, during the  
+process, the uniformity of the quadrilaterals increases.  
+Algorithm 1 Optimal Quad Mesh Generation  
+Require: A triangular mesh M with genus zero with  
+n + 1 boundary components;  
+Ensure: An quad-mesh of M with least distortion;  
+1: for all interior boundary loop γi do  
+2: Compute the shortest path τi from γi to γ0.  
+3: end for  
+4: for all interior boundary γi do  
+5: Solve Eqn. 4.3 to obtain exact harmonic forms  
+{d f1, . . . , d fn};  
+6: end for  
+7: for all cut τk do  
+8: Slice M along τk to get ¯Mk, τk corresponds to τ +  
+k  
+and τ -  
+k ;  
+9: Construct random function gk on ¯Mk using  
+Eqn. 4.4;  
+10: Set the closed 1-form ηk ← dgk  
+11: end for  
+12: for all closed 1-form ηk do  
+13: Find the function hk : S → R by solving Eqn. 4.5;  
+14: Set the non-exact harmonic 1-form ωk ← ηk +dhk  
+15: end for  
+16: for all non-exact harmonic 1-form ωk do  
+17: Find the conjugate harmonic 1-form ⋆ωk by solv-  
+ing Eqn. 4.7;  
+18: Set the holomorphic 1-form φk ← ωk + √-1⋆ωk  
+19: end for  
+20: Find the optimal holomorphic 1-form φ∗ by mini-  
+mizing the energy in Eqn. 4.10;  
+21: Locate the n-1 zeros {p1, . . . , pn-1} of φ∗ by sorting  
+the conformal factor Eqn. 4.12;  
+22: for all zero point pi do  
+23: Trace the critical horizontal trajectory through  
+pi;  
+24: Trace the critical vertical trajectory through pi;  
+25: end for  
+26: All the critical trajectories partition the surface S  
+input patches {Ω1, Ω2, . . . ,Ωk};  
+27: Tessellate the critical trajectories;  
+28: for all surface patch Ω i do  
+29: Map Ωi onto a planar rectangle by integrationφ∗;  
+30: Quadrangulate the planar image of Ω k with the  
+tessellation of the critical trajectories as the  
+boundary constraints to obtain a quad-mesh Qk;  
+31: end for  
+32: Set the quad-mesh of M Q← S  
+k Qk;  
+33: return Q  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 13 =====  
+References  
+[1] Boier-Martin, I., Rushmeier, H., Jin, J.: Parameteri-  
+zation of triangle meshes over quadrilateral domains.  
+In: Proceedings of the 2004 Eurographics/ACM SIG-  
+GRAPH symposium on Geometry processing. pp. 193-  
+203 (2004)  
+[2] Bommes, D., L´ evy, B., Pietroni, N., Puppo, E., Silva,  
+C., Tarini, M., Zorin, D.: Quad-mesh generation and  
+processing: A survey. In: Computer graphics forum.  
+vol. 32, pp. 51-76. Wiley Online Library (2013)  
+[3] Carr, N.A., Hoberock, J., Crane, K., Hart, J.C.: Rect-  
+angular multi-chart geometry images. In: Symposium  
+on geometry processing. pp. 181-190 (2006)  
+[4] Chen, W., Zheng, X., Ke, J., Lei, N., Luo, Z., Gu,  
+X.: Quadrilateral mesh generation i: Metric based  
+method. Computer Methods in Applied Mechanics and  
+Engineering 356, 652-668 (2019)  
+[5] Donaldson, S.: Riemann surfaces. Oxford University  
+Press (2011)  
+[6] Dong, S., Bremer, P.T., Garland, M., Pascucci, V.,  
+Hart, J.C.: Spectral surface quadrangulation. In: ACM  
+SIGGRAPH 2006 Papers, pp. 1057-1066 (2006)  
+[7] Gu, X., Yau, S.T.: Global conformal surface parame-  
+terization. In: First Eurographics Symposium on Ge-  
+ometry Processing (SGP03), Aachen, Germany. pp.  
+127-137 (June 23-25, 2003)  
+[8] Gurung, T., Laney, D., Lindstrom, P., Rossignac, J.:  
+Squad: Compact representation for triangle meshes.  
+In: Computer Graphics Forum. vol. 30, pp. 355-364.  
+Wiley Online Library (2011)  
+[9] He, Y., Wang, H., Fu, C.W., Qin, H.: A divide-  
+and-conquer approach for automatic polycube map  
+construction. Computers & Graphics 33(3), 369-380  
+(2009)  
+[10] Huang, J., Zhang, M., Ma, J., Liu, X., Kobbelt, L.,  
+Bao, H.: Spectral quadrangulation with orientation  
+and alignment control. In: ACM SIGGRAPH Asia  
+2008 papers, pp. 1-9 (2008)  
+[11] Jiang, T., Fang, X., Huang, J., Bao, H., Tong, Y.,  
+Desbrun, M.: Frame field generation through metric  
+customization. ACM Transactions on Graphics (TOG)  
+34(4), 1-11 (2015)  
+[12] Jin, M., Kim, J., Luo, F., Gu, X.: Discrete surface ricci  
+flow. IEEE Transaction on Visualization and Computer  
+Graphics (TVCG) 14(5), 1030-1043 (2008)  
+[13] K¨ alberer, F., Nieser, M., Polthier, K.: Quadcover-  
+surface parameterization using branched coverings. In:  
+Computer graphics forum. vol. 26, pp. 375-384. Wiley  
+Online Library (2007)  
+[14] Kowalski, N., Ledoux, F., Frey, P.: A pde based ap-  
+proach to multidomain partitioning and quadrilateral  
+meshing. In: Proceedings of the 21st international  
+meshing roundtable. pp. 137-154. Springer (2013)  
+[15] Lai, Y.K., Jin, M., Xie, X., He, Y., Palacios, J., Zhang,  
+E., Hu, S.M., Gu, X.: Metric driven rosy field design  
+and remeshing. IEEE Transaction on Visualization and  
+Computer Graphics (TVCG) 16(1), 95-108 (2009)  
+[16] Lei, N., Zheng, X., Jiang, J., Lin, Y.Y., Gu, D.X.:  
+Quadrilateral and hexahedral mesh generation based  
+on surface foliation theory. Computer Methods in Ap-  
+plied Mechanics and Engineering 316, 758-781 (2017)  
+[17] Lei, N., Zheng, X., Luo, Z., Gu, D.X.: Quadrilateral  
+and hexahedral mesh generation based on surface folia-  
+tion theory ii. Computer Methods in Applied Mechan-  
+ics and Engineering 321, 406-426 (2017)  
+[18] Lei, N., Zheng, X., Luo, Z., Luo, F., Gu, X.: Quadrilat-  
+eral mesh generation ii: Meromorphic quartic differen-  
+tials and abel-jacobi condition. Computer methods in  
+applied mechanics and engineering 366, 112980 (2020)  
+[19] Lei, N., Zhu, Y., Zheng, X., Si, H., Gu,  
+X.: Why cross fields are not equivalent  
+to quadrilateral meshes. CMAME (2023).  
+https://doi.org/10.2139/ssrn.4460747, http:  
+//dx.doi.org/10.2139/ssrn.4460747  
+[20] Li, W.C., Vallet, B., Ray, N., L´ evy, B.: Representing  
+higher-order singularities in vector fields on piecewise  
+linear surfaces. IEEE Transactions on Visualization  
+and Computer Graphics 12(5), 1315-1322 (2006)  
+[21] Lin, J., Jin, X., Fan, Z., Wang, C.C.: Automatic  
+polycube-maps. In: Advances in Geometric Modeling  
+and Processing: 5th International Conference, GMP  
+2008, Hangzhou, China, April 23-25, 2008. Proceedings  
+5. pp. 3-16. Springer (2008)  
+[22] Palacios, J., Zhang, E.: Rotational symmetry field  
+design on surfaces. ACM Transactions on Graphics  
+(TOG) 26(3), 55-es (2007)  
+[23] Ray, N., Li, W.C., L´ evy, B., Sheffer, A., Alliez, P.:  
+Periodic global parameterization. ACM Transactions  
+on Graphics (TOG) 25(4), 1460-1485 (2006)  
+[24] Ray, N., Sokolov, D.: Robust polylines tracing for  
+n-symmetry direction field on triangulated surfaces.  
+ACM Transactions on Graphics (TOG) 33(3), 1-11  
+(2014)  
+[25] Remacle, J.F., Lambrechts, J., Seny, B., Marchan-  
+dise, E., Johnen, A., Geuzainet, C.: Blossom-quad:  
+A non-uniform quadrilateral mesh generator using  
+a minimum-cost perfect-matching algorithm. Interna-  
+tional journal for numerical methods in engineering  
+89(9), 1102-1119 (2012)  
+[26] Shepherd, K.M., Gu, X.D., Hiemstra, R.R., Hughes,  
+T.J.: Quadrilateral layout generation and optimization  
+using equivalence classes of integral curves: theory  
+and application to surfaces with boundaries. Journal  
+of Mechanics 38, 128-155 (2022)  
+[27] Shepherd, K.M., Gu, X.D., Hughes, T.J.: Feature-  
+aware reconstruction of trimmed splines using ricci  
+flow with metric optimization. Computer Methods  
+in Applied Mechanics and Engineering 402, 115555  
+(2022)  
+[28] Tarini, M., Pietroni, N., Cignoni, P., Panozzo, D.,  
+Puppo, E.: Practical quad mesh simplification. In:  
+Computer Graphics Forum. vol. 29, pp. 407-418. Wiley  
+Online Library (2010)  
+[29] Tong, Y., Alliez, P., Cohen-Steiner, D., Desbrun, M.:  
+Designing quadrangulations with discrete harmonic  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 14 =====  
+forms. In: Eurographics symposium on geometry pro-  
+cessing (2006)  
+[30] Velho, L., Zorin, D.: 4-8 subdivision. Computer Aided  
+Geometric Design 18(5), 397-427 (2001)  
+[31] Wang, H., Jin, M., He, Y., Gu, X., Qin, H.: User-  
+controllable polycube map for manifold spline con-  
+struction. In: Proceedings of the 2008 ACM sym-  
+posium on Solid and physical modeling. pp. 397-404  
+(2008)  
+[32] Xia, J., Garcia, I., He, Y., Xin, S.Q., Patow, G.: Ed-  
+itable polycube map for gpu-based subdivision sur-  
+faces. In: Symposium on interactive 3D graphics and  
+games. pp. 151-158 (2011)  
+[33] Zheng, X., Zhu, Y., Chen, W., Lei, N., Luo,  
+Z., Gu, X.: Quadrilateral mesh generation iii:  
+Optimizing singularity configuration based on  
+abel-jacobi theory. Computer Methods in Ap-  
+plied Mechanics and Engineering 387, 114146  
+(2021). https://doi.org/10.1016/j.cma.2021.114146,  
+https://doi.org/10.1016/j.cma.2021.114146  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited

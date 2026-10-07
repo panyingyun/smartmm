@@ -1,0 +1,623 @@
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.007
+Creating surface mesh ...
+Surface mesh seconds:  0.001
+Recovering boundaries...
+Boundary recovery seconds:  0
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.013
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 178
+  Mesh tetrahedra: 469
+  Mesh faces: 1098
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 16
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.005
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002
+Refining mesh...
+Refinement seconds:  0.002
+Smoothing vertices...
+Mesh smoothing seconds:  0
+Improving mesh...
+Mesh improvement seconds:  0.001
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.01
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 182
+  Mesh tetrahedra: 501
+  Mesh faces: 1162
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 20
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.004
+Creating surface mesh ...
+Surface mesh seconds:  0.001
+Recovering boundaries...
+Boundary recovery seconds:  0
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002
+Refining mesh...
+Refinement seconds:  0.002
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.01
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 187
+  Mesh tetrahedra: 545
+  Mesh faces: 1250
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 25
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.005
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002
+Refining mesh...
+Refinement seconds:  0.002
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.01
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 190
+  Mesh tetrahedra: 569
+  Mesh faces: 1298
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 28
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.004
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.002
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.01
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 191
+  Mesh tetrahedra: 576
+  Mesh faces: 1312
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 29
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.004
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.002
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.011
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 189
+  Mesh tetrahedra: 559
+  Mesh faces: 1278
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 27
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.009
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0.001
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.014
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 178
+  Mesh tetrahedra: 469
+  Mesh faces: 1098
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 16
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.003
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 180
+  Mesh tetrahedra: 493
+  Mesh faces: 1146
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 18
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0.001
+Recovering Delaunayness...
+Delaunay recovery seconds:  0
+Refining mesh...
+Refinement seconds:  0
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.002
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 179
+  Mesh tetrahedra: 517
+  Mesh faces: 1194
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 17
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0
+Improving mesh...
+Mesh improvement seconds:  0.001
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.003
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 182
+  Mesh tetrahedra: 545
+  Mesh faces: 1250
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 20
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.008
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0.001
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.014
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 178
+  Mesh tetrahedra: 469
+  Mesh faces: 1098
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 16
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.001
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0.001
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.005
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 181
+  Mesh tetrahedra: 498
+  Mesh faces: 1156
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 19
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.001
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.001
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.004
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 185
+  Mesh tetrahedra: 531
+  Mesh faces: 1222
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 23
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.001
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.004
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 182
+  Mesh tetrahedra: 526
+  Mesh faces: 1212
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 20
+
+mesh: icosphere sub=2, tetgen maxvol=0.06
+
+shape      amp sphArea/4pi  bndOK A:ratioStd  A:J<0.5  A:flip B:ratioStd    B:min  B:flip      B:gap
+----------------------------------------------------------------------------------------------------
+peanut    0.00      1.0000   True     0.0000   0.000%       0     0.0000  1.00000       0  1.776e-15
+peanut    0.10      1.0000   True     0.2112   0.000%       0     0.0726  0.92624       0  6.119e-01
+peanut    0.20      1.0000   True     0.4728   0.183%       0     0.1667  0.32705       0  1.200e+00
+peanut    0.30      1.0000   True     0.8213   7.909%       0     0.2857  0.32011       0  1.789e+00
+peanut    0.40      1.0000   True     1.3381  12.674%       0     0.4137  0.06724       0  2.364e+00
+peanut    0.45      1.0000   True     1.7121  15.027%       0     0.5675  0.02972       0  2.774e+00
+crinkly   0.00      1.0000   True     0.0000   0.000%       0     0.0000  1.00000       0  1.776e-15
+crinkly   0.10      1.0000   True     0.2450   3.651%       0     0.2332  0.10831       0  1.799e-01
+crinkly   0.20      1.0000   True     0.4858  31.915%       0     0.5012  0.03117       0  9.961e-01
+crinkly   0.25      1.0000   True     0.5933  42.018%       0     0.5447  0.01905       0  1.414e+00
+wedge     0.00      1.0000   True     0.0000   0.000%       0     0.0000  1.00000       0  1.776e-15
+wedge     0.10      1.0000   True     0.1048   0.402%       0     0.0883  0.22054       0 -7.922e-01
+wedge     0.20      1.0000   True     0.1872   2.637%       0     0.1443  0.11935       0 -1.413e+00
+wedge     0.35      1.0000   True     0.2644  51.521%       0     0.2351  0.04546       0 -2.080e+00
+
+Legend: A = plain P1 harmonic map to the ball; B = VSEM fixed point with the same (radial-projection) boundary map.
+sphArea/4pi = 1 means the boundary map is a bijection to the sphere; 2 means it double-covers the sphere.

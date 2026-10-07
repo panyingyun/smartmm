@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1240" viewBox="0 0 1920 1240" role="img" aria-labelledby="title desc">
+  <title id="title">smartmm 业务架构图</title>
+  <desc id="desc">smartmm 业务架构：把任意拓扑 3-球实体（CAD 实体或四面体网格）经校验与预处理、三维共形（调和）映射、最优传输保体积校正、四面体剖分导出五步闭环，产出保体积参数化与可密度控制的四面体网格；能力层由预处理与网格化、共形几何、最优传输与变分优化、四面体重剖分四项构成；验收条件约束双射性、体积比一致性、能量下界、逆映射一致性与单元质量。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8fbfd"/>
+      <stop offset="1" stop-color="#eef4f7"/>
+    </linearGradient>
+    <linearGradient id="input" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dceefa"/>
+      <stop offset="1" stop-color="#bad8ea"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e4f4df"/>
+      <stop offset="1" stop-color="#c7e5c5"/>
+    </linearGradient>
+    <linearGradient id="abstract" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff1c8"/>
+      <stop offset="1" stop-color="#efd78a"/>
+    </linearGradient>
+    <linearGradient id="s1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5c7d8f"/>
+      <stop offset="1" stop-color="#94aebe"/>
+    </linearGradient>
+    <linearGradient id="s2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3d9a7d"/>
+      <stop offset="1" stop-color="#72bda1"/>
+    </linearGradient>
+    <linearGradient id="s3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7766ad"/>
+      <stop offset="1" stop-color="#aa9bcf"/>
+    </linearGradient>
+    <linearGradient id="s4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#cc7048"/>
+      <stop offset="1" stop-color="#e7a477"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="7" stdDeviation="8" flood-color="#39556a" flood-opacity="0.16"/>
+    </filter>
+    <filter id="smallShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#39556a" flood-opacity="0.14"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 12 12" markerWidth="14" markerHeight="14" refX="11" refY="6" orient="auto" markerUnits="userSpaceOnUse" overflow="visible">
+      <path d="M0.5,1.2 L11,6 L0.5,10.8 Z" fill="#637c89"/>
+    </marker>
+    <style>
+      text { font-family: "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", Arial, sans-serif; fill: #18303f; }
+      .title { font-size: 30px; font-weight: 700; }
+      .section { font-size: 27px; font-weight: 700; }
+      .file { font-size: 24px; font-weight: 700; }
+      .body { font-size: 22px; }
+      .small { font-size: 19px; }
+      .step-title { font-size: 21px; font-weight: 700; }
+      .step-body { font-size: 16px; fill: #2c4756; }
+      .card-title { font-size: 22px; font-weight: 700; fill: white; }
+      .card-file { font-size: 16px; font-weight: 700; fill: white; }
+      .card-body { font-size: 15px; fill: white; }
+      .chip { font-size: 14px; font-weight: 700; }
+      .gate-title { font-size: 18px; font-weight: 700; fill: #3c3213; }
+      .gate-body { font-size: 15px; fill: #5c4f2a; }
+      .val-title { font-size: 20px; font-weight: 700; fill: #23414f; }
+      .val-body { font-size: 16px; fill: #3d5b6b; }
+    </style>
+  </defs>
+
+  <rect width="1920" height="1240" fill="url(#bg)"/>
+  <circle cx="120" cy="150" r="3" fill="#8fb3a5" opacity=".6"/>
+  <circle cx="1800" cy="180" r="5" fill="#d4b862" opacity=".55"/>
+  <circle cx="1848" cy="640" r="3" fill="#8fb3a5" opacity=".6"/>
+  <circle cx="65" cy="600" r="4" fill="#d4b862" opacity=".55"/>
+
+  <text x="54" y="58" class="title">smartmm · 业务架构</text>
+  <text x="54" y="88" class="small" fill="#66808e">拓扑 3-球实体 → 共形（调和）映射 → 最优传输保体积校正 → 四面体剖分：一条可复现、可验收、许可可商用的保体积参数化流水线</text>
+
+  <!-- Business goal & constraints -->
+  <g filter="url(#shadow)">
+    <rect x="110" y="120" width="1700" height="150" rx="20" fill="url(#input)" stroke="#6f9eb9" stroke-width="2"/>
+  </g>
+  <text x="150" y="162" class="section">业务目标 &amp; 约束</text>
+  <line x1="690" y1="178" x2="690" y2="252" stroke="#8bb8d0" stroke-width="2"/>
+  <line x1="1210" y1="178" x2="1210" y2="252" stroke="#8bb8d0" stroke-width="2"/>
+  <g transform="translate(162,196)">
+    <text x="0" y="0" class="file">输入</text>
+    <text x="20" y="34" class="body">• CAD 实体（STEP/IGES/BREP）</text>
+    <text x="20" y="64" class="body">• 闭合曲面（STL/OFF/PLY）或四面体网格</text>
+  </g>
+  <g transform="translate(726,196)">
+    <text x="0" y="0" class="file">产出</text>
+    <text x="20" y="34" class="body">• 保体积参数化 F : M → B³（+ 逆映射）</text>
+    <text x="20" y="64" class="body">• 均匀 / 密度可控的四面体网格 M′</text>
+  </g>
+  <g transform="translate(1246,196)">
+    <text x="0" y="0" class="file">硬约束</text>
+    <text x="20" y="34" class="body">• 实体必须拓扑 3-球（亏格 0、无空腔）</text>
+    <text x="20" y="64" class="body">• 映射双射 · 全程不产生反四面体</text>
+  </g>
+
+  <!-- Main flow : five steps -->
+  <text x="112" y="318" class="section">主流程 · 五步闭环</text>
+
+  <g filter="url(#smallShadow)"><rect x="110" y="336" width="320" height="200" rx="18" fill="#f3f9fc" stroke="#8bb8d0" stroke-width="2"/></g>
+  <text x="130" y="374" class="step-title">① 几何输入与校验</text>
+  <text x="130" y="404" class="step-body">• 读入 STEP/STL/网格，统一为 TetMesh</text>
+  <text x="130" y="428" class="step-body">• 方向归一（signed volume &gt; 0）</text>
+  <text x="130" y="452" class="step-body">• 拓扑 3-球与亏格检查</text>
+  <text x="130" y="476" class="step-body">• sliver / radius-ratio 质量体检</text>
+  <text x="130" y="508" class="step-body" fill="#66808e">run_pipeline.py --mesh-size</text>
+
+  <path d="M432 436H452" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <g filter="url(#smallShadow)"><rect x="455" y="336" width="320" height="200" rx="18" fill="#f4f9f2" stroke="#9dbf9b" stroke-width="2"/></g>
+  <text x="475" y="374" class="step-title">② 四面体化与预处理</text>
+  <text x="475" y="404" class="step-body">• Gmsh（OCC）或 TetGen 生成体网格</text>
+  <text x="475" y="428" class="step-body">• 曲面网格先重建体积再剖分</text>
+  <text x="475" y="452" class="step-body">• ODV / Lloyd 光滑消除 sliver</text>
+  <text x="475" y="476" class="step-body">• 网格质量是阶段 1 成败的前置条件</text>
+  <text x="475" y="508" class="step-body" fill="#66808e">实测：无 sliver 后折叠全部消失</text>
+
+  <path d="M777 436H797" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <g filter="url(#smallShadow)"><rect x="800" y="336" width="320" height="200" rx="18" fill="#f2f7fa" stroke="#7fa6bb" stroke-width="2"/></g>
+  <text x="820" y="374" class="step-title">③ 三维共形（调和）映射</text>
+  <text x="820" y="404" class="step-body">• 边界 ∂M → S²：球面共形 / 切向松弛</text>
+  <text x="820" y="428" class="step-body">• 内部解 P1 有限元 Dirichlet 问题</text>
+  <text x="820" y="452" class="step-body">• 星形双射初值 + 折叠修复保单射</text>
+  <text x="820" y="476" class="step-body">• 得球坐标 ψ(v_i)，体积畸变 5%–15%</text>
+  <text x="820" y="508" class="step-body" fill="#66808e">实测 E_V 超界 5.6%–9.5%</text>
+
+  <path d="M1122 436H1142" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <g filter="url(#smallShadow)"><rect x="1145" y="336" width="320" height="200" rx="18" fill="#f6f2fc" stroke="#a292c9" stroke-width="2"/></g>
+  <text x="1165" y="374" class="step-title">④ 保体积校正</text>
+  <text x="1165" y="404" class="step-body">• 测度：站点 ψ(v_i)，质量 Σ|τ|/4</text>
+  <text x="1165" y="428" class="step-body">• 路线 A：半离散 OT / 乘方图</text>
+  <text x="1165" y="452" class="step-body">• 路线 B：最小化 E_V（推荐，秒级）</text>
+  <text x="1165" y="476" class="step-body">• 复合 F = φ⁻¹∘ψ，F(v_i) = W_i 质心</text>
+  <text x="1165" y="508" class="step-body" fill="#66808e">实测 E_V 超界 → 1.3%–2.4%</text>
+
+  <path d="M1467 436H1487" stroke="#637c89" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <g filter="url(#smallShadow)"><rect x="1490" y="336" width="320" height="200" rx="18" fill="#fdf5ee" stroke="#d5a67c" stroke-width="2"/></g>
+  <text x="1510" y="374" class="step-title">⑤ 四面体剖分与导出</text>
+  <text x="1510" y="404" class="step-body">• 逆映射 f⁻¹：KD-tree + 重心坐标</text>
+  <text x="1510" y="428" class="step-body">• 模板拉回：refine / uniform 模板</text>
+  <text x="1510" y="452" class="step-body">• 或球内按 r_k=R(k/N)^{1/3} 采样 →</text>
+  <text x="1510" y="476" class="step-body">  点集 + 原始 ∂M → fTetWild / TetGen</text>
+  <text x="1510" y="508" class="step-body" fill="#66808e">实测体积误差 0（机器精度）· 翻转 0</text>
+
+  <!-- Capability layer : four capabilities -->
+  <text x="112" y="600" class="section">核心能力 · 四项</text>
+
+  <g filter="url(#shadow)">
+    <rect x="115" y="618" width="400" height="216" rx="20" fill="url(#s1)" stroke="#3f5f70" stroke-width="2"/>
+  </g>
+  <text x="137" y="656" class="card-title">能力 1 · 网格与几何基础</text>
+  <line x1="137" y1="676" x2="493" y2="676" stroke="white" opacity=".35"/>
+  <text x="137" y="706" class="card-file">mesh.py · generate.py</text>
+  <text x="137" y="730" class="card-body">TetGen/VTK I/O · 带符号体积 · 二面角 · 质量度量</text>
+  <text x="137" y="754" class="card-body">立方球（COBE）网格 · Delaunay 球 · ODV 光滑</text>
+  <text x="137" y="778" class="card-body">五种形变测试件：twist / pear / bump / bend</text>
+  <line x1="137" y1="794" x2="493" y2="794" stroke="white" opacity=".25"/>
+  <text x="137" y="818" class="card-body" opacity=".95">价值：隔离几何差异，算法只面对统一 TetMesh</text>
+
+  <g filter="url(#shadow)">
+    <rect x="545" y="618" width="400" height="216" rx="20" fill="url(#s2)" stroke="#277158" stroke-width="2"/>
+  </g>
+  <text x="567" y="656" class="card-title">能力 2 · 共形几何</text>
+  <line x1="567" y1="676" x2="923" y2="676" stroke="white" opacity=".35"/>
+  <text x="567" y="706" class="card-file">harmonic.py</text>
+  <text x="567" y="730" class="card-body">P1 有限元刚度矩阵 · 四面体 cotan 权重</text>
+  <text x="567" y="754" class="card-body">球面边界映射 · 体积调和延拓</text>
+  <text x="567" y="778" class="card-body">星形域构造性双射 · 折叠修复保单射</text>
+  <line x1="567" y1="794" x2="923" y2="794" stroke="white" opacity=".25"/>
+  <text x="567" y="818" class="card-body" opacity=".95">价值：规范到单位球，获得全局坐标图</text>
+
+  <g filter="url(#shadow)">
+    <rect x="975" y="618" width="400" height="216" rx="20" fill="url(#s3)" stroke="#5f4b94" stroke-width="2"/>
+  </g>
+  <text x="997" y="656" class="card-title">能力 3 · 最优传输与变分优化</text>
+  <line x1="997" y1="676" x2="1353" y2="676" stroke="white" opacity=".35"/>
+  <text x="997" y="706" class="card-file">laguerre.py · volume_ot.py</text>
+  <text x="997" y="730" class="card-body">乘方图 / Laguerre 单元 · 半离散 OT 对偶</text>
+  <text x="997" y="754" class="card-body">精确 Hessian · 阻尼牛顿 + λ 回退</text>
+  <text x="997" y="778" class="card-body">体积拉伸能量最小化：VSEM / IEM</text>
+  <line x1="997" y1="794" x2="1353" y2="794" stroke="white" opacity=".25"/>
+  <text x="997" y="818" class="card-body" opacity=".95">价值：体积畸变压到 1%–2%，有下界可验证</text>
+
+  <g filter="url(#shadow)">
+    <rect x="1405" y="618" width="400" height="216" rx="20" fill="url(#s4)" stroke="#9a4f28" stroke-width="3"/>
+  </g>
+  <text x="1427" y="656" class="card-title">能力 4 · 四面体重剖分</text>
+  <line x1="1427" y1="676" x2="1783" y2="676" stroke="white" opacity=".35"/>
+  <text x="1427" y="706" class="card-file">remesh.py</text>
+  <text x="1427" y="730" class="card-body">逆映射求值 · 点定位 · 边界投影兜底</text>
+  <text x="1427" y="754" class="card-body">模板拉回（保拓扑、免 mesher、秒级）</text>
+  <text x="1427" y="778" class="card-body">尺寸场 h_M(x) = h_B(f(x)) · |det Df|^{1/3}</text>
+  <line x1="1427" y1="794" x2="1783" y2="794" stroke="white" opacity=".25"/>
+  <text x="1427" y="818" class="card-body" opacity=".95">价值：均匀 / 自适应四面体网格，可直接交付</text>
+
+  <!-- Quality gates -->
+  <text x="112" y="884" class="section">验收条件 · 六道门禁</text>
+
+  <g filter="url(#smallShadow)"><rect x="113" y="902" width="264" height="106" rx="14" fill="#fdf6e3" stroke="#c9a227" stroke-width="2"/></g>
+  <text x="245" y="934" class="gate-title" text-anchor="middle">① 体积比一致性</text>
+  <text x="245" y="962" class="gate-body" text-anchor="middle">归一化 |r/mean − 1| &lt; 5%</text>
+  <text x="245" y="986" class="gate-body" text-anchor="middle">p99 &lt; 15%</text>
+
+  <g filter="url(#smallShadow)"><rect x="399" y="902" width="264" height="106" rx="14" fill="#fdf6e3" stroke="#c9a227" stroke-width="2"/></g>
+  <text x="531" y="934" class="gate-title" text-anchor="middle">② 双射性</text>
+  <text x="531" y="962" class="gate-body" text-anchor="middle">翻转数 = 0 · frac(J&lt;0.5) 一并报告</text>
+  <text x="531" y="986" class="gate-body" text-anchor="middle">“无翻转”并不等于“映射好”</text>
+
+  <g filter="url(#smallShadow)"><rect x="685" y="902" width="264" height="106" rx="14" fill="#fdf6e3" stroke="#c9a227" stroke-width="2"/></g>
+  <text x="817" y="934" class="gate-title" text-anchor="middle">③ 能量下界</text>
+  <text x="817" y="962" class="gate-body" text-anchor="middle">E_V / (V(f)²/V(M)) − 1 &lt; 2%</text>
+  <text x="817" y="986" class="gate-body" text-anchor="middle">等体积能量 E_I → 0</text>
+
+  <g filter="url(#smallShadow)"><rect x="971" y="902" width="264" height="106" rx="14" fill="#fdf6e3" stroke="#c9a227" stroke-width="2"/></g>
+  <text x="1103" y="934" class="gate-title" text-anchor="middle">④ 逆映射一致性</text>
+  <text x="1103" y="962" class="gate-body" text-anchor="middle">f⁻¹(f(v)) − v 最大偏差</text>
+  <text x="1103" y="986" class="gate-body" text-anchor="middle">&lt; 1e-10（骨架一致时为 0）</text>
+
+  <g filter="url(#smallShadow)"><rect x="1257" y="902" width="264" height="106" rx="14" fill="#fdf6e3" stroke="#c9a227" stroke-width="2"/></g>
+  <text x="1389" y="934" class="gate-title" text-anchor="middle">⑤ 重网格体积</text>
+  <text x="1389" y="962" class="gate-body" text-anchor="middle">Vol(M′)/Vol(M) − 1 &lt; 1%</text>
+  <text x="1389" y="986" class="gate-body" text-anchor="middle">实测机器精度 0</text>
+
+  <g filter="url(#smallShadow)"><rect x="1543" y="902" width="264" height="106" rx="14" fill="#fdf6e3" stroke="#c9a227" stroke-width="2"/></g>
+  <text x="1675" y="934" class="gate-title" text-anchor="middle">⑥ 单元质量</text>
+  <text x="1675" y="962" class="gate-body" text-anchor="middle">最小二面角 ≥ 10°（工程目标）</text>
+  <text x="1675" y="986" class="gate-body" text-anchor="middle">radius-ratio · 无 sliver</text>
+
+  <!-- Business value -->
+  <g filter="url(#shadow)">
+    <rect x="115" y="1038" width="400" height="112" rx="16" fill="url(#abstract)" stroke="#c9a227" stroke-width="2"/>
+  </g>
+  <text x="315" y="1074" class="val-title" text-anchor="middle">均匀四面体网格</text>
+  <text x="315" y="1104" class="val-body" text-anchor="middle">球内均匀模板 → 拉回即均匀（体积误差 0）</text>
+  <text x="315" y="1130" class="val-body" text-anchor="middle">单元数可控 · 秒级 · 免 mesher</text>
+
+  <g filter="url(#shadow)">
+    <rect x="545" y="1038" width="400" height="112" rx="16" fill="#ecfaf5" stroke="#5ca58a" stroke-width="2"/>
+  </g>
+  <text x="745" y="1074" class="val-title" text-anchor="middle">密度 / 度量可控网格</text>
+  <text x="745" y="1104" class="val-body" text-anchor="middle">用户指定目标测度 ν，OT 精确达成</text>
+  <text x="745" y="1130" class="val-body" text-anchor="middle">球内采样 + 原 ∂M → fTetWild / TetGen</text>
+
+  <g filter="url(#shadow)">
+    <rect x="975" y="1038" width="400" height="112" rx="16" fill="#eaf6fb" stroke="#4a9bb8" stroke-width="2"/>
+  </g>
+  <text x="1175" y="1074" class="val-title" text-anchor="middle">等几何 / 三变量样条</text>
+  <text x="1175" y="1104" class="val-body" text-anchor="middle">保体积参数化 = 分析适用的体参数域</text>
+  <text x="1175" y="1130" class="val-body" text-anchor="middle">避免体积畸变导致的单元退化</text>
+
+  <g filter="url(#shadow)">
+    <rect x="1405" y="1038" width="400" height="112" rx="16" fill="#fdeee6" stroke="#c8763f" stroke-width="2"/>
+  </g>
+  <text x="1605" y="1074" class="val-title" text-anchor="middle">保体积配准与形变</text>
+  <text x="1605" y="1104" class="val-body" text-anchor="middle">球坐标下做配准 / 形变，体积先验天然满足</text>
+  <text x="1605" y="1130" class="val-body" text-anchor="middle">医学影像体积测量：肿瘤体积不失真</text>
+
+  <text x="110" y="1192" class="small" fill="#66808e">一条流水线三种用法：CLI 产出可用网格，report.json 给出全部验收指标，研究材料（docs/ 与 research/）给出论文出处、算法语义与选型依据。</text>
+  <text x="110" y="1222" class="small" fill="#66808e">许可线：本仓库实现为纯 Python（numpy/scipy）；外部依赖仅推荐 geogram + exploragram（BSD-3）、fTetWild（MPL-2.0）、Mmg（LGPL-3.0），避开 TetGen ≥1.5（AGPL）与 CGAL Mesh_3（GPL）。</text>
+</svg>

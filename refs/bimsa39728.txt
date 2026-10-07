@@ -1,0 +1,948 @@
+
+===== page 1 =====
+Applications of Computational Conformal Geometry
+David Gu
+Computer Science Department
+Stony Brook University
+gu@cs.stonybrook.edu
+November 30, 2024
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 1 / 97
+===== page 2 =====
+Basic Concepts
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 2 / 97
+===== page 3 =====
+Riemann Surface
+Definition (Riemann surface)
+Suppose S is a topological surface with an open covering S⊂⋃
+α Uα, each
+open set has a local coordinates system φα : Uα→ C, if Uα∩ Uβ̸=∅,
+then the transition map
+φαβ :φα (Uα∩ Uβ)→φβ (Uα∩ Uβ),φαβ =φβ◦φα
+is biholomorphic. Then the atlas A ={(Uα,φα)} is called a complex
+structure of the surface, and the surface S with the complex structure is
+called a Riemann surface.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 3 / 97
+===== page 4 =====
+Riemann Surface
+According to classical surface differential geometry, all oriented metric
+surfaces are Riemann surfaces.
+Theorem
+Suppose S is an oriented surface with a Riemannian metric g, then for
+each point p ∈ S, there is a neighborhood p ∈ U(p), such that U (p) has
+an isothermal coordinates system. All such isothermal coordinate systems
+form a complex structure. Hence, S is a Riemann surface.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 4 / 97
+===== page 5 =====
+Riemann Surface
+Theorem
+Suppose (S, g) is an oriented, closed surface with an Riemannian metric
+g, Q is a quadrilateral mesh of S with genus g > 1, if all vertices have
+valence 4k, k∈ Z+, then Q induces a Riemann surface RQ, and a
+holomorphic one-form ω on theRQ.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 5 / 97
+===== page 6 =====
+Hodge Theorem
+Definition (Harmonic Differential)
+Suppose ω is a differential k-form on ( S, g), then ω is harmonic if and
+only if ∆ gω = 0.
+If ω is a differential 1-form, then ω is harmonic if and only if
+dω = 0, δω = 0
+Theorem (Hodge)
+Each de Rham cohomology class has a unique harmonic form.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 6 / 97
+===== page 7 =====
+Holomorphic Differential
+Definition (Holomorphic Differential)
+Suppose φ is a complex different form, on each local chart ( Uα, zα),φ has
+local representation φ = fα (zα) dzα, where fα is a holomorphic function.
+On another intersecting chart ( Uβ, zβ), Uα∩ Uβ̸=∅, φ = fβ (zβ) dzβ,
+such that
+fα = fβ (zβ (zα)) dzβ
+dzα
+then φ is globally defined, and called a holomorphic differential.
+Each holomorphic 1-form φ can be decomposed into two conjugate
+harmonic 1-forms, namely,
+φ =ω +
+√
+-1
+∗
+ω
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 7 / 97
+===== page 8 =====
+Discrete Uniformization
+Definition (Discrete Conformality With Fixed Triangulation)
+Given a triangulation T , a discrete conformal factor u is a real-valued
+function on V (T ). Two Euclidean polyhedral surfaces ( T, l)E and (T, l′)E
+are discretely conformally equivalent if for some discrete conformal factor
+u,
+l′
+ij = e
+1
+2 (ui +uj)lij
+Theorem (Discrete Uniformization)
+For a Euclidean PL metric (T, l)E on a connected orientable surface S and
+a prescribed discrete curvature K ∗ satisfying ∑
+i∈V (T )
+Ki = 2πχ(S), then
+there exists a polyhedral metric (T, l′)E satisfying
+1 (T, l′)E is discrete conformal to (T, l)E , and
+2 the discrete curavature of (T, l′) is K∗
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 8 / 97
+===== page 9 =====
+Circle Packing
+Figure: Circle Packing metric : Triangle [ v1, v2, v3] has vertices v1, v2, v3, and
+edges e12, e23, e31. Three circles centered at v1, v2, and v3, with radii r1, r2 and r3
+intersect one another, with intersection angles of Φ 12, Φ23 and Φ 31, which are the
+weights associated with the edges. The edge lengths of the triangle are
+determined by ri and Φ ij by the cosine law.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 9 / 97
+===== page 10 =====
+Circle Packing
+Definition (Discrete Conformal Mapping for Circle Packing)
+A mesh with circle packing ( M, Γ, Φ), where M is the topological
+triangulation (connectivity), Γ ={γi, vi∈ V} are the vertex radii,
+Φ ={Φij, eij∈ E} are the angles associated with each edge.
+A discrete conformal mapping τ : (M, Γ, Φ)→ (M, ¯Γ, Φ) only changes the
+vertex radii Γ, but preserves the intersection angles Φ.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 10 / 97
+===== page 11 =====
+Discrete Ricci flow
+Definition (Discrete Ricci flow)
+The discrete Ricci flow is defined as
+dγi
+dt = ( ¯Ki- Ki)γi,
+where ¯Ki is the target discrete curvature.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 11 / 97
+===== page 12 =====
+Minkowski Problem
+ρ
+GK
+NK
+S2
+S2
+∂K
+NK(z)
+z
+K
+Figure: The Minkowski problem asks how to find ∂K from the Gaussian curvature
+measure.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 12 / 97
+===== page 13 =====
+Normal Mapping
+K
+ρ(x)x ∈∂K
+x ∈Sd-1
+NK(z2)
+NK(z1)
+z1
+z2
+o
+Figure: Normal mapping. K⊂ Rd whose boundary ∂K is parameterized in polar
+coordinates{ρ(x)x : x∈ Sd-1,ρ : Sd-1→ R+}. Then to any point z∈∂K, we
+associate the normal mapping N K (z) :=
+{
+y∈ Sd-1 : K⊂{ w :⟨y, w- z⟩≤ 0}
+}
+.
+Geometrically, the normal mapping finds the normals of all supporting
+hyperplanes at z.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 13 / 97
+===== page 14 =====
+Gaussian Curvature Measure and Minkowski Problem
+Definition (Gauss Map and Gaussian Curvature Measure)
+The (multivalued) Gauss map G K : Sd-1→ Sd-1 is defined by
+GK (x) := NK (ρ(x)x), and define the Gaussian curvature measure ,
+µK (E) :=Hd-1(GK (E)) ∀E⊂ Sd-1 Borel.
+whereHd-1 denotes the ( d- 1)-dimensional Hausdorff measure on Sd-1.
+Problem (Minkowski)
+Given a Borel measure ν on Sd-1, can one find an open bounded convex
+set K∋ 0 such that ν =µK ?
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 14 / 97
+===== page 15 =====
+Minkowski Problem and OT
+The Minkowski problem can be reformulated as an optimal transport
+problem: given a finite measure ν on Sd-1, find an optimal transport map
+T : Sd-1→ Sd-1 that minimizes
+inf
+T#Hd-1=ν
+∫
+Sd-1
+- log⟨x, T (x)⟩dHd-1.
+One can verify that the optimized T is the desired GK such that µK =ν.
+Moreover, the minimization problem is equivalent to its Kantorovich dual
+problem: supφ,ψ{I(φ,ψ ), (φ,ψ )∈A} , where the functional is defined as
+I(φ,ψ ) =
+∫
+Sd-1
+φ(x)dν(x) +
+∫
+Sd-1
+ψ(y)dHd-1(y)
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 15 / 97
+===== page 16 =====
+Legendre Dual
+y
+x
+ρ(x)⟨x,y ⟩
+x∗
+supxρ(x)⟨x,y ⟩
+ρ(x)
+y
+h(y)
+x
+y∗ h(y)⟨x,y ⟩-1
+inf y
+h(y)
+⟨x,y⟩
+xi xj
+xk
+xl
+nk
+nl
+q
+dk
+dl
+djdi
+(a) (b)
+Figure: (a) Generalized Legendre dual: given a surface Sρ =ρ(x)x and a unit
+vector y, h(y) is the height of the unique plane with normal vector y and tangent
+to Sρ (left), and such planes form an envelope of Sρ (right). (b) Power diagram
+(red) and weighted Delaunay (blue).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 16 / 97
+===== page 17 =====
+Cortical Surface Shape Analysis
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 17 / 97
+===== page 18 =====
+Alzheimer's Disease
+Figure: Structural brain imaging in Alzheimer's disease
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 18 / 97
+===== page 19 =====
+Pipeline
+Given an input triangular mesh of a cortical surface S, we conformally
+mapS to S2 via a spherical harmonic map.
+On S2, we set the target measure νi at each vertex as the
+corresponding vertex area on S and compute the Alexandrov
+polyhedron Sρ by solving the discrete Minkowski problem.
+An area-preserving map from S to S2 is obtained by mapping each
+vertex inS to the center of cells in the power diagram.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 19 / 97
+===== page 20 =====
+Spherical Harmonic Map
+(a) Input Surface S (b) Harmonic Map
+Figure: Spherical harmonic map.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 20 / 97
+===== page 21 =====
+Spherical Harmonic Map
+(a) Input Surface S (b) Harmonic Map
+Figure: Cortical surface and harmonic map
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 21 / 97
+===== page 22 =====
+Computing the Alexandrov Polyhedron Sρ
+(a) Discrete Alex. Poly. Sρ (b) Envelope S∗
+ρ
+Figure: Alexandrov polyhedron
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 22 / 97
+===== page 23 =====
+Computing the Alexandrov Polyhedron Sρ
+(a) Weighted DelaunayT (b) Power DiagramD
+Figure: Weighted Delaunay triangulation and spherical power diagram.
+S∗
+ρ(k) is then projected onto the unit sphere and forms a power diagram
+Dρ(k)
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 23 / 97
+===== page 24 =====
+Computing the Alexandrov Polyhedron Sρ
+Suppose each vertex vi∈S is mapped to xif1(vi)∈ S2 under the spherical
+harmonic map, we set the target measure ν =∑n
+i=1νiδ(x- xi) with
+νi = VertexArea(vi).
+Solve the discrete Minkowski problem via optimizing the discrete energy
+I(φ1,··· ,φ n) =
+n∑
+i=1
+∫
+Wi (φ)
+c(x, xi)dµ(x) +
+n∑
+i=1
+φi(νi- wi(φ))
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 24 / 97
+===== page 25 =====
+Computing the Alexandrov Polyhedron Sρ
+Since the optimization is concave, it is optimized via Newton's method,
+using gradient
+∇I(φ) = (ν1- w1(φ),ν 2- w2(φ),··· ,ν n- wn(φ)),
+and the Hessian
+
+
+
+∂2I(φ)
+∂φi∂φj
+=-∂wi (φ)
+∂φj
+=-∂wj(φ)
+∂φi
+= sin dl +sin dk
+tan di +tan dj
+∂2I(φ)
+∂φ2
+i
+=∑
+j̸=i
+∂wi (φ)
+∂φj
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 25 / 97
+===== page 26 =====
+Cortical Surface Shape Analysis
+Given a dataset consisting of brain cortical surfaces, using the
+area-preserving map, we could perform an accurate registration
+among the brain surfaces.
+Using the corresponding Alexandrov polyhedra as shape
+representations of their Riemannian metric, we can measure the
+geometric differences and pinpoint regions that have significant
+changes. from AD and CU groups.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 26 / 97
+===== page 27 =====
+Visualization Results
+Sagittal View (L) Sagittal View (R) Superior View Inferior View
+Figure: Permutation test p-value heat map on the left cerebral cortical surface.
+The results reveal significant differences in both temporal lobe and posterior
+cingulate, structures that are affected early in AD.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 27 / 97
+===== page 28 =====
+Aneurysm Morphology and Vascular Shape Analysis
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 28 / 97
+===== page 29 =====
+Aneurysm Repair
+Figure: AAA Stent Graft
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 29 / 97
+===== page 30 =====
+Optimally Quad-meshing Vascular surface
+Figure: A section of the abdominal aorta
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 30 / 97
+===== page 31 =====
+Optimally Quad-meshing Vascular surface
+Figure: Visualization of holomorphic 1-form
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 31 / 97
+===== page 32 =====
+Optimally Quad-meshing Vascular surface
+The input is a genus zero surface S with multiple boundaries, represented
+as a triangle mesh
+Figure: The input mesh and the shortest paths from interior boundaries to the
+exterior boundary.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 32 / 97
+===== page 33 =====
+Optimally Quad-meshing Vascular surface
+For each interior boundary component γi, i = 1,..., n, we compute a
+unique harmonic function fi with Dirichlet boundary condition, the
+restriction of fi on γi equals to 1 , the restriction of fi on other boundary
+components equal to zero. This boils down to solving the
+Laplace-Beltrami equation: for i = 1, 2,··· , n,
+
+
+
+∆gfi = 0
+fi|γi = 1
+fi|γj = 0 j̸= i
+(1)
+The equation ∆ gfi = 0 is equivalent to δdfi = 0. By using the Finite
+Element Method, this equation is converted to a large sparse linear system.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 33 / 97
+===== page 34 =====
+Optimally Quad-meshing Vascular surface
+Non-exact Harmonic Forms For each interior boundary component
+γi, i = 1, 2,..., n, we compute a non-exact harmonic form ωi, such that
+∫
+γj
+ωi =δij, i, j = 1, 2,..., n
+For each interior boundary component γi∈∂S, we slice the surface S
+along the shortest cut τi to obtain ¯Si,τ i is split into two boundary
+components τ +
+i ,τ-
+i ∈∂ ¯Si. We then define a function gi : ¯Si→ R,
+gi (vk) =
+
+
+
+1 vk∈τ +
+i
+0 vk∈τ-
+i
+rand otherwise
+(2)
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 34 / 97
+===== page 35 =====
+Optimally Quad-meshing Vascular surface
+For each edge e∈τi, the corresponding edges e+∈τ +
+i and e-∈τ-
+i , and
+dgi
+(
+e+
+i
+)
+= dgi
+(
+e-
+i
+)
+= 0
+hence dgi is a 1-form defined on the original surface S, denoted as ηi.
+According to Hodge theorem, for each cohomology class, there is a unique
+harmonic form. We can find a function hi : S→ R, such that
+ωi =ηi + dhi is harmonic.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 35 / 97
+===== page 36 =====
+Optimally Quad-meshing Vascular surface
+Figure: Exact (left) and non-exact (right) harmonic differentials.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 36 / 97
+===== page 37 =====
+Optimally Quad-meshing Vascular surface
+Conjugate Harmonic Forms So far, we have computed n exact harmonic
+1-forms{df1, df2,··· , dfn} and n non-exact harmonic 1-forms
+{ω1,ω 2,··· ,ω n}, then we compute the conjugate their harmonic 1-forms.
+In theory, the conjugate harmonic 1-form of a non-exact harmonic 1-form is
+an exact harmonic 1-form, and the conjugate of an exact harmonic 1-form
+is a non-exact harmonic 1-form. Hence, we can construct the equations:
+⋆ωi =λi1df1 +λi2df2 +··· +λindfn (3)
+therefore, we obtain the linear equation group:
+
+
+
+∫
+Sω1∧⋆ωi =λi1ω1∧ df1 +··· λinω1∧ dfn∫
+Sω2∧⋆ωi =λi2ω2∧ df1 +··· λinω2∧ dfn
+·········∫
+Sωn∧⋆ωi =λi1ωn∧ df1 +··· λinωn∧ dfn
+(4)
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 37 / 97
+===== page 38 =====
+Optimally Quad-meshing Vascular surface
+The wedge product of two simplicial 1-forms ω1,ω 2 on a 2 -simplex σ is
+given by the following formula:
+ω1∧ω2(σ) = 1
+6
+⏐⏐⏐⏐⏐⏐⏐
+ω1 (ei) ω1 (ej) ω1 (ek)
+ω2 (ei) ω2 (ej) ω2 (ek)
+1 1 1
+⏐⏐⏐⏐⏐⏐⏐
+(5)
+Given two simplicial 1-forms ω1 and ω2, the 2-form ω1∧∗ω2 on each face
+σ = [vi, vj, vk] is evaluated as:
+ω1∧∗ω2(σ) = 1
+2[ cotθiω1 (ei)ω2 (ei) +
+cotθjω1 (ej)ω2 (ej) + (6)
+cotθkω1 (ek)ω2 (ek)]
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 38 / 97
+===== page 39 =====
+Optimally Quad-meshing Vascular surface
+There are n equations for n unknowns, and the linear system is
+nondegenerated, so we can solve the coefficients λij 's and obtain the
+conjugate harmonic 1 -form ⋆ωi. Then we obtain n holomorphic 1-forms:
+φi =ωi +
+√
+-1⋆ωi, i = 1, 2,..., n (7)
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 39 / 97
+===== page 40 =====
+Optimally Quad-meshing Vascular surface
+Figure: Holomorphic 1-form basis.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 40 / 97
+===== page 41 =====
+Optimally Quad-meshing Vascular surface
+(a) φ1 (b) φ2.
+Figure: holomorphic 1-forms and Quadrilateral meshes.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 41 / 97
+===== page 42 =====
+Optimally Quad-meshing Vascular surface
+Any holomorphic 1-form ω is a linear combination of ωk's,
+ω =λ1ω1 +λ2ω2 +... +λnωn,
+where λk's are the coefficients.
+For a triangle△e1e2e3, its area under the metric induced by ω is given by
+△e1e2e3 : = 1
+2ω(e1)×ω(e2)
+= 1
+2
+n∑
+k=1
+λkαk(e1)
+n∑
+k=1
+λkβk(e2)- 1
+2
+n∑
+k=1
+λkβk(e1)
+n∑
+k=1
+λkαk(e2)
+= 1
+2
+n∑
+k,l=1
+λkλl(αk(e1)βl(e2)-βk(e1)αl(e2)),
+which is a quadratic function in variables λk.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 42 / 97
+===== page 43 =====
+Optimally Quad-meshing Vascular surface
+The total energy is defined as
+E(λ) :=
+∑
+∆k∈F
+(
+|∆k|gλ-| ∆k| g
+)2
+after expansion
+E(λ) =
+∑
+∆k∈F
+
+1
+2
+n∑
+i,j=1
+ckλiλj-| ∆k| g
+
+
+2
+(8)
+where
+ck :=
+⏐⏐⏐⏐⏐⏐
+αi
+(
+ek
+1
+)
+βi
+(
+ek
+1
+)
+αj
+(
+ek
+2
+)
+βj
+(
+ek
+2
+)
+⏐⏐⏐⏐⏐⏐
+The partial derivative is
+∂E(λ)
+∂λi
+= 2
+∑
+∆k∈F
+
+1
+2
+n∑
+i,j=1
+λiλjck-| ∆k|g
+
+
+
+
+n∑
+j=1
+λjck
+
+ (9)
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 43 / 97
+===== page 44 =====
+Optimally Quad-meshing Vascular surface
+Figure: The energy E(λ) monotonously decreases during the optimization.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 44 / 97
+===== page 45 =====
+Optimally Quad-meshing Vascular surface
+Figure: Optimization of the blood vessel model.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 45 / 97
+===== page 46 =====
+Optimally Quad-meshing Vascular surface
+Figure: Holomorphic 1-forms and quad meshes
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 46 / 97
+===== page 47 =====
+Optimally Quad-meshing Vascular surface
+Figure: The histograms of the corner angles (left) and the logarithms of ratios
+between the adjacent edge lengths of the quad-mesh in Fig. 21
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 47 / 97
+===== page 48 =====
+Aneurysm Morphology
+Given a holomorphic 1-form φ, for any point on the surface p∈ S, a
+tangent direction v∈ TpS is called a horizontal direction, if φ(v)∈ R is a
+real number; similarly if φ(v) is an imaginary number, then v is called a
+vertical direction. A curve γ is called a horizontal trajectory of φ, if its
+tangent directions are horizontal everywhere except at the zeros of φ. The
+vertical trajectories of φ are defined similarly.
+For any non-zero point p∈ S of φ, there is a unique horizontal (vertical)
+trajectory through it. For a zero point p with order np, there are np + 1
+horizontal (vertical) trajectories through it. Such a kind of horizontal
+trajectory is called a critical horizontal trajectory.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 48 / 97
+===== page 49 =====
+Aneurysm Morphology
+γ0
+γ1
+γ2
+p
+c1
+c2
+τ1
+τ2
+c3
+c4
+Figure: A pair of topological pants, the curves in red and blue are horizontal,
+vertical trajectories of the holomorphic 1-form Ω respectively, p the zero point.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 49 / 97
+===== page 50 =====
+Aneurysm Morphology
+Figure: Bottom front and back views of an abdominal aorta, where c1, c2, c3, c4
+are the critical trajectories.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 50 / 97
+===== page 51 =====
+Aneurysm Morphology
+Figure: (a) & (c) Two connected components obtained by slicing the original
+mesh along the the critical trajectory. (b) & (d) The corresponding conformal
+parameterization on 2-D rectangles.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 51 / 97
+===== page 52 =====
+Aneurysm Morphology
+Figure: Abdominal aorta surface and its conformal parametrization φ(R1) and
+φ(R2). The red point on the rectangles is the intersection of trajectories. φ(γ1),
+φ(γ2) and φ(c3) are the conformal fingerprint.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 52 / 97
+===== page 53 =====
+Aneurysm Morphology
+Figure: Data plotted in 3-dimensional feature space of conformal fingerprint for
+15 AAA cases (blue) and corresponding post-treatment scans (orange).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 53 / 97
+===== page 54 =====
+Aneurysm Morphology
+We collected 78 AAA scans manually labeled as either "easy" or "hard" by
+a physician. Subsequently, we computed nine conventional measurements
+crucial for AAA evaluation.
+Table: The respective accuracy, precision, recall, and F1 Score obtained using
+conventional measurements, the conformal fingerprint, and the combination.
+Acc Recall Precision F1
+Conventional 0.693 0.506 0.806 0.765
+Conformal 0.701 0.608 0.757 0.757
+Conformal w/ neck len 0.75 0.669 0.811 0.813
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 54 / 97
+===== page 55 =====
+Deformable Circle Packed Structure
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 55 / 97
+===== page 56 =====
+Circle Packing
+Figure: Circle Packing metric : Triangle [ v1, v2, v3] has vertices v1, v2, v3, and
+edges e12, e23, e31. Three circles centered at v1, v2, and v3, with radii r1, r2 and r3
+intersect one another, with intersection angles of Φ 12, Φ23 and Φ 31, which are the
+weights associated with the edges. The edge lengths of the triangle are
+determined by ri and Φ ij by the cosine law.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 56 / 97
+===== page 57 =====
+Circle Packing
+A mesh with circle packing ( M, Γ, Φ), where M is the topological
+triangulation (connectivity), Γ ={γi, vi∈ V} are the vertex radii,
+Φ ={Φij, eij∈ E} are the angles associated with each edge.
+A discrete conformal mapping τ : (M, Γ, Φ)→ (M, ¯Γ, Φ) only changes the
+vertex radii Γ, but preserves the intersection angles Φ.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 57 / 97
+===== page 58 =====
+Conformal deformation of Circle Packing
+After finding the optimal circle packing ( M, Φ, Γ), we will use discrete
+Ricci flow to adjust the vertex radii Γ to deform the mesh, therefore, the
+deformation is discrete conformal.
+The discrete Ricci flow is defined as
+dγi
+dt = ( ¯Ki- Ki)γi,
+where ¯Ki is the desired discrete curvature.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 58 / 97
+===== page 59 =====
+Alexandrov Convex Cap Theorem
+Theorem (Alexandrov Convex Cap Theorem)
+Let D be a disk with convex Euclidean polyhedral metric. Then there
+exists a convex cap in R3 with upper boundary isometric to D. And this
+convex cap is unique up to rigid motion.
+Definition (Generalized Convex cap)
+A generalized convex cap C(T,h) with upper boundary D is defined as
+follows (assuming a given geodesic triangulation T of D and a collection of
+nonnegative numbers hi on vertices of D):
+1 Each triangle ijk∈ T can be placed above the horizontal plane such
+that the distances from its vertices to this plane is the numbers hi
+assigned to these vertices.
+2 For every edge ij∈E (T ), the sum of the two dihedral angles of the
+prisms at it is no more than π.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 59 / 97
+===== page 60 =====
+Alexandrov Convex Cap Theorem
+Definition (Total Scalar Curvature (Izmestiev))
+First, we denote Σ as the set of singular points in D. Let C(T, h) be a
+convex generalized cap. Then the total scalar curvature of C is defined as:
+S(C) =
+∑
+i∈Σ\∂D
+hiκi +
+∑
+ij∈E(T )\∂D
+(π-θij)lij +
+∑
+ij∈∂D
+(π/2-ηij)lij (10)
+where κi is the curvature at the ith height, lij is the length of the edge
+ij∈E (T ), and θij,η ij are the complete dihedral angle at interior edge ij
+and boundary edge ij, respectively.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 60 / 97
+===== page 61 =====
+Alexandrov Convex Cap Theorem
+θij =αij +αji,ω i =
+∑
+fijk∈T
+ωijk, ki = 2π-ωi
+. Furthermore, the gradient of S equals
+∂S
+∂hi
+= ki. (11)
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 61 / 97
+===== page 62 =====
+Alexandrov Convex Cap Theorem
+Figure: Total Scalar Curvature of convex caps
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 62 / 97
+===== page 63 =====
+Computational Algorithms
+Algorithm 1 Discrete Ricci flow algorithm
+Input: Triangular mesh (M, l) and target curvature ¯Ki
+1: Step 1: Optimize intial radius.
+2: Step 2: Compute edge length: lij← ri + rj.
+3: Step 3 : Compute inner angle from cosine law.
+4: Step 4: Compute discrete Gaussian curvature Ki of each vertex vi.
+5: while maxi|Ki- ¯Ki|≥ ϵ do
+6: Update log radius ui = ui +δ(Ki- ¯Ki).
+7: Normalize ui such that ∑
+i ui = 1.
+8: Update vertex radius ri.
+9: Repeat Step 2-4.
+10: end while
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 63 / 97
+===== page 64 =====
+Computational Algorithms
+Algorithm 2 Prism Embedding
+Input: Triangular mesh (M, l) and target curvature ¯Ki
+1: For each edge ij, projecting edge length ¯lij =
+√
+l 2
+ij- (hi- hj)2.
+2: θi← cos-1(
+¯l2
+ij +¯l2
+ki-¯l2
+jk
+2¯lij¯lki
+)
+3: vi← (0, 0, hi)
+4: vj← (¯lij, 0, hj)
+5: vk← (¯lki cosθi,¯lki sinθi, hk)
+6: Compute the dihedral angle on each edge.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 64 / 97
+===== page 65 =====
+Computational Algorithms
+Algorithm 3 Convex Cap Embedding
+Initialize the height function such that h|∂D = 0.
+Compute all the dihedral angles by Algorithm 2.
+Compute the 3-D curvature ki and edge curvature θij.
+while max|ki|>ϵ do
+∇S = (k1,··· , ki,··· kn)T ,
+Update the height function h+ =δ∇S.
+Compute all the dihedral angles by Algorithm 2.
+Compute the 3-D curvature ki and edge curvature θij.
+if edge is not convex, then
+step back and change the triangulation.
+end if
+end while
+¯lij =
+√
+l 2
+ij- (hi- hj)2.
+Embedd ( D,¯l) on the plane, each vertex vi has coordinate ( xi, yi).
+The final embedding is given by vi← (xi, yi, hi).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 65 / 97
+===== page 66 =====
+Computational Algorithms
+Algorithm 4 Conformal Deformation of Convex Caps
+Input: Triangular mesh M, initial curvature k0 and final curvature
+k1.
+Compute metric l(0) from k0 using Ricci flow.
+Compute the embedding of ( M, l(0)).
+t = 0.
+while t < 1 do
+k(t) = (1- t)× k0 + t× k1.
+Compute metric l(t) using Ricci flow.
+Embed ( M, l(t)) using current height or radial function as the initial
+guess.
+t← t +δ.
+end while
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 66 / 97
+===== page 67 =====
+Conformal deformation of Circle Packing
+Figure: Deformation of Convex Caps - Face Circle Packing.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 67 / 97
+===== page 68 =====
+Conformal deformation of Circle Packing
+Figure: Deformation of Convex Caps - Vertex Circle Packing
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 68 / 97
+===== page 69 =====
+Orthopedic Palatal Expansion Assessment
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 69 / 97
+===== page 70 =====
+Measuring Soft Tissue Change in Orthopedic Palatal
+Expansion
+3D scanning facial surface.
+Register point cloud to show overall changes.
+Register triangular surface to compare geodesics between landmarks.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 70 / 97
+===== page 71 =====
+3D facial scans with texture
+Figure: Facial scans
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 71 / 97
+===== page 72 =====
+3D facial scans with texture
+Figure: Facial scans
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 72 / 97
+===== page 73 =====
+Geometric Processing
+Figure: Riemann mapping.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 73 / 97
+===== page 74 =====
+Geometric Processing
+Figure: Geodesics among markers.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 74 / 97
+===== page 75 =====
+3D facial scans with texture
+Figure: Facial scans. On the top is the scan at insertion time (T0), on the bottom
+is the scan after first tie-off (T1).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 75 / 97
+===== page 76 =====
+Point Cloud Registration
+Figure: Point clouds and heatmaps. From left to right: source cloud (white) and
+target cloud (green), final position of source cloud (red), heatmap of of structural
+difference.David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 76 / 97
+===== page 77 =====
+Surface Registration
+Figure: Surface registration
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 77 / 97
+===== page 78 =====
+Surface Registration
+Figure: Surface registration
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 78 / 97
+===== page 79 =====
+Geodesics
+Figure: Geodesic Distances measurement of facial landmarks
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 79 / 97
+===== page 80 =====
+CAD Model Shape Identification and Analysis
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 80 / 97
+===== page 81 =====
+Motivation
+Figure: Examples of beads on surfaces (regions marked in red).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 81 / 97
+===== page 82 =====
+Surface Partitioning
+Figure: Original patches (left) and improved partitioning (right).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 82 / 97
+===== page 83 =====
+Beads segmentation
+Figure: Beads (regions marked in red) and Sharp edges(marked in yellow).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 83 / 97
+===== page 84 =====
+Beads segmentation
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 84 / 97
+===== page 85 =====
+Shape analysis
+Figure: A bead and its 2D mapping.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 85 / 97
+===== page 86 =====
+Shape analysis
+We record the 2D points on the outer boundary loop (marked in red) and
+calculate the following measures to describe the polygonal shape enclosed
+in the boundary loop:
+Roundness = 4πA
+P2
+Compactness = πr 2
+Conv
+Convexity = A
+Conv
+where A and P denotes the area and perimeter of the polygon enclosed by
+the outer boundary, r is the radius of the minimum inscribed circle at the
+polygon's center of mass, conv is the area of the polygon's convex hull.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 86 / 97
+===== page 87 =====
+Shape analysis
+In addition to the above measures, 2 more measures are calculated on the
+3D surface to include curvature information in our features. Shape index is
+a quantity in the range [-1, +1] that captures the local geometry, whereas
+the curvedness is a positive number that specifies the amount of
+curvature. They are defined as follows:
+s idx =-2
+π arctan
+(kmax + kmin
+kmax- kmin
+)
+curv =
+√
+k2max + k2
+min
+2
+where kmax and kmin are the principal curvatures.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 87 / 97
+===== page 88 =====
+Shape analysis
+Figure: Shape index and curvedness.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 88 / 97
+===== page 89 =====
+Experimental Results
+Figure: Bead segmentation results (left) and ground truth label (right).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 89 / 97
+===== page 90 =====
+Experimental Results
+Figure: Bead segmentation results (left) and ground truth label (right).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 90 / 97
+===== page 91 =====
+Experimental Results
+Figure: Bead segmentation results (left) and ground truth label (right).
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 91 / 97
+===== page 92 =====
+Experimental Results
+Metric Values
+Precision score 0.8571
+Recall score 0.93333
+Accuracy score 0.9082
+Table: Performance metric of segmentaion
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 92 / 97
+===== page 93 =====
+Experimental Results
+Each bead is represented in the following 6-dimensional feature vector:
+{num bd, roundness, compactness, convexity, s idx, curv}.
+We compare the shape similarity of beads by calculating the distance
+between their feature vectors. The distance is calculated using weighted
+euclidean distance with the following weight:
+{0.1, 0.2, 0.2, 0.2, 0.1, 0.2}.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 93 / 97
+===== page 94 =====
+Experimental Results
+0.02878437 0.07681764 0.09129981 0.10100566 0.11050414
+Figure: Top 5 most similar beads retrieved.
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 94 / 97
+===== page 95 =====
+Experimental Results
+Figure: Cluster 1
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 95 / 97
+===== page 96 =====
+Experimental Results
+Figure: Cluster 2
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 96 / 97
+===== page 97 =====
+Experimental Results
+Figure: Cluster 5
+David Gu (Stony Brook University) Computational Conformal Geometry November 30, 2024 97 / 97

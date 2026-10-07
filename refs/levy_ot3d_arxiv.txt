@@ -1,0 +1,1118 @@
+
+===== page 1 =====
+A NUMERICAL ALGORITHM FOR
+L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D
+BRUNO L´EVY
+Abstract. This paper introduces a numerical algorithm to compute the L2
+optimal transport map between two measures µ and ν, where µ derives from
+a density ρ defined as a piecewise linear function (supported by a tetrahedral
+mesh), and where ν is a sum of Dirac masses.
+I first give an elementary presentation of some known results on optimal
+transport and then observe a relation with another problem (optimal sam-
+pling). This relation gives simple arguments to study the objective functions
+that characterize both problems.
+I then propose a practical algorithm to compute the optimal transport map
+between a piecewise linear density and a sum of Dirac masses in 3D. In this
+semi-discrete setting, Aurenhammer et.al [ 8th Symposium on Computational
+Geometry conf. proc., ACM (1992)] showed that the optimal transport map is
+determined by the weights of a power diagram. The optimal weights are com-
+puted by minimizing a convex objective function with a quasi-Newton method.
+To evaluate the value and gradient of this objective function, I propose an ef-
+ficient and robust algorithm, that computes at each iteration the intersection
+between a power diagram and the tetrahedral mesh that defines the measure
+µ.
+The numerical algorithm is experimented and evaluated on several datasets,
+with up to hundred thousands tetrahedra and one million Dirac masses.
+Introduction
+Optimal Transportation, initially studied by Monge [24], is a very general prob-
+lem formulation that can be used as a model for a wide range of applications do-
+mains. In particular, it is a natural formulation for several fundamental questions
+in Computer Graphics [20, 21, 6]
+This article proposes a practical algorithm to compute the optimal transport
+map between two measures µ and ν, where µ derives from a density ρ defined
+as a piecewise linear function (supported by a tetrahedral mesh), and where ν is a
+sum of Dirac masses. Possible applications comprise measuring the (approximated)
+Wasserstein distance between two shapes and deforming a 3D shape onto another
+one (3D morphing).
+I first review some known results about optimal transport in Section 1, its rela-
+tion with power diagrams [4, 21] in Section 1.4 and observe some connections with
+Date: 04/01/2014.
+1991 Mathematics Subject Classification. 49M15, 35J96, 65D18.
+Key words and phrases. optimal transport, power diagrams, quantization noise power, Lloyd
+relaxation.
+Inria Nancy Grand-Est and LORIA, rue du Jardin Botanique, 54500 Vandoeuvre, France.
+1
+arXiv:1409.1279v1  [math.AP]  3 Sep 2014
+===== page 2 =====
+2 BRUNO L ´EVY
+another problem (optimal sampling [19, 10]). The structure of the objective func-
+tion minimized by both problems is very similar, this allows reusing known results
+for both functions. This gives a simple argument to easily compute the gradient
+of the quantization noise power minimized by optimal sampling, and this gives the
+second order continuity of the objective function minimized in semi-discrete opti-
+mal transport (see Section 1.6).
+I then propose a practical algorithm to compute the optimal transport map be-
+tween a piecewise linear density and a sum of Dirac masses in 3D (Section 2).
+This means determining the weights of a power diagram, obtained as the unique
+minimizer of a convex function [4]. Following the approach in [21], to optimize
+this function, I use a quasi-Newton solver combined with a multilevel algorithm.
+Adapting the approach to the 3D setting requires an efficient method to compute
+the intersection between a power diagram and the tetrahedral mesh that defines
+the density µ.
+To compute these intersections, the algorithm presented here simultaneously
+traverses the tetrahedral mesh and the power diagram (Section 2.1). The required
+geometric predicates are implemented in both standard floating point precision and
+arbitrary precision, using arithmetic filtering [22], expansion arithmetics [28] and
+symbolic perturbation [12]. Both predicates and power diagram construction al-
+gorithm are available in PCK (Predicate Construction Kit) part of my publically
+available "geogram" programming library1.
+The algorithm was experimented and evaluated on several datasets (Section 3).
+1. Optimal Transport: an Elementary Introduction
+This section, inspired by [29], [27], [8] and [1], presents an introduction to op-
+timal transport. It stays at an elementary level that corresponds to what I have
+understood and that keeps computer implementation in mind.
+1.1. The initial formulation by Monge. The problem of Optimal Transport
+was first introduced and studied by Monge [24]. With modern notations, it can be
+stated as follows :
+(M)
+given Ω a Borel set and two measures µ and ν on Ω such that µ(Ω) =ν(Ω),
+find T : Ω→ Ω such that
+{ (C1) ν =T♯µ
+(C2)
+∫
+Ωc(x,T (x))dµ is minimal
+where c denotes a convex distance function. In the first constraint ( C1), T♯µ
+denotes the pushforward of µ byT , defined by T♯µ (X) =µ(T-1(X)) for any Borel
+(i.e. measurable) subset X of Ω. In other words, the constraint ( C1) means that
+T should preserve the mass of any measurable subset of Ω. The functional in ( C2)
+has a non-symmetric structure, that makes it difficult to study the existence for
+problem (M).
+The non-symmetry comes from the constraint that T should be a map. It makes
+it possible to merge mass but not to split mass. This difficulty is illustrated in Figure
+1. Suppose you want to find the optimal transport from one vertical segment L1 to
+1http://gforge.inria.fr/projects/geogram/
+===== page 3 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 3
+Figure 1. A classical illustration of the existence problem with
+Monge's formulation: there is no optimal transport map from a
+segment L1 to two parallel segments L2 and L3 (it is always pos-
+sible to find a better one by replacing h with h/2)
+two parallel segments L2 and L3. It is possible to split L1 into segments of length
+h mapped to L2 andL3 in alternance (Figure 1 left). For any length h, it is always
+possible to find a better map, i.e. with a lower value of the functional in ( C2), by
+splittingL1 into smaller segments (Figure 1 right), therefore problem (M) does not
+have a solution within the set of admissible maps. This problem occurs whenever
+the source measure µ has mass concentrated on sets with zero geometric measure
+(likeL1).
+1.2. The relaxation of Kantorovich for Monge's problem. To overcome this
+difficulty, Kantorovich proposed a relaxation of problem (M) where mass can be
+both splitted and merged. The idea consists of manipulating measures on Ω × Ω as
+follows :
+(K)
+min
+{
+∫
+Ω×Ω
+c(x,y )dγ| γ∈ Π(µ,ν )
+}
+where Π(µ,ν ) ={γ∈P (Ω× Ω)| (P1)♯γ =µ ; (P2)♯γ =ν}
+where (P1) and (P2) denote the two projections ( x,y )∈ Ω× Ω↦→ x and (x,y )∈
+Ω× Ω↦→y respectively.
+The pushforwards of the two projections (P1)♯γ and (P2)♯γ are called the marginals
+of γ. The probability measures γ in Π(µ,ν ), i.e. that have µ and ν as marginals,
+are called transport plans. Among the transport plans, those that are in the form
+(Id×T )♯µ correspond to a transport map T :
+Observation 1. If (Id×T )♯µ∈π(µ,ν ), then T pushes µ to ν.
+Proof. (Id×T )♯µ belongs to π(µ,ν ), therefore (P2)♯(Id×T )♯µ =ν,
+or ((P2)◦ (Id×T ))♯µ =ν, thus T♯µ =ν □
+With this observation, for transport plans of the form γ = (Id×T )♯µ, (K)
+becomes
+min
+
+
+
+∫
+Ω×Ω
+c(x,y )d ((Id×T )♯µ)
+
+
+ = min
+
+
+
+∫
+Ω
+c(x,T (x))dµ
+
+
+To help intuition, four examples of transport plans in 1D are depicted in Figure
+2. The measure γ on Ω× Ω is non-zero on subsets that contain points ( x,y ) such
+===== page 4 =====
+4 BRUNO L ´EVY
+Figure 2. Four examples of transport plans in 1D. A: a segment
+is translated. B: a segment is splitted into two segments. C: a
+Dirac mass is splitted into two Dirac masses. D: a Dirac mass is
+splitted into two segments. The first two ones (A and B) are in
+the form (Id×T )♯µ whereT is a transport map, whereas the third
+and fourth ones (C and D) are not, because they both split a Dirac
+mass.
+that mass is transported from x toy. The transport plans in the first two examples
+are in the form (Id×T )♯µ, i.e. they are derived from a transport map 2. The third
+and fourth ones do not admit a transport map, because they split a Dirac mass.
+The optimal transport plan for the case shown in Figure 1 is of the same nature.
+It is not in the form ( Id×T )♯µ because it splits the mass concentrated in L1 into
+L2 and L3.
+At this point, a standard approach to tackle the existence problem is to find
+some regularity in both the functional and space of admissible transport plans,
+i.e. proving that the functional is smooth enough and finding a compact set of
+admissible transport plans. Since the set of admissible transport plans contains
+at least the product measure µ⊗ν, it is non-empty, and existence can be proved
+using a topological argument that exploits the smoothness of the functional and
+the compactness of the set. Once the existence of a transport plan is proved, an
+interesting question is whether there exists a transport map that corresponds to this
+transport plan. Unfortunately, problem (K) does not directly exhibit the properties
+required by this path of reasoning. However, one can observe that (K) is a linearly
+constrained optimization problem. This calls for studying the dual formulation,
+as done by Kantorovich. This dual formulation has a nice structure, that allows
+answering the questions above (existence of a transport plan, and whether there is
+a transport map that corresponds to this transport plan when it exists).
+1.3. The dual formulation of Kantorovich. The dual formulation can be stated
+as follows3 :
+2For the second one (B), the transport map is not defined in the center of the segment, but it
+is not a problem since there is no mass concentrated there.
+3 Showing the equivalence with problem (K) requires some care, the reader is referred to [29]
+chapter 5. Note that [29] uses a slightly different definition (with φ -ψ instead of φ +ψ), that
+makes the detailed argument simpler but that breaks symmetry between φ andψ. Since I stay at
+an elementary level, I prefer to keep the symmetry.
+===== page 5 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 5
+(D) : max
+
+
+
+∫
+Ω
+φdµ +
+∫
+Ω
+ψdν| (C1) φ∈L1(µ);ψ∈L1(ν);
+(C2) φ(x) +ψ(y)≤c(x,y )∀(x,y )∈ Ω× Ω
+
+
+
+Following the classical image that gives some intuition about this formula, imag-
+ine now that you are hiring a transport company to do the job for you. The company
+has a special way of calculating the price: the function φ(x) corresponds to what
+they charge you for loading at x, and ψ(y) what they charge for unloading at y.
+The company tries to maximize profit (therefore is looking for a max instead of a
+min), but they cannot charge you more than what it will cost you if you do the job
+yourself (C2).
+The existence for (D) is difficult to study, since the class of admissible functions
+that satisfy (C1) and (C2) is non-compact. However, more structure in the problem
+can be revealed by referring to the notion of c-transform, that exhibits a class of
+admissible functions with regularity :
+Definition 1. Given a function X : Ω→ ¯R, the c-transform Xc is defined by :
+Xc := inf
+x∈Ω
+c(x,y )-X (x)
+• If for a function φ there exists a function X such that φ =Xc, then φ is
+said to be c-concave;
+• Ψc(Ω) denotes the set of c-concave functions on Ω.
+It is now possible to make two observations, that allow us to restrict ourselves
+to the class of c-concave functions for the possible choices for φ and ψ :
+Observation 2. If (φ,ψ ) is admissible for (D), then (φ,φc) is also admissible.
+Proof. {
+∀(x,y )∈ Ω× Ω,φ (x) +ψ(y)≤c(x,y )
+φc(y) = inf
+x∈Ω
+c(x,y )-φ(x)
+φ(x) +φc(y) = φ(x) + infx′∈Ω (c(x′,y )-φ(x′))
+≤ φ(x) +c(x,y )-φ(x)
+≤ c(x,y )
+□
+Observation 3. If (φ,ψ ) is admissible for (D), then a better candidate can be
+found by replacing ψ with φc :
+Proof.
+{
+φc(y) = inf
+y∈Ω
+c(x,y )-φ(x)
+∀x∈ Ω,ψ (y) ≤ c(x,y )-φ(x)
+⇒ ψ(y)≤φc(y)
+□
+Therefore, we have min(K) = max
+ψ∈Ψc(Ω)
+∫
+Ω
+ψdµ +
+∫
+Ω
+ψcdν
+I will not detail here the proof for the existence, the reader is referred to [29], Chap-
+ter 4. The idea is that we are now in a much better situation, since the class of
+admissible functions Ψc(Ω) is compact (provided that we fix the value of Ψ at one
+===== page 6 =====
+6 BRUNO L ´EVY
+point of Ω to remove the translational invariance degree of freedom of the problem).
+Since we have computer implementation in mind, our goal is to find a numerical
+algorithm to compute an optimal transport mapT . At first sight, though the values
+of the functionals match at a solution of ( K) and (D), it seems to be difficult to
+deduceT from a solution to the dual problem (D). However, there is a nice relation
+between the dual problem ( D) and the initial Monge's problem ( M), detailed in
+[29], chapters 9 and 10. The main result characterizes the pairs of points (x,y ) that
+are connected by the transport plan :
+Theorem 1.
+∀(x,y )∈∂cψ,∇ψ(x)-∇xc(x,y ) = 0
+where ∂cψ ={(x,y )|φ(x) +ψ(y) = c(x,y )} denotes the so-called c-subdifferential
+of ψ.
+Proof. See [29] chapter 10.
+I summarize the heuristic argument given at the beginning of the same chapter,
+that gives some intuition :
+Consider a point ( x,y ) on the c-subdifferential ∂cψ, that satisfies φ(y) +ψ(x) =
+c(x,y ) (1).
+By definition, φ(y) =ψc(y) = inf
+x
+c(x,y )-ψ(x), thus∀˜x,φ (y)≤c(˜x,y )-ψ(˜x), or
+φ(y) +ψ(˜x)≤c(˜x,y ) (2).
+By substituting (1) into (2), one gets ψ(˜x)-ψ(x)≤c(˜x,y )-c(x,y ) for all ˜x.
+Imagine now that ˜x follows a trajectory parameterized by ϵ and starting at x. One
+can compute the gradient along an arbitrary direction w by taking the limit when
+ϵ tends to zero in the relation ψ(˜x)-ψ(x)
+ϵ ≤ c(˜x,y)-c(x,y)
+ϵ . Thus we have∇ψ(x)·w≤
+∇xc(x,y )·w. The same derivation can be done with -w instead of w, and one
+gets:∀w,∇ψ(x)·w =∇xc(x,y )·w, thus∀(x,y )∈∂cψ,∇ψ(x)-∇xc(x,y ) = 0.
+Note: the derivations above are only formal ones and do not make a proof. The
+proof requires a much more careful analysis, using generalized definitions of differ-
+entiability and tools from convex analysis. □
+In the L2 case, i.e. c(x,y ) = 1 /2∥x-y∥2, we have ∀(x,y )∈ ∂cψ,∇ψ(x) +
+y-x = 0, thus, whenever the optimal transport map T exists, we have T (x) =
+x-∇ψ(x) = ∇(∥x∥2/2-ψ(x)). Not only this gives an expression of T , but
+also it allows characterizing T as the gradient of a convex function, which is an
+interesting property since it implies that two "transported particles" x1↦→ T (x1)
+and x2↦→T (x2) cannot collide, as shown below :
+Observation 4. If c(x,y ) = 1/2∥x-y∥2 and ψ∈ Ψc(Ω), then ¯ψ : x↦→ ¯ψ(x) =
+∥x∥2/2-ψ(x) is convex (it is an equivalence if Ω = Rd).
+Proof.
+ψ(x) = inf
+y
+|x-y|2
+2 -φ(y)
+= inf
+y
+∥x∥2
+2 -x·y +∥y∥2
+2 -φ(y)
+- ¯ψ(x) = φ(x)-∥x∥2
+2 = inf
+y
+-x·y +
+(
+∥y∥2
+2 -φ(y)
+)
+¯ψ(x) = sup
+y
+x·y-
+(
+∥y∥2
+2 -φ(y)
+)
+===== page 7 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 7
+The function x↦→ x·y-
+(
+∥y∥2
+2 -φ(y)
+)
+is linear in x, therefore the graph of ¯ψ is
+the upper envelope of a family of hyperplanes, thus ¯ψ is convex. □
+Observation 5. Consider the trajectories of two particles parameterized by t∈
+[0, 1], t↦→ (1-t)x1 +tT (x1) and t↦→ (1-t)x2 +tT (x2). If x1 ̸= x2 and for
+0<t< 1 the particles cannot collide.
+Proof. By contradiction, suppose that you have t∈ (0, 1) and x1̸=x2 such that:
+(1-t)x1 +tT (x1) = (1 -t)x2 +tT (x2)
+(1-t)x1 +t∇ ¯ψ(x1) = (1 -t)x2 +t∇ ¯ψ(x2)
+(1-t)(x1-x2) +t(∇ ¯ψ(x1)-∇ ¯ψ(x2)) = 0
+∀v, (1-t)v· (x1-x2) +tv· (∇ ¯ψ(x1)-∇ ¯ψ(x2)) = 0
+takev = (x1-x2)
+(1-t)∥x1-x2∥2 +t(x1-x2)· (∇ ¯ψ(x1)-∇ ¯ψ(x2)) = 0
+which is a contradiction since this quantity is the sum of two strictly positive
+numbers ( recalling the definition of the convexity of ¯ψ: ∀x1 ̸= x2, (x1-x2)·
+(∇ ¯ψ(x1)-∇ ¯ψ(x2))> 0 ).
+□
+At this point, we know that when the optimal transport map exists, it can be
+deduced from the function ψ using the relation T (x) =∇ ¯ψ = x-∇ψ. We now
+consider some ways of finding the function ψ.
+The classical change of variable formula gives:
+∀B,
+∫
+B
+µ(x)dµ =µ(B) =ν(T (B)) =
+∫
+B
+1
+detJT (x)T (x)dν
+where JT denotes the Jacobian matrix of T .
+If µ and ν both have a density u and v (i.e.∀B,µ (B) =
+∫
+Bu(x)dx and ν(B) =∫
+Bv(x)dx), then one can (formally) consider (1.3) in a pointwise manner :
+∀x∈ Ω,u (x) = 1
+detJT (x)v(T (x)) ;
+injecting T =∇ ¯ψ and JT =H ¯ψ in (1.3) gives:
+(1) ∀x∈ Ω,u (x) = 1
+detH ¯ψ(x)v(∇ ¯ψ(x))
+where H ¯ψ denotes the Hessian of ¯ψ. Equation 1 is known as the Monge-Amp` ere
+equation. It is a highly non-linear equation, and its solution when it exists often has
+singularities. It is similar to the eikonal equation that characterizes the distance
+function and that has a singularity on the medial axis. Note that the derivations
+above are only formal, studying the solutions of the Monge-Amp` ere equation re-
+quires using more elaborate tools, and several types of weak solutions can be defined
+(viscosity solutions, solutions in the sense of Brenier, . . . ).
+Still keeping computer implementation in mind, one may consider three different
+problem settings :
+• continuous: ifµ andν have a densityu andv, it is possible to numerically
+solve the Monge-Amp` ere equation, as done in [5] and [26];
+===== page 8 =====
+8 BRUNO L ´EVY
+• discrete: if both µ andν are discrete (sums of Dirac masses), then finding
+the optimal transport plan becomes an assignment problem, that can be
+solved with some variants of linear programming techniques (see the survey
+in [7]);
+• semi-discrete: ifµ has a density and ν is discrete (sum of Dirac masses),
+then an optimal transport map exists. It has interesting connections with
+notions of computational geometry. The remainder of this paper considers
+this problem setting.
+1.4. The semi-discrete case. I now consider that µ has a density u, and that
+ν =∑k
+i=1νiδpi is a sum of k Dirac masses, that satisfies ν(Ω) =∑k
+i=1νi =µ(Ω).
+WheneverT exists, the pre-images of the Dirac masses T-1(pi) partition Ω almost
+everywhere4. This subsection reviews the main results in [4], showing that this par-
+tition corresponds to a geometrical structure called a power diagram. Interestingly,
+from the point of view of computer implementation, the proof directly leads to a
+numerical algorithm, as experimented in 2D in [21] and in 3D further in this paper.
+Definition 2. Given a set P of k points pi in Rd and a set W of k real numbers
+wi, the Voronoi diagram Vor(P ) and the power diagram PowW (P ) are defined as
+follows :
+• The Voronoi diagram Vor(P ) is the partition of Rd into the subsets Vor(pi)
+defined by :
+Vor(pi) :={x|∥x-pi∥2 <∥x-pj∥2 ∀j̸=i};
+• the power diagram PowW (P ) is the partition of Rd into the subsets PowW (pi)
+defined by :
+PowW (pi) :={x|∥x-pi∥2-wi <∥x-pj∥2-wj ∀j̸=i};
+• the map TW defined by∀i,∀p∈ PowW (pi),TW (p) =pi is called the assign-
+ment defined by the power diagram PowW (P ).
+It can be shown that the assignment defined by a power diagram is an optimal
+transport map (the main argument of the proof is sketched further). Then one
+needs to determine - when it is possible 5 - the parameters of this power diagram
+(i.e. the weights) that realize the optimal transport towards a given discrete target
+measure ν. Intuitively, a power diagram may be thought-of as a generalization of
+the Voronoi diagram, with additional "tuning buttons" represented by the weights
+wi. Changing the weight wi associated with a point pi influences the area and
+the measure µ(PowW (pi)) of its power cell (the higher the weight, the larger the
+power cell). Though the relation between the weights and the measures of the
+power cells is non-trivial 6, it is well behaved, and as shown below, one can prove
+the existence and uniqueness of a set of weights such that the measure of each
+power cellµ(PowW (pi)) matches a prescribed value νi. In this case, the prescribed
+measuresνi are referred to as capacity constraints, and the power diagram is said to
+be adapted to the capacity constraints. At this point, since we already know that
+the assignment defined by a power diagram is an optimal transport map, then we
+are done (i.e. the assignment defined by the power diagram is the optimal transport
+4 except on a subset of measure 0 on the common boundaries of the parts.
+5We will see further that it is always possible in this setting.
+6Misleadingly, the term 'weight' seems similar to 'mass', but both notions are not directly
+related.
+===== page 9 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 9
+Figure 3. Illustra-
+tion of the (by contra-
+diction) argument that
+the common boundary
+between the pre-images
+ofpi andpj is contained
+by a straight line or-
+thogonal to [pi,pj].
+Figure 4. The weight
+vector that defines an
+optimal transport map
+can be found as the
+maximizer of a convex
+function, defined as the
+lower envelope of a fam-
+ily of linear functions.
+map that we are looking for). I shall now give more details about the proofs of the
+two parts of the reasoning.
+Theorem 2. Given a set of points P and a set of weights W , the assignment TP,W
+defined by the power diagram is an optimal transport map.
+Proof. I give here the main idea of the proof (see [4] for the complete one). The main
+argument is that if T is an optimal transport map, then the common boundary of
+the pre-imagesT-1(pi) andT-1(pj) of two Dirac masses is a straight line orthogonal
+to the segment [pi,pj]. The argument, obtained by contradiction, is illustrated in
+Figure 3. Suppose that the common boundary between the pre-images T-1(pi) and
+T-1(pj) is not a straight line (thick curve in the figure), then one can find a straight
+line orthogonal to the segment [ pi,pj] that has an intersection with the common
+boundary (dashed line in the figure), and two points qi and qj located as shown
+in the figure. Then, it is clear (by the Pythagorean theorem) that re-assigning
+qj to T-1(pi) and qi to T-1(pj) lowers the transport cost, which contradicts the
+initial assumption. It is then possible to establish that the pre-images correspond
+to power cells, by invoking some properties of power diagrams [3]. □
+Theorem 3. Given a measure µ with density, a set of points (pi) and prescribed
+masses νi such that ∑νi = µ(Ω), there exists a weights vector W such that
+µ(PowW (pi)) =νi.
+Proof. Consider the functionfT (W ) =
+∫
+Ω∥x-T (x)∥2-wT(x)dµ, whereT : Ω→P
+is an arbitrary assignment. One can observe that:
+• If the assignmentT is fixed,fT (W ) =
+∫
+Ω∥x-T (x)∥2dµ-∑k
+i=1wiµ(T-1(pi))
+is affine in W . In Figure 4, the graph of fT (W ) for a fixed assignment T
+===== page 10 =====
+10 BRUNO L ´EVY
+corresponds to one of the straight lines (note that in the figure, the "W
+axis" symbolizes k coordinates);
+• we now consider a fixed value ofW and different assignmentsT . Among all
+the possibleT 's, it is clear thatfT (W ) is minimized byTW , the assignment
+defined by the power diagram with weights W (the definition of the power
+cell minimizes at each point of Ω the integrand in the equation of fT (W )).
+Now takeT =TW infT (W ), in other words, consider the function fTW (W ). Its
+graph, depicted as a dashed curve in Figure 4, is the lower envelope of a family
+of hyperplanes, thus it is a concave function, with a single maximum. For the
+next steps of the proof, we now need to compute the gradient ∇WfTW (W ). Note
+that when computing the variations of fTW (W ), both the argument W of f and
+the parameter TW change, making the computations quite involved. When TW
+changes, the power cells change, and one needs to compute integrals over varying
+domains. However, it is possible to drastically simplify computations by using the
+envelope theorem. Given a parameterized family of functions fT (W ) (in our case,
+the parameter is T ), whenever the gradient of ∇WfTW (W ) exists, it is equal to
+the gradient ∇WfT∗(W ) computed at the minimizer T∗ (fTW in our case). In
+other words, when computing the gradients, one can directly use the expression of
+fT (W ) and ignore the variations of T in function of W . In Figure 4, it means that
+the tangent to fTW at W corresponds to the (linear) graph of fT (W ) with a fixed
+T =TW . Note that in our case, the so-called choice set, i.e. where T is chosen, is
+the set of all the assignments between Ω and P . This requires a special version of
+the envelope theorem that works for such a general choice sets [23].
+One can see that the components of the gradient correspond to the (negated)
+measures of the power cells :
+∂fTW (W)
+∂wi
+= ∇W
+
+
+∫
+Ω
+∥x-T (x)∥2dµ
+  
+constant(W)
+-
+k∑
+i=1
+wiµ(T-1
+W (pi))
+
+
+= -µ(T-1
+W (pi)) =-µ(PowW (pi))
+We are now in a very good situation to establish the existence and uniqueness
+of the weight vector W that realizes the optimal transport map. The idea is to
+use fTW to construct a function g that has a global maximum realized at a weight
+vector such that the measures of the power cells match the prescribed measures.
+Consider the functiong defined byg(W ) =fTW (W )+∑
+iνiwi. The components of
+the gradient of g are given by ∂g/∂wi =-µ(PowW (pi)) +νi. This function is also
+concave (it is the sum of a concave function plus a linear one), therefore it has a
+unique global maximum where the gradient is zero. Therefore, at the maximum of
+g, for each power cell, the measure µ(PowW (pi)) matches the prescribed measure
+νi. □
+Besides showing the existence of a semi-discrete transport map and character-
+izing it as the assignment defined by a power diagram, the proof in Theorem 3
+directly leads to a numerical algorithm, as shown in [21], described in Section 2
+further. A similar algorithm can be obtained by starting from a discrete version
+===== page 11 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 11
+Figure 5. Left: random
+points (black dots), Voronoi
+diagram and cell centroids
+(gray dots); Right: a barycen-
+tric Voronoi diagram is a local
+minimizer of Q.
+Figure 6. The
+quantization noise
+power Q mini-
+mized in vector
+quantization is a
+lower envelope.
+of the Monge-Ampere equation and the characterization of T as the gradient of a
+piecewise linear convex function[13].
+1.5. Relation with Kantorovich's dual formulation. It is interesting to see the
+relation between the proof of Aurenhammer et.al that does not use the formalism
+of optimal transport, and the dual formulation of optimal transport. Interestingly,
+one can remark that the same argument (lower envelope of hyperplanes) is used to
+establish the concavity offTW in Theorem 3 and the convexity of ¯ψ in Observation
+4. The relation between both formulations can be further explained if we link the
+Kantorovich potential φ and the weights wi with the relation φ(yi) = 1/2wi. For
+instance, injecting φ(yi) = 1/2wi and c(x,y ) = 1/2∥x-y∥2 into ψ(x) = φc(x) =
+infyc(x,y )-φ(y) gives ψ(x) = 1/2 infi∥x-yi∥2-wi. This corresponds to the
+definition of the power cells (intuitively, the inf in the definition of φc is the same
+as the inf in the definition of the power cell). Now consider T (x) =x-∇ψ(x). Still
+using the expression of ψ(x) above, we get T (x) =x- 1/2∇x(∥x-yi∥2-wi) =yi.
+This connects the characterization of T as the solution of ∇φ(x)-∇xc(x,y ) = 0
+(Theorem 1) with the characterization of T as the assignment defined by the power
+diagram (Theorem 3). This corresponds to the point of view developed in [13].
+1.6. Relation with optimal sampling. In this section, I exhibit some relations
+between semi-discrete optimal transport and another problem referred to asoptimal
+sampling (or vector quantization ). Given a compact Ω ⊂ Rd, a measure µ, and a
+set of k points Y in Rd, the quantization noise power of Y is defined as :
+(2) Q(Y ) :=
+∫
+Ω
+min
+i
+∥x-yi∥2dµ =
+k∑
+i=1
+∫
+Vor(yi)
+∥x-yi∥2dµ
+The quantization noise power measures how good Y is at "sampling" Ω (the
+smaller, the better), see the survey in [10]. The vector quantization problem con-
+sists in minimizing Q(Y ) (i.e. finding the poinset Y that best samples Ω). This
+notion comes from signal processing theory, and was used to find the optimal as-
+signment of frequency bands for multiplexing communications in a single channel
+[19]. Designing a numerical algorithm that optimizes Q requires to evaluate the
+===== page 12 =====
+12 BRUNO L ´EVY
+gradient of Q. This requires computing integrals over varying domains (since the
+Voronoi cells of theyi's depend on the yi's), which requires several pages of careful
+derivations, as done in [14, 10]. At the end, most of the terms cancel-out, leaving a
+simple formula (see below). One can note the similarity between the quantization
+noise power (Equation 2) and the objective function maximized by the weight vec-
+tor in semi-discrete optimal transport (proof of Theorem 3). This suggests using
+the same type of argument (envelope theorem) to directly obtain the gradient of
+Q :
+Observation 6. The function Q is of class C1 (at least 7) and the components of
+its gradient relative to one of the point yi is given by:
+∇yiQ(Y ) = 2mi(yi-gi)
+wheremi =µ(Vor(yi)) =
+∫
+Vor(yi)dµ denotes the mass of the Voronoi cell Vor (yi)
+and gi = 1/mi
+∫
+Vor(yi)xdµ denotes the centroid of the Voronoi cell Vor (yi).
+Proof. Consider the function QT (Y ) :=
+∫
+Ω∥x-T (x)∥2dµ, parameterized by an
+assignment T : Ω → Y . We are in a setting similar to semi-discrete optimal
+transport (Section 1.4), except that the function QT (Y ) is quadratic (see Figure
+6), whereas FT (W ) is linear (Figure 4). We have :
+• Q(Y ) =QTVor(Y );
+• for a given Y , TVor is the unique affectation that minimizes QT (Y ).
+By the envelope theorem, we have:
+∇Q(Y ) = ∇QTVor(Y )) =∇∑
+i
+∫
+Vor(yi)
+(x2- 2x·yi +y2
+i )dµ
+= ∑
+i
+
+∇
+∫
+Vor(yi)
+x2dµ- 2∇
+∫
+Vor(yi)
+x·yidµ +∇
+∫
+Vor(yi)
+y2
+idµ
+
+
+∇yiQ(y) = -2yi
+∫
+Vor(yi)
+xdµ + 2yi
+∫
+Vor(yi)
+dµ
+= -2migi + 2miyi = 2mi(yi-gi)
+□
+This directly gives the expression of the gradient of Q and explains why most of
+the terms cancel out in the derivations conducted in [14]. I mention that the same
+result can be obtained in a more general setting with Reynold's transport theorem
+[25] (that deals with functions integrated over varying domains).
+However, the envelope argument cannot be used to compute the Hessian of Q
+(second order derivatives), and the structure of the formulas [14, 11, 18] do not
+suggest that direct computation can be avoided for them. Note also that Q is the
+lower envelope of a family of parabola (instead of a family of hyperplanes), there-
+fore the concavity argument does not hold, and the graph of Q has many local
+minima (as depicted in Figure 6). The local minima of Q, i.e. the point sets Y
+such that∇Q = 0, satisfy∀i,yi =gi, in other words, the position at each point yi
+corresponds to the centroids of the Voronoi cell associated with yi. For this reason,
+a stationary point of Q is called a centroidal Voronoi tessellations. To compute a
+centroidal Voronoi tessellation, it is possible to iteratively move each point towards
+7it is in fact of class C2 almost everywhere [18]
+===== page 13 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 13
+the centroid of its Voronoi cell (Lloyd relaxation [19]), which is equivalent to min-
+imizing Q with a gradient descent method [10]. It is also possible to minimize Q
+with Newton-type methods [18] that show faster convergence.
+More relations between semi-discrete optimal transport and vector quantization
+can be exhibited by considering a power diagram as the intersection between ad+1
+Voronoi diagram and Rd :
+Observation 7. The d-dimensional power diagram Pow W (Y ) corresponds to the
+intersection between the d + 1 dimensional Voronoi diagram Vor( ˆY ) and Rd, where
+the Rd+1 lifting ˆyi of yi is defined by :
+ˆyi =
+
+
+yi,1
+yi,2
+...
+yi,d
+hi =√wM- wi
+
+
+where yi,j denotes the j-th coordinate of point yi, and where wM denotes the
+maximum of all weights Max (wi).
+Proof.
+Vor(ˆyi)∩ Rd ={x | ∥ˆx- ˆyi∥2 <∥ˆx- ˆyj∥2∀j̸=i}
+=
+{
+x |
+
+[ x
+0
+]
+-
+[ yi
+√wM- wi
+]
+2
+<
+
+[ x
+0
+]
+-
+[ yj
+√wM- wj
+]
+2
+∀j̸=i
+}
+= {x | ∥x-yi∥2-wi +wM <∥x-yj∥2-wj +wM∀j̸=i}
+= {x | ∥x-yi∥2-wi <∥x-yj∥2-wj∀j̸=i}
+= Pow W (yi)
+□
+We can now see a relation between vector quantization and semi-discrete optimal
+transport :
+Observation 8. The quantization noise power ˆQ( ˆY ) computed in Rd+1 corresponds
+to the term fTW (W ) of the function maximized by the weight vector that defines a
+semi-discrete optimal transport map plus the constant wMµ(Ω).
+Proof.
+ˆQ( ˆY ) = ∑
+i
+∫
+Vor(ˆyi)∩Rd
+∥ˆx- ˆyi∥2dµ
+= ∑
+i
+∫
+PowW (yi)
+∥x-yi∥2-wi +wMdµ
+= fTW (W ) +wMµ(Ω)
+□
+===== page 14 =====
+14 BRUNO L ´EVY
+The quantization noise powerQ is already known to be of classC2 almost every-
+where8 [18]. As a consequence of this observation, since the function fTW (W ) can
+be obtained through the change of variable hi =√wM-wi, it is also of class C2
+almost everywhere. This gives more justification for using a quasi-Newton method
+to find the maximum ofg as done in [21] and in this paper (but note that a complete
+justification would require to find some bounds on the eigenvalue of the Hessian).
+Another consequence of this observation is that given Ω ⊂ Rd, a measure µ
+and a pointset Y , optimizing ˆQ for the first d coordinates moves the points in a
+way that minimizes the quantization noise power, and optimizing for the d + 1
+coordinate computes the weights of a power diagram that defines an assignment
+that transports µ to the points. Interestingly, the first problem has multiple local
+minima, whereas the second one admits a global maximum.
+2. Numerical Algorithm
+I shall now explain how to use the results in Section 1.4 and turn them into
+an efficient numerical algorithm. The algorithm is a variation of the one in [21].
+Besides generalizing it to the 3d case, I make some observations that improve the
+efficiency of the multilevel optimization method.
+The input of the algorithm is a measure µ, represented by a simplicial complex
+M (i.e. an interconnected set of tetrahedra in 3D), a set Y of k points yi and
+k masses νi such that ∑νi = µ(M) where µ(.) is defined as follows : For a set
+B⊂ R3, the measure µ(B) corresponds to the volume of the intersection between
+the tetrahedra of M andB. Optionally, M can have a density linearly interpolated
+from its vertices. In this setting, the measure of B corresponds to the integral of
+the linearly interpolated density on the intersection between B and the tetrahedra
+of M.
+The weight vector that realizes the optimal transport can be obtained by max-
+imizing the function g(W ) using different numerical methods. The single-level
+version of the algorithm in [21] is outlined in Algorithm 1 :
+To facilitate reproducing the results, I give more details about each step of
+the algorithm: (1): note that the components of the gradient of g correspond to
+the difference between the prescribed measures ν and the measures of the power
+cells. This gives an interpretation of the norm of the gradient of g, and helps
+choosing a reasonable ϵ threshold. In the experiments below, I used ϵ = 0.01∗
+µ(M)/
+√
+k. (2): the algorithm that computes the intersection between a power
+diagram and a tetrahedral mesh is detailed further (Algorithm 2). (3),(4): once the
+intersection VorW (Y )∩M is computed, the terms g(W ) and∇g(W ) are obtained
+by summing the contributions of each intersection (grayed area in Figure 7). (5):
+To maximize g, as in [21], I use the L-BFGS numerical optimization method [16].
+An implementation is available in [17].
+2.1. Computing the intersection between a tetrahedral mesh and a power
+diagram. To adapt the 2d algorithm in [21] to the 3d case, the only required
+8 "by almost everywhere", we mean that the function is no longer C2 whenever two points
+become co-located, or whenever a Voronoi bisector matches a discontinuity of µ located on a
+straight line.
+===== page 15 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 15
+Data: A tetrahedral mesh M, a set of points Y and masses νi such that
+µ(M) =∑νi
+Result: The weight vector W that determines the optimal transport map T
+from M to∑νiδyi
+W← 0
+(1) while ∥∇g(W )∥2 <ϵ do
+(2) Compute VorW (Y )∩M
+(3) Compute g(W ) =∑
+i
+∫
+PowW (yi)∩M
+∥x-yi∥2-widµ +∑
+iνiwi
+(4) Compute∇g(W ) =-µ(PowW (yi)) +νi
+(5) update W with L-BFGS
+end
+Algorithm 1: Semi-discrete optimal transport (single-level algorithm)
+component is a method that computes the intersection between a tetrahedral mesh
+and a power diagram (step (2) in Algorithm 1) :
+Data: A tetrahedral mesh M, a set of points Y and a weight vector W
+Result: The intersection VorW (Y )∩M
+S: Stack(couple(tet index, point index))
+foreach tetrahedront∈M do
+if t is not marked then
+(1) i←i| PowW (yi)∩t̸=∅
+Mark(t,i)
+Push(S, (t,i))
+while S is not empty do
+(t,i)← Pop(S)
+(2) P: Convex← PowW (yi)∩t
+(3) Accumulate(P)
+(4) foreach j neighbor of i in P do
+if (t,j ) is not marked then
+Mark(t,j ); Push(S, ( t,j ))
+end
+end
+(5) foreacht′ neighbor of t in P do
+if (t′,i ) is not marked then
+Mark(t′,i ); Push(S, ( t′,i ))
+end
+end
+end
+end
+end
+Algorithm 2: Computing PowW (Y )∩M by propagation
+The algorithm works by propagating simultaneously over the tetrahedra and the
+power cells. It traverses all the couples ( t,i ) such that the tetrahedron t has a
+===== page 16 =====
+16 BRUNO L ´EVY
+Figure 7. Computing the intersection between a power diagram
+and a tetrahedral mesh by propagation.
+non-empty intersection with the power cell of yi. (1): Propagation is initialized
+by starting from an arbitrary tetrahedron t and a point yi that has a non-empty
+intersection between its power cell and t. I use the point yi that minimizes its
+power distance∥yi-.∥2-wi to one of the vertices of t. (2): a tetrahedron t and a
+power cell PowWyi can be both described as the intersection of half-spaces, as well
+as the intersectiont∩PowWyi, computed using re-entrant clipping (each half-space
+is removed iteratively). I use two version of the algorithm, a non-robust one that
+uses floating point arithmetics, and a robust one [15], that uses arithmetic filters
+[22], expansion arithmetics [28] and symbolic perturbation [12]. Both predicates
+and power diagram construction algorithm are available in PCK (Predicate Con-
+struction Kit) part of my publically available "geogram" programming library9. (3)
+the contribution of each intersection P =t∩ PowWyi is added to g and∇g.
+The convexP is illustrated in the (2d) figure 7 as the grayed area (in 3d, P is a
+convex polyhedron). The algorithm then propagates to both neighboring tetrahedra
+and points. (4): each portion of a facet of t that remains inP triggers a propagation
+to a neighboring tetrahedron t′. In the 2d example of Figure 7, this corresponds to
+edges e1 and e4 that trigger a propagation to triangles t2 and t1 respectively. (5):
+each facet ofP generated by a power cell facet triggers propagation to a neighboring
+point. In the 2d example of the figure, this corresponds to edges e2 and e3 that
+trigger propagation to points yj1 and yj2 respectively.
+This algorithm is parallelized, by partitioning the meshM intoM1,M2, . . .Mnb cores
+and by computing in each thread Mthrd∩ PowW (Y ).
+I conducted a simple experiment, where M is a tessellated sphere with 2026
+tetrahedra, and Y a sampling of the same sphere shifted by a translation vector
+of three times the radius of the sphere. The statistics in Table 1 obtained with a
+9http://gforge.inria.fr/projects/geogram/
+===== page 17 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 17
+nb masses k 1000 2000 5000 10000 30000 50000 100000
+nb iter 146 200 328 529 1240 1103 1102
+time (s) 2.8 6.4 21 65 232 568 847
+Table 1. Statistics for a simple translation scenario with the
+single-level algorithm. The threshold for ∥∇g∥2 is set to ϵ = 0.01∗
+µ(M)/
+√
+k.
+nb masses 1000 2000 5000 10000 30000 50000 100000
+deg. 0 time (s) 2.5 6 19 38 184 356 959
+deg. 1 time (s) 1 2 6 14 54 103 172
+deg. 2 time (s) 1.4 2.2 6 16 58 138 172
+BRIO/deg. 2 time (s) 1 1.65 3.4 9 26 62 106
+single level time (s) 2.8 6.4 21 65 232 568 847
+Table 2. Statistics for a simple translation scenario with the
+multi-level algorithm. The meshM has 61233 tetrahedra. Timings
+are in seconds. Each level is initialized from the previous one with
+regressions of different degrees.
+standard PC10 show that the single-level algorithm does not scale-up well with the
+number of points and starts taking a signiffficant time for processing 10K masses and
+above. This confirms the observation in [21]. This is because at the initial iteration,
+all the weights are zero, and the power diagram corresponds to the Voronoi diagram
+of the points yi. At this step, only some points yi on the border of the pointset
+have a Voronoi cell that "see" the meshM (i.e. that have a non-empty intersection
+with it). It takes many iteration to compute the weights that "shift" the concerned
+power cells onto M and allow inner points to see M. It is only once all the points
+of Y "see" M that the numerical method can capture the trend of g around the
+maximum (and then it takes a small number of iterations to the algorithm to
+balance the weights). Intuitively, Y is "peeled" only one layer of points at a time.
+The bad effect on performances is even more important than in [21], because in the
+3d setting, the proportion of "inner" points relative to the number of points on the
+border of the pointset is larger than in 2d.
+2.2. Multi-level algorithm. To improve performances, I follow the approach in
+[21], that uses a multilevel algorithm. The idea consists in "bootstrapping" the
+algorithm on a coarse sub-sampling of the pointset. The "peeling" effect mentioned
+in the previous paragraph is limited since we have a small number of points. Then
+the algorithm is run with a larger number of points, using the previously computed
+weights as an initialization. The set of points can be decomposed into multiple level
+of increasing resolution. The complete algorithm will be detailed below (Algorithm
+3).
+To further improve the speed of convergence, I use the remark in Section 1.5
+that the weights wi corresponds to the potential φ evaluated at yi (with a 1/2
+factor). For a translation, we know that T-1(y) = y-V = y-∇φ, therefore
+10 experiments done with a 2.8 GHz Intel Core i7-4900MQ CPU with an implementation of
+Algorithm 2 that uses 8 threads.
+===== page 18 =====
+18 BRUNO L ´EVY
+φ(y) =V·y whereV denotes the translation vector. In more general settings, φ is
+still likely to be quite regular (except on its singularities where T is discontinuous).
+When initializing a level from the previous one, this suggests initializing the new
+wi's from a regression of their nearest neighbors computed at the previous level.
+Table 2 shows the statistics for initialization with the nearest neighbor (deg. 0),
+linear regression with 10 nearest neighbors (deg. 1) and quadratic regression with 20
+nearest neighbors (deg. 2). As can be seen, initializing with linear regression results
+in a significant speedup. In this specific case though, quadratic regression does not
+gain anything. It is not a big surprise since we know already that φ(y) = V·y is
+linear in this specific case, but it can slightly improve performances in more general
+settings, as shown further. Finally, it is possible to gain another x2 speedup factor :
+the algorithm that we use to compute the power diagrams [2] sorts the points with
+a multilevel spatial reordering method, that makes it very efficient. It is possible to
+use the same multilevel spatial ordering for both the numerical optimization and
+for computing the power diagrams (BRIO/deg. 2 row in the table). Since only the
+weights change during the iterations, this order needs to be computed once only, at
+the beginning of the algorithm. Note the overall 8x acceleration factor as compared
+to the single-level algorithm in Table 1 (repeated in the last row of Table 2 to ease
+comparison). The complete multi-level algorithm is summarized below :
+Data: A tetrahedral mesh M, a set of points Y and masses νi such that
+µ(M) =∑νi
+Result: The weight vector W that determines the optimal transport map T
+from M to∑νiδyi
+Apply a random permutation to the points Y
+(1) Partition the interval of indices [1,k ] of Y intonl intervals [bl,el] of
+increasing size
+foreach level l do
+(2) Sort the points ybl...Y el spatially
+(3) For each i, νi←|M|/el
+(4) Interpolate the weights wbl...w el from the already computed weights
+w1...w bl-1
+Optimize the weights using Algorithm 1
+end
+Algorithm 3: Semi-discrete optimal transport (multi-level algorithm)
+In my implementation, for step (1), the ratio between the number of points in a
+level and in the rest of the points is set to 0.125. For the spatial sort in step (2),
+the algorithm, available in "geogram", was inspired by the variant of the Hilbert
+sort implemented in [9]. (3): Before computing the optimal transport maps, since
+the number of points changes at each level, the masses of the points need to be
+updated. At step (4), to determine the weight of a new point wi, I use linear least
+squares with 10 nearest neighbors for degree 1 and quadratic least squares with 20
+nearest neighbors for degree 2.
+The influence of the degree of the regression is evaluated in Table 3 for a config-
+uration where a sphere is splitted into two spheres (first row in Figure 8). Unlike
+in the previous translation case, in this configuration the potential φ is non-linear
+===== page 19 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 19
+nb masses 1000 2000 5000 10000 30000 50000 100000
+BRIO/deg. 1 time (s) 1 1.7 3.5 9.8 25 61.7 122
+BRIO/deg. 2 time (s) 0.9 1.6 3.5 8.4 28.3 61.4 112
+Table 3. Statistics for splitting a sphere into two spheres with
+the multi-level algorithm. Timings are in seconds. Each level is
+initialized from the previous one with regressions of different de-
+grees.
+(see the deformations of the spheres), and a higher degree regression slightly im-
+proves the speed of convergence for a large number of points, since it captures more
+variations of φ and better initializes W .
+2.3. Using semi-discrete transport to approximate the transport between
+two tetrahedral meshes. I now consider the case where the input is a pair of
+tetrahedral meshesM andM′. The goal is now to generate a sequence of tetrahedral
+meshes that realize an approximation of the optimal transport between M andM′.
+The algorithm is outlined below :
+Data: Two tetrahedral meshes M and M′, and k the desired number of
+vertices in the result
+Result: A tetrahedral mesh G with k vertices and a pair of points p0
+i and p1
+i
+attached to each vertex. Transport is parameterized by time
+t∈ [0, 1] with pi(t) = (1-t)p0
+i +tp1
+i .
+(1) Sample M′ with a set Y of k points
+(2) Compute the weight vector W that realizes the optimal transport between
+M and Y (Algorithm 3)
+(3) Compute E = Del(Y )|M′ and F = PowW (Y )|M ; Tets(G) ←E∩F
+(4) Foreachi∈ [1...k ], (pi)0← centroid(PowW (yi)∩M) ; ( pi)1←yi
+Algorithm 4: Approximated optimal transport between two tetrahedral meshes
+The different steps of this algorithm are implemented as follows: (1): to compute
+a homogeneous sampling, I initialize Y with a centroidal Voronoi tessellation (see
+Section 1.6). (3): the main difficulty consists in finding the discontinuities in T and
+avoid generating tetrahedra that cross them. To detect the discontinuities in T ,
+I consider that the Voronoi diagram Vor( Y ) that samples M′ evolves towards the
+power diagram PowW (Y ) that samplesM (note that this evolution goes backwards,
+fromM′ toM). Thus, the tetrahedra that are kept are those that are present both
+in the dual Del(Y ) of Vor(Y ) (Delaunay triangulation) and the dual Reg W (Y ) of
+PowW (Y ) (regular weighted triangulation). (4) Finally, the geometry p0
+i of each
+vertex of G at initial time t = 0 is determined as the centroid of the power cell
+PowW (yi)∩M. The geometry p1
+i at final time t = 1 is simply yi.
+3. Results and conclusions
+Several results are shown in Figures 8 and 9. Note that when the volume of M
+and M′ differ, using νi =|M|/k changes the "density" of M′ and preserves the
+total mass. The intermediary steps are generated by using pi = (1-t)p0
+i +tp1
+i for
+the locations at the vertices of G. As can be seen, the combinatorial criterion that
+===== page 20 =====
+20 BRUNO L ´EVY
+Figure 8. Some examples of semi-discrete optimal transport with
+topology changes.
+nb masses 1000 2000 5000 10000 30000 50000 10 5 3× 105 5× 105 106
+time (s) 1.45 3.2 7.3 17.3 55 154 187 671 1262 2649
+Table 4. Statistics for the Armadillo→ sphere optimal transport
+with varying number of masses (see third row of Figure 9). Timings
+are given in seconds. The multi-level algorithm with BRIO pre-
+ordering and degree 2 regressions is used.
+selects the stable tetrahedra successfully finds the discontinuities. The third row
+of Figure 9 demonstrates some potential applications in computer graphics. In the
+bottom row, the obtained deformation looks "natural" and "visually pleasing" (as
+far as I can judge, but my own judgment may be biased . . . ). However, a "user"
+would probably prefer to rotate the star in the center column of Figure 9 rather
+than splitting and merging the branches, but optimal transport "does not care"
+about preserving topology.
+Timings for the Armadillo→ sphere optimal transport are given in Table 4. The
+algorithm scales up reasonably well, and computes the optimal transport from a
+tetrahedral mesh to 300K Dirac masses in 10 minutes. It scales-up to 1 million
+Dirac masses (but it nearly takes 45 minutes).
+To conclude, I mention that the main limitation of Algorithm 4 is that the
+discontinuities are sampled at the precision of the initial sampling, that does not
+takes them into account. As a consequence, this leaves a gap that has a width
+of one tetrahedron in the result. One can clearly see it in the figures. Moreover,
+when the shape undergoes strong deformations, flipping may occur, making the
+concerned pairs of tetrahedra disappear in the result (for instance, one can observe
+===== page 21 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 21
+Figure 9. More examples of semi-discrete optimal transport.
+Note how the solids deform and merge to form the sphere on the
+first row, and how the branches of the star split and merge on the
+second row.
+some holes in the legs of the armadillo in Figure 9). With a better representation of
+discontinuity, one may obtain a more precise representation of the transport. This
+leads to the following open questions, that concern the continuous setting for some
+particular representations of µ and ν :
+(1) Given two tetrahedral meshes M and M′, is it possible to characterize
+the locus of the points where T is discontinuous (discontinuity locus), and
+invent an algorithm that generates a faithful representation of it ?
+(2) What does the discontinuity locus looks like if M and M′ both have a
+density linearly interpolated over the tetrahedra ?
+(3) What does the discontinuity locus looks like if µ and ν are supported by
+two different set of spheres ?
+acknowledgement
+I wish to thank Nicolas Bonneel for many discussions and for proofreading an
+early version of this article.
+References
+[1] L. Ambrosio and N. Gigli, A users guide to optimal transport , Modelling and Optimisation
+of Flows on Networks, Lecture Notes in Mathematics, (2013), pp. 1-155.
+===== page 22 =====
+22 BRUNO L ´EVY
+[2] N. Amenta, S. Choi, and G. Rote , Incremental constructions con brio , in Proceedings of
+the Nineteenth Annual Symposium on Computational Geometry, SCG '03, New York, NY,
+USA, 2003, ACM, pp. 211-219.
+[3] F. Aurenhammer, Power diagrams: Properties, algorithms and applications , SIAM J. Com-
+put., 16 (1987), pp. 78-96.
+[4] F. Aurenhammer, F. Hoffmann, and B. Aronov , Minkowski-type theorems and least-
+squares partitioning, in Symposium on Computational Geometry, 1992, pp. 350-357.
+[5] J.-D. Benamou and Y. Brenier , A computational fluid mechanics solution to the monge-
+kantorovich mass transfer problem , Numerische Mathematik, 84 (2000), pp. 375-393.
+[6] N. Bonneel, M. van de Panne, S. Paris, and W. Heidrich , Displacement interpolation
+using lagrangian mass transport , ACM Trans. Graph., 30 (2011), p. 158.
+[7] R. Burkard, M. Dell'Amico, and S. Martello , Assignment Problems, SIAM, 2009.
+[8] L. Caffarelli, The monge-amp` ere equation and optimal transportation, an elementary re-
+view, Optimal transportation and applications (Martina Franca, 2001), Lecture Notes in
+Mathematics, (2003), pp. 1-10.
+[9] C. Delage and O. Devillers, Spatial sorting, in CGAL User and Reference Manual. CGAL
+Editorial Board, 2011. 3.9 edition.
+[10] Q. Du, V. Faber, and M. Gunzburger, Centroidal voronoi tessellations: Applications and
+algorithms, SIAM Rev., 41 (1999), pp. 637-676.
+[11] Q. Du, V. Faber, and M. Gunzburger, Centroidal Voronoi tessellations: applications and
+algorithms, SIAM Review, 41 (1999), pp. 637-676.
+[12] H. Edelsbrunner and E. P. M ¨ucke, Simulation of simplicity: A technique to cope with
+degenerate cases in geometric algorithms , ACM TRANS. GRAPH, 9 (1990), pp. 66-104.
+[13] X. Gu, F. Luo, J. Sun, and S.-T. Yau, Variational principles for minkowski type problems,
+discrete optimal transport, and discrete monge-ampere equations , arXiv, (2013). [math.PR]
+http://arxiv.org/abs/1302.5472.
+[14] M. Iri, K. Murota, and T. Ohya , A fast Voronoi-diagram algorithm with applications to
+geographical optimization problems, in Proc. IFIP, 1984, pp. 273-288.
+[15] B. L´evy, Restricted voronoi diagrams for (re)-meshing surfaces and volumes , in Curves and
+Surfaces conference proceedings, 2014.
+[16] D. C. Liu and J. Nocedal, On the limited memory bfgs method for large scale optimization ,
+Math. Program., 45 (1989), pp. 503-528.
+[17] Y. Liu , HLBFGS, a hybrid l-bfgs optimization framework which unifies l-bfgs
+method, preconditioned l-bfgs method, preconditioned conjugate gradient method.
+http://research.microsoft.com/en-us/um/people/yangliu/software/HLBFGS/.
+[18] Y. Liu, W. Wang, B. L´evy, F. Sun, D.-M. Yan, L. Lu, and C. Yang, On centroidal Voronoi
+tessellation--energy smoothness and fast computation , ACM Transactions on Graphics, 28
+(2009), pp. 1-17.
+[19] S. P. Lloyd, Least squares quantization in pcm , IEEE Transactions on Information Theory,
+28 (1982), pp. 129-137.
+[20] F. M´emoli, Gromov-wasserstein distances and the metric approach to object matching, Foun-
+dations of Computational Mathematics, 11 (2011), pp. 417-487.
+[21] Q. M´erigot, A multiscale approach to optimal transport, Comput. Graph. Forum, 30 (2011),
+pp. 1583-1592.
+[22] A. Meyer and S. Pion , FPG: A code generator for fast and certified geometric predicates ,
+in Real Numbers and Computers, Santiago de Compostela, Espagne, 2008, pp. 47-60.
+[23] P. Milgrom and I. Segal, Envelope Theorems for Arbitrary Choice Sets , Econometrica, 70
+(2002), pp. 583-601.
+[24] G. Monge, M´ emoire sur la th´ eorie des d´ eblais et des remblais, Histoire de l'Acadmie Royale
+des Sciences (1781), (1784), pp. 666-704.
+[25] V. Nivoliers and B. L ´evy, Approximating functions on a mesh with restricted voronoi
+diagrams, in ACM/EG Symposium on Geometry Processing / Computer Graphics Forum,
+2013.
+[26] N. Papadakis, G. Peyr´e, and E. Oudet, Optimal Transport with Proximal Splitting, SIAM
+Journal on Imaging Sciences, 7 (2014), pp. 212-238.
+[27] F. Santambrogio, Introduction to Optimal Transport Theory , arXiv, (2010). [math.PR]
+http://arxiv.org/abs/1009.3856.
+===== page 23 =====
+A NUMERICAL ALGORITHM FOR L2 SEMI-DISCRETE OPTIMAL TRANSPORT IN 3D 23
+[28] J. R. Shewchuk, Robust adaptive floating-point geometric predicates, in Symposium on Com-
+putational Geometry, 1996, pp. 141-150.
+[29] C. Villani , Optimal transport : old and new , Grundlehren der mathematischen Wis-
+senschaften, Springer, Berlin, 2009.

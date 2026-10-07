@@ -1,0 +1,767 @@
+
+===== page 1 =====
+GMSH'S APPROACH TO ROBUST MESH GENERATION
+OF SURFACES WITH IRREGULAR PARAMETRIZATIONS
+Jean-Fran¸ cois Remacle1 and Christophe Geuzaine 2
+1 Universit´ e catholique de Louvain, Institute of Mechanics, Materials and Civil Engineering (iMMC),
+Place du Levant 1, 1348 Louvain-la-Neuve, Belgium
+2 Universit´ e de Li` ege, Department of Electrical Engineering and Computer Science, Montefiore
+Institute B28, All´ ee de la D´ ecouverte 10, 4000 Li` ege, Belgium
+ABSTRACT
+This paper proposes a robust and effective approach to overcome a major difficulty associated to surface finite element
+mesh generation: the handling surfaces with irregular (singular) parametrizations such as spheres, cones or other
+surfaces of revolution produced by common Computer Aided Design tools. The main idea is to represent triangles
+incident to irregular points as trapezoids with one degenerated edge. This new approach has been implemented in
+Gmsh and examples containing thousands of surfaces with irregular points are presented at the end of the paper.
+Keywords: Computer Aided Design, Mesh generation, Gmsh.
+1. INTRODUCTION
+Computer Aided Design (CAD) systems are used ex-
+tensively for industrial design in many domains, in-
+cluding automotive, shipbuilding, and aerospace in-
+dustries, industrial and architectural design, prosthet-
+ics, and many more. Engineering designs are encapsu-
+lated in such CAD models, which up to manufactur-
+ing tolerances exactly represent their geometry. While
+the engineering analysis process begins with such CAD
+models, the predominant method of analysis (the finite
+element method) requires an alternative, discrete, rep-
+resentation of the geometry: a finite element mesh.
+In such a mesh, the CAD model is subdivided into
+a (large) collection of simple geometrical shapes such
+as triangles, quadrangles, tetrahedra and hexahedra,
+arranged in such a way that if two of them intersect,
+they do so along a face, an edge or a node, and never
+otherwise.
+Three-dimensional CAD models are represented on
+a computer using a "Boundary Representation"
+(BRep) [1]: a volume is bounded by a set of faces,
+a face is bounded by a serie of curves and a curve is
+bounded by two end points. The BREP is a discrete
+object: it is a graph that contains model entities to-
+gether with all their topological adjacencies. Then a
+geometry is associated to each model entity. Figure 1
+presents a moderately complex CAD model together
+with its 3D mesh generated using Gmsh [2].
+As an example, consider a model face F with its
+boundary
+∂F ={C1,...,C n}.
+FaceF is topologically closed, i.e. ∂(∂F ) = ∅: each
+endpoint of the bounding curvesCj is considered twice
+inF , one time positively and one time negatively. The
+geometry of a model face F is its underlying surfaceS
+with its parametrization
+x : A↦→ R3, (u,v )↦→ x(u,v )
+whereA⊂ R2 is a rectangular region [u0,u 1]×[v0,v 1].
+A parametrization is said to be regular if ∂ux and∂vx
+are linearly independent:
+∂ux×∂vx̸= 0
+for anyu,v∈A. Points where∂ux×∂vx = 0 are called
+irregular or singular points of the parametrization. We
+337
+===== page 2 =====
+Figure 1: An Engine Block.
+assume here that irregular points are isolated. Irreg-
+ular points can occur for two possible reasons: (i) one
+of the partial derivatives ∂ux or ∂vx is equal to 0 or
+(ii) partial derivatives are non zero and are parallel.
+The second case (ii) where partial derivatives are non
+zero yet are parallel is not common in practice while
+case (i) appears quite often.
+The underlying geometry of a face F is thus a para-
+metric surface x(u,v ). Yet, its domain is often smaller
+than A: A is usually trimmed by boundaries Cj and
+the geometry of the trimming curves are algebraic
+curves cj(u,v ) = 0 defined in the ( u,v ) plane of F .
+Figure 2 shows an example of a trimmed surface.
+Generating a triangular surface mesh of F consists in
+generating a planar triangular mesh in its parameter
+plane whose map through x(u,v ) is a valid mesh in
+R3 with triangles of controlled shapes and sizes.
+A triangle is valid in the ( u,v ) plane when it is prop-
+erly oriented, i.e. when its area is strictly positive. It
+is indeed more complicated to assess that a triangle is
+valid in R3. Assume a triangle ( a, b, c) with its non
+unit normal n = (b- a)× (c- a) and the normal to
+the CAD surface at the centroid
+(ut,v t) = 1
+3(ua +ub +uc,v a +vb +vc)
+of the triangle:
+nCAD =∂ux(ut,v t)×∂vx(ut,v t).
+We say that triangle (a,b,c ) is valid if nCAD· n> 0.
+In the example of Figure 2, the depicted trimmed sur-
+face has no irregular points and the mesh generation
+procedure is usually straightforward. In this specific
+example, the anisotropic frontal-Delaunay approach
+that is implemented in Gmsh [2] was used based on
+the metric tensor
+M =
+(∥∂ux∥2 ∂ux·∂vx
+∂ux·∂vx ∥∂vx∥2
+)
+(1)
+that is of full rank everywhere.
+Surfaces with isolated irregular points are however
+very common in CAD systems: spheres, cones and
+other surfaces of revolution may contain one or two ir-
+regular points. Mesh generation procedures are known
+to be prone to failure close to irregularities. Con-
+sider for example the parametrization of a sphere as
+it is used to our best knowledge in every CAD sys-
+tem. A sphere of radius R centered at the origin is
+parametrized as
+x(u,v ) =R sinu cosv
+y(u,v ) =R sinu sinv
+z(u,v ) =R cosu
+338
+===== page 3 =====
+Figure 2: Surface mesh of a model face. View of the mesh in the parameter plane (left) and on R3.
+whereu∈ [0,π ] is the inclination andv∈ [0, 2π[ is the
+azimuth. At the poles, i.e. when u = 0 or u =π,
+∂vx =R(- sinu sinv, sinu cosv, 0) = (0, 0, 0)
+vanishes and this parametrization is irregular at the
+two poles of the sphere.
+In this paper, a new approach is proposed that allows
+to generate meshes of surfaces with irregularities in an
+efficient and robust fashion. At first, we explain in §2
+why indirect surface mesh generation procedures be-
+come fragile at the vicinity of irregular points. Then
+in§3 and§5, we present the critical modifications to
+standard meshing procedures that allow to address is-
+sues related to irregular parametrizations. Examples
+of CAD models with thousand of spheres and cones
+are finally be presented in §7.
+2. THE ISSUE OF MESHING SURFACES
+WITH IRREGULAR
+PARAMETRIZATIONS
+Two main approaches exist for surface meshing. The
+first approach, usually called the "direct approach" [3],
+consists in generating the mesh directly in R3. Differ-
+ent direct approaches have been proposed in the lit-
+erature: advancing front methods [4, 5], octree based
+methods [6, 7], methods based on local mesh modi-
+fications [8, 9], methods based on restricted Voronoi
+diagrams [10], ... Octree- and Voronoi- based methods
+have in common the need to intersect a 3D object (an
+octree or a Voronoi Diagram) with the surface that is
+to be meshed. When an octree is used, the intersec-
+tion of the octree with the surface is usually irregular
+and local mesh modifications have to be performed in
+order to obtain a quality mesh. On the other hand,
+when the Voronoi diagram of the points is used, re-
+covering edges (sharp features) of the surface is an
+issue. Other direct methods generate triangles on the
+surface without using any kind of 3D object. Advanc-
+ing front methods and paving methods [11] add points
+and triangle on the surface using a frontal approach.
+Those methods handle sharp features without difficul-
+ties and allow to generate quality meshes. Yet, such
+methods are plaged with robustness issues (front col-
+liding and 3D intersections of 2D objects). Some di-
+rect approaches [8, 9] start from a "CAD" mesh and
+modify it to produce a "computational" mesh with
+elements of controlled shapes and sizes. The main dis-
+advantage of such an approach is that it requires an
+initial mesh. One may use STL triangulations pro-
+vided by CAD modelers but those are not guaranteed
+to be watertight on a whole CAD model and a complex
+preprocessing step is usually required to fix holes and
+T-juntions. Another issue is related to what could be
+called an "isogeometric" argument: the final "compu-
+tational" mesh and the inital "CAD" mesh are piece-
+wise linear complexes that do not necessary cover the
+same geometry. Modifying an existing surface mesh
+using local mesh modification like vertex repositioning
+leads to vertices located outside of the input geome-
+try i.e. the "CAD" mesh. While meshing procedures
+of this kind that actually ensure that the distance be-
+tween the "CAD" and the "computational" mesh is
+bounded, those are based on complex datastructures
+and require to compute Haussdorff distances between
+triangulations [12].
+When mesh generation procedures have access to
+parametrizations of surfaces, one can generate a pla-
+nar mesh in the parametric domain and map it in 3D.
+This surface meshing approach is called "indirect". In
+Gmsh, surface meshes are generated in the parameter
+plane (u,v ) and standard "off the shelf" anisotropic
+2D meshers are used for generating surface meshes.
+This is of course the main advantage of the indirect ap-
+proach: a priori, no major coding effort is required to
+go from planar meshing to surface meshing. This last
+statement is of course a little bit too optimistic. En-
+339
+===== page 4 =====
+suring that a planar mesh is valid is trivial: all trian-
+gles should be positively oriented. Now, if the surface
+parametrization x(u,v )∈ R3 is regular, then the map-
+ping of the (u,v ) mesh onto the surface is itself valid
+because the composition of two regular mappings is
+regular. For example, the very simple mesh of the pa-
+rameter plane of the whole sphere presented in Figure
+3 maps exactly the sphere as depicted in the bottom
+part of Figure 3.
+Here, the main issue is that we do not actually map
+entire triangles onto the surface but only their corners.
+The topology of the 2D mesh is simply "translated"
+in 3D: straight sided triangles in the (u,v ) plane be-
+come straight sided triangles in 3D. Another "isoge-
+ometric" issue thus appears in the indirect approach:
+the mapping x(u,v ) of a triangle in the ( u,v ) plane
+is not equal to the straight sided triangle in R3. So,
+a valid 2D triangle in the parameter plane does not
+necessary produce a valid 3D triangle on the surface.
+For example all the triangles in the parameter plane
+in Figure 3 are mapped onto zero-area triangles in R3.
+On the other hand, an invalid 2D triangle (i.e. with a
+negative area) may be perfectly valid in 3D.
+In ordre to illustrate those issues, Figure 4 shows the
+example of the parameter space of a complete sphere.
+An edge (a,b ) where b is close to the north pole p
+(in red) is considered. Edge ( a,b ) is used to form a
+triangle (a,b,c ) where c ∈ A = [0, 2π[×[0,π ]. The
+iso-lines that are presented are iso-values of triangle
+qualities1: the particular point c drawn on the Figure
+is the only one in the parameter plane leading to a
+valid equilateral triangle in 3D. The grey zone in the
+Figure corresponds to the locations of points c that
+form invalid elements in 3D. Invalid elements in the
+parameter plane (u,v ) correspond to points above the
+green line that passes through ( a,b ). It can be seen
+that there exists a zone where triangles are valid in 2D
+but not in 3D, and another zone where elements are
+valid in 3D but not in 2D. Some interesting comments
+can be made with respect to Figure 4:
+• The blue line is the 3D geodesic between a and
+b. This geodesic is far from being a straight line
+in the parameter plane, especially when the edge
+(a,b ) is close to the pole (in red). Geodesics are
+straight lines in the parameter plane when the
+metric tensor M is constant (this is a sufficient
+condition). We will see in the next section that
+geodesics that are incident to an irregular point
+are also straight lines, even though the metricM
+has strong variations close to singularities.
+1We use as quality metrric the ratio 2 r
+R between the
+inner-radius r and the circumradius R multiplied by 2 in
+order to have a quality equal to one for the equilateral
+triangle.
+• The point c in Figure 4 that corresponds to an
+equilateral triangle (a,b,c ) is always in the valid
+zone i.e. the zone where triangles are both valid
+in 2D and 3D. More generally, good quality trian-
+gles can always be formed in the parameter plane,
+even when the metric is very distorded.
+• The zone that is valid in 2D but not in 3D is the
+most problematic for mesh generation algorithm
+that work in the parametric plane. Hopefully,
+this zone only contains points c for which trian-
+gles (a,b,c ) are of bad quality.
+It is difficult to generalize those three comments to
+general surfaces but our experience (through numeri-
+cal experiments) shows that they do indeed hold.
+The main question can thus be formulated as follows:
+assuming a surface with a parametrization that may
+contain isolated irregular points, can we always find a
+valid 2D mesh that corresponds to a valid 3D mesh?
+When we started to think about version 4 of Gmsh, our
+answer to that question was tending to be no, at least
+using the current implementation of the surface mesh
+generators. The typical issue that was encountered at
+the time is illustrated on Figure 5. The right part of
+the Figure represents the mesh in the parametric plane
+(u,v ) while the right part of the Figure represents the
+surface mesh in R3.
+In Figure 5, the surface S is a sphere. Points like c or
+g (in green) are classified on model face F . Points like
+d or f (in pink) are classified on regular model edges
+that boundF while points likeb ande are classified on
+the seam of F (in order to have∂(∂F ) =∅ some CAD
+systems like OpenCASCADE close periodic surfaces
+with a seam). Point b is a pole of the sphere: it is an
+irregular point. The parametric mesh is perfecly valid
+i.e. triangles cover exactly A without overlap. Yet,
+even though triangle ( b,c,d ) is correctly oriented in
+the parametric plane, it is invalid in R3. We are here
+in the situation of Figure 4 where point a is above the
+geodesic betweenc andd in the parameter plane. One
+single edge flip could potentially make the 3D mesh
+valid and of better quality: exchanging edges (c,d)
+and (a,b ) fixes all issues. Yet, doing so makes the
+parametric mesh invalid. With the set of points that
+is depicted in Figure 5, we found it impossible to build
+a quality mesh in R3 that is valid in the (u,v ) plane.
+Contrary to what one might think, the main issue here
+is not the fact that the metric tensor (1) is of rank 1 at
+irregular points and very distorted around it. In the
+context of mesh generation, geometrical queries like
+the evaluation of the metric tensor M are never done
+at irregular points; and anisotropic mesh generators
+are able to generate meshes for smooth metric fields
+even though they are very distorted. The mesh gen-
+340
+===== page 5 =====
+-
+Figure 3: A very simple mesh (left) of the parameter plane of a sphere and (right) its mapping through spherical coordinates.
+eration issue that arises here is essentially related to
+triangles (e.g. (b,c,d ) in the Figure) and edges that
+have one vertex likeb that corresponds to an irregular
+point of the parametrization.
+Another minor issue will be fixed by our new approach.
+The existence of one degenerated mesh edge connect-
+ing points b implies the existence of an irregular tri-
+angle (d,b,b) that has one degenerated edge. This
+triangle can be eliminated in a post processing stage
+but its presence is quite annoying in the mesh genera-
+tion process: computation of circumcircles, edge flips
+(flipping edge (b,d) does not change the mesh), ...
+3. GEODESICS OF SURFACES OF
+REVOLUTION
+Most of the CAD surfaces that have irregular points
+are surfaces of revolution. Consider a surface of revo-
+lution with respect to the z-axis and suppose that the
+generating curve is
+c(v) = (f(v), 0,g (v)) , v∈ [0,T ].
+The parametrization of the surface is given by
+x(u,v ) = (f(v) cos(u),f (v) sin(u),g(v)), (2)
+(u,v )∈ [0, 2π[×[0,T ]. Geodesics of surface of revolu-
+tion, even though their forms are not trivial (see for
+example the blue line of Figure 4), have specific prop-
+erties [13]. One interresting property of surfaces of rev-
+olution is that meridian curves u = cste are geodesics.
+Surfaces of revolution may have irregular points: if
+f(0) =g(0) = 0 in (2), thenx(u, 0) = (0, 0, 0) for every
+u. The origin of the axis belongs to the surface and is
+thus an irregular point as defined above. Let us now
+look at the parameter plane (u,v ) corresponding to a
+surface of revolution with a irregular point at u = 0.
+Figure 6 gives an illustration of that situation. The
+thick red line u = 0 is mapped onto one single point
+x = (0, 0, 0). Thus, edges (g,b) and ( g,b ′) have the
+same end-points in R3 but the only geodesic between
+those two points is the meridian (g,b).
+This simple result allows us to critically examine Fig-
+ure 5: edges like (c,b ), (g,b) or (d,b ) are far from being
+geodesics and are thus far from the their correspond-
+ing straight edges in R3, as depicted in Figure 7. On
+the other hand, edge (b,f ) is close to be a geodesic
+and its 3D representation is close to the correspond-
+ing straight line.
+Coming back to the mesh generation problem, it
+should be interresting to replace all the edges that are
+incident to irregular points by meridians. The new
+representation of the mesh in the ( u,v ) plane is de-
+picted in Figure 8.
+With this representation, the unique edge flip that al-
+lows to have a valid mesh in R3 is permitted. Edge
+(a,b a) (in dashed lines) can replace edge (c,d) without
+creating invalid triangles in the parameter plane (edge
+(c,g ) could be flipped as well even though it is not re-
+quired). Note here that triangles incident to irregular
+points are now right trapezoids with one degenerated
+edge, which means that no degenerated triangles exist
+in that new representation.
+4. MODIFICATIONS OF THE INITIAL
+MESH
+Our surface mesh generation procedure starts with an
+initial "empty mesh" i.e. a mesh in the parameter
+space that contains only vertices of the surface bound-
+aries. Then, in this new procedure, edges that are ad-
+341
+===== page 6 =====
+a
+b
+c
+Valid in 3D but not in (u , v)
+Valid in (u, v) but not in 3D
+b
+p
+a
+c
+Figure 4: Parameter plane of a sphere. We consider an edge (a,b ). Figures depict the quality of a triangle (a,b,c ) withc
+positioned anywhere in the parameter plane. The grey zone corresponds to invalid triangles in 3D.
+x(u, v)
+g
+d
+c
+a
+b
+c
+da f
+e
+f
+b
+e
+b
+e
+g
+Figure 5: A valid mesh in the parameter space that is invalid in the real space.
+jacent to singularities are transformed onto geodesics.
+The question that is addressed in this section is the
+validity of this initial transformation.
+Consider the surface presented in Figure 9 together
+with a mesh generated using the new version of Gmsh's
+MeshAdapt surface mesher (see§5 below).
+The initial mesh that contains all boundary points is
+presented in Figure 10. Again, a seam and two irreg-
+ular points are present in the surface plus a trimming
+curve.
+In our new procedure, all edges that are adjacent to ir-
+regular points are transformed onto geodesics. Figure
+11 shows the result of that transformation.
+It is actually easy to figure out that the initial trans-
+formed mesh of Figure 11 is actually wrong (inverted)
+in the parameter space. Figure 12 shows a zoom of the
+three problematic edges that make this mesh invalid.
+The problem comes from the fact that, in Figure 9,
+three edges of the internal boundary are initially con-
+nected to the point on the bottom right of the external
+rectangle. Yet, those edge normals are pointing up-
+ward so the proposed correction creates edgdes that
+intersect other edges of the internal boundary.
+Addressing this problem is indeed quite simple. All
+problematic geodesic edges are split along their origi-
+nal path (not along the geodesic of course) up to the
+point when no intersection occurs. The resulting ini-
+tial mesh is presented in Figure 13.
+342
+===== page 7 =====
+b′
+meridian
+singular point
+b
+g
+c
+u
+v
+Figure 6: Parameter space corresponding to a surface of
+revolution with an irregular point at u = 0.
+b
+a d f
+e
+gc
+Figure 7: True mapping of straight lines in the parameter
+space onto R3 close to an irregular point.
+5. LOCAL MESH MODIFICATIONS:
+GMSH'S MESHADAPT ALGORITHM
+REVISITED
+Gmsh's most basic surface mesher is called Me-
+shAdapt2. MeshAdapt's surface meshing strategy is
+based on the concept of local mesh modifications
+[14, 15, 16]. The algorithm works as follows. First, an
+initial mesh containing all the mesh points and edges
+of the model edges that bound a face is built in the
+parametric space (u,v ) (see §4). Then, local mesh
+modifications are applied to the mesh in the parame-
+ter plane:
+1. Each edge that is too long is split;
+2. Each edge that is too short is collapsed;
+3. Edge flips are performed in order to increase mesh
+quality;
+4. Vertices are re-located optimally after steps 1, 2
+and 3.
+2gmsh -algo meshadapt is the commandline that forces
+gmsh to use that algorithm.
+b f be
+d
+c
+a f
+e e g
+be bg bc ba bd
+Figure 8: New representation in the parameter space
+where every edge connected to an irregular point is a
+meridian. Point bi's all belong to edge (bi,i ) even though
+all bi's 3D locations are equal.
+Figure 9: A surface.
+Figure 14 illustrates local mesh modifications applied
+to edges that are in the vicinity of a irregular point b.
+When edge (a,c) is flipped, a new instance of point bc
+is created on the degenerated edge and pointc becomes
+connected to bc. The operation can be reversed as
+depicted in Figure 14. When an edge like (a,d) is split
+at pointe, a new pointbe is created on the degenerated
+line. When an edge like (c,b c) that is connected to the
+irregular point is split, bc is replaced by be. Note that
+when a point like e is relocated, point be is relocated
+as well.
+All four local mesh modifications of our algorithm in-
+volve details of implementation that are too specific
+to be described in a paper but that are critical for ro-
+bustness. Interrested readers can download the source
+code of Gmsh 4.3.0 that implements the algorithm
+that exactly corresponds to the examples of the pa-
+per. Nevertheless, the the most critical part of the Me-
+shAdapt surface mesher is the vertex relocation, both
+in term of the final mesh quality and of CPU time
+(it actually takes about 60% of the total mesh genera-
+tion time). When parametrizations are very distorded,
+simple smoothing strategies do not actually produce
+improvements of the mesh, espacially close to singu-
+larities. In this new version of the algorithm, advanced
+optimization procedures have been used [17] for ver-
+tex relocation. Figure 15 show the mesh of the surface
+343
+===== page 8 =====
+Figure 10: The initial mesh for the surface presented in
+9 represented in the parameter plane.
+Figure 11: Intial mesh of surface 9 where all edges ad-
+jacent to irregular points are transformed into geodesics.
+of Figure 9 at different stages of the MeshAdapt algo-
+rithm.
+6. DELAUNAY MESH GENERATION
+CLOSE TO IRREGULAR POINTS
+Gmsh's frontal-Delaunay algorithm is an extension to
+surface meshing of the planar frontal-Delaunay mesher
+described in [18]. Points are inserted in the domain
+in a frontal fashion while always keeping a valid mesh
+during the process. The mesh is generated in the (u,v )
+plane which means that an anisotropic Delaunay cri-
+terion is required to produce isotropic meshes in 3D.
+The most critical operation involved in that algorithm
+is the edge flip. Consider Figure 16: we would like to
+figure out wether edge (a,d) should be flipped or not.
+In order to apply Delaunay's empty circle criterion,
+we actually work in the tangent plane and compute a
+unique metric tensorM at location (a +bc +c +d)/4
+that is symmetrical with respect to points a, bc, c,
+and d. This allows to avoid "unstable flips". In this
+tangent plane, circleCM(a,c,d) is an ellipsis. The new
+representation that is proposed here allows to provide
+a robust way of computing Delaunay flips.
+In the example of Figure 16, edge (a,d) should be
+flipped to (c,b c) becausebc is insideCM(a,c,d). Other
+occurences of b like ba or bd may be located outside
+CM(a,c,d) but the only edge that should be consid-
+ered in the circle test is the geodesic ( c,b c).
+Figure 12: Zoom on the problematic geodesic edges that
+intersect internal edges of the trimming curve.
+Figure 13: Corrected initial mesh.
+7. EXAMPLES
+We have chosen two examples that were invariably cre-
+ating invalid elements in all previous versions of Gmsh.
+7.1 Many spheres
+One of the nastier parametrization that is constantly
+used in CAD systems is the sphere, with its two irreg-
+ular points at the poles. As a first example, we have
+generated a CAD model that consist in a unit cube B
+containing 5000 spheres with (pseudo-)random centers
+and radii Si,i = 1,..., 5000. The final CAD model C
+is computed as
+C =B\S1\S2···\ S5000.
+The final model C is depicted in Figure 18. It con-
+sist in 3 volumes, 4971 surfaces (mainly trimmed
+spheres resulting from the boolean operations) and
+18112 curves. Gmsh's actual script that was used to
+generate that model is given by
+// Gmsh's script to generate
+// a CAD model with 5000 spheres
+SetFactory("OpenCASCADE");
+DefineConstant[
+rmin = {0.002, Name "Min radius"}
+rmax = {0.03, Name "Max radius"}
+344
+===== page 9 =====
+bd
+collapse
+e
+d
+collapse splitsplit
+relocate
+c
+c c
+c
+a
+a a
+a
+ba bd ba bc bd
+ba be bd ba be
+d d
+flip
+d
+e
+Figure 14: Local mesh modifications with irregular
+points.
+Figure
+15: Different stages of the MeshAdapt algorithm
+n = {5000, Name "Number of spheres"}
+];
+For i In {1:n}
+r = rmin + Rand(rmax - rmin);
+x = -0.5 + Rand(1);
+y = -0.5 + Rand(1);
+z = -0.5 + Rand(1);
+Sphere(i) = {x, y, z, r};
+EndFor
+Block(n + 1) = {-0.5, -0.5, -0.5, 1, 1, 1};
+BooleanDifference{ Volume{n + 1}; Delete; }
+{ Volume{1:n}; Delete; }
+Some of the surfaces of the 5000 spheres model are
+really complex to mesh, especially when a trimmed
+CM (a, c, d )
+a
+d
+bdba
+c
+bc
+Figure 16: Illustration of the application of the circle
+criterion close to an irregular point.
+The surface
+trimming
+curvesingular
+point
+a
+Singular point
+a
+Trimming curve
+Figure 17: One surface of the 5000 sphere model that
+exhibit a complex configuration close to one of the poles
+of the sphere.
+curve is very close to an irregular point. Figure 17
+shows a complicated situation.
+7.2 Many ellipsoids
+Generating an ellipsoid can be done by applying an
+affine transformation to a sphere followed by a rota-
+tion. Using Gmsh's built-in scripting language, this
+can be achieved as follows:
+R = 2;
+Sphere(1) = {0, 0, 0, R};
+Affine{ 1,0,0,0, 0,10,0,0, 0,0,1,0 }
+{ Volume{i}; }
+Rotate {{Sqrt(2), Sqrt(2) , 0},
+{0, 0, 0}, Pi/3} Volume{i};}
+Ellipsoids have parametrizations that are even more
+distorded than spheres. In the following example, 450
+345
+===== page 10 =====
+Figure
+18: A complex model made of 5000 spheres (left), another model made of 450 ellipsoids (center) and a third model
+made of 100 intersecting cones (right).
+ellipsoids Ei, i = 1,..., 450 have been inserted into
+a unit cube, with random orientantions and random
+sizes. The final CAD model is again built as the unit
+cube "minus" all ellipsoids. In OpenCASCADE, el-
+lipsoids are encoded as B-spline surfaces and their
+intersections takes way more effort than intersecting
+spheres: it actually took about 7 minutes to generate
+the CAD model while only 3 minutes were required to
+generate the surface mesh (295 surfaces for a total of
+220,523 triangles) and only 14 seconds were required
+to generate the 3D mesh (55 volumes and 7,35 million
+tetrahedra). Figure 18 show a picture of the resulting
+mesh.
+7.3 Many cones
+Apex of cones are singular points of their parametriza-
+tions. We have generated a geometry with 100 inter-
+secting cones in a box. Figure 18 show an image of
+the mesh.
+CONCLUSIONS
+Generating in a reliable manner a quality surface mesh
+for arbitrary CAD models entails dealing with various
+CAD systems idiosyncrasies. In this paper, we have
+presented a crucial modification of Gmsh's surface
+meshing algorithms that is an important step forward
+towards this goal, by handling surfaces with a finite
+number of irregular points. The two test cases that
+are presented are only indicative: hundered of other
+examples were successfully tested during the writing
+of this paper, all with surfaces that have singularities.
+The lack of a structure of proof for surface meshing
+that is briefly explained in the introduction is one of
+the curses mesh generation people have to live with.
+Surface meshers that are reasonably reliable are all
+based on heuristics and their disfunctions and bugs can
+only be found through extensive testing. For example,
+the issue that has been explained in §4 has only been
+encountered twice in all our test cases. Yet, it has to
+be addressed because the rare conditions of apparition
+of the bug will definitively happen at some point in a
+software like Gmsh that is used by a large community.
+In conclusion, we are aware that other issues will show
+up in the long term (maybe impossible) goal of 100%
+reliability. Yet, the improvements that are presented
+in this paper definitively make Gmsh's surface meshers
+more reliable on a large numer of test cases that were
+failing in previous versions. The method that is pro-
+posed does not require deep modifications of existing
+surface meshing algorithms. Yet, it allows to produce
+quality meshes for all test cases that we encountered.
+References
+[1] Weiler K. "The radial-edge structure: a topo-
+logical representation for non-manifold geometric
+boundary representations." Geometric modeling
+for CAD applications , 1988
+[2] Geuzaine C., Remacle J.F. "Gmsh: A 3-D fi-
+nite element mesh generator with built-in pre-and
+post-processing facilities." International journal
+for numerical methods in engineering, vol. 79,
+no. 11, 1309-1331, 2009
+[3] Borouchaki H., Laug P., George P.L. "Paramet-
+ric surface meshing using a combined advancing-
+front generalized Delaunay approach." Interna-
+tional Journal for Numerical Methods in Engi-
+neering, vol. 49, no. 1-2, 233-259, 2000
+346
+===== page 11 =====
+[4] Hartmann E. "A marching method for the tri-
+angulation of surfaces." The Visual Computer ,
+vol. 14, no. 3, 95-108, 1998
+[5] Owen S.J., Staten M.L., Canann S.A., Saigal S.
+"Q-Morph: an indirect approach to advancing
+front quad meshing." International Journal for
+Numerical Methods in Engineering, vol. 44, no. 9,
+1317-1340, 1999
+[6] Mar´ echal L. "Advances in octree-based all-
+hexahedral mesh generation: handling sharp fea-
+tures." Proceedings of the 18th international
+meshing roundtable, pp. 65-84. Springer, 2009
+[7] Shephard M.S., Georges M.K. "Automatic three-
+dimensional mesh generation by the finite octree
+technique." International Journal for Numerical
+methods in engineering, vol. 32, no. 4, 709-749,
+1991
+[8] Frey P. Yams a fully automatic adaptive isotropic
+surface remeshing procedure. Ph.D. thesis, Inria,
+2001
+[9] B´ echet E., Cuilliere J.C., Trochu F. "Generation
+of a finite element MESH from stereolithography
+(STL) files." Computer-Aided Design, vol. 34,
+no. 1, 1-17, 2002
+[10] Yan D.M., L´ evy B., Liu Y., Sun F., Wang W.
+"Isotropic remeshing with fast and exact compu-
+tation of restricted Voronoi diagram." Computer
+graphics forum, vol. 28, pp. 1445-1454. Wiley On-
+line Library, 2009
+[11] Blacker T.D., Stephenson M.B. "Paving: A new
+approach to automated quadrilateral mesh gen-
+eration." International Journal for Numerical
+Methods in Engineering, vol. 32, no. 4, 811-847,
+1991
+[12] Borouchaki H., Frey P. "Simplification of surface
+mesh using Hausdorff envelope." Computer meth-
+ods in applied mechanics and engineering , vol.
+194, no. 48-49, 4864-4884, 2005
+[13] Do Carmo M.P. Differential Geometry of Curves
+and Surfaces: Revised and Updated Second Edi-
+tion. Courier Dover Publications, 2016
+[14] Remacle J.F., Li X., Chevaugeon N., Shephard
+M.S. "Transient Mesh Adaptation Using Con-
+forming and Non Conforming Mesh Modifica-
+tions." IMR, pp. 261-272. 2002
+[15] Li X., Shephard M.S., Beall M.W. "3D
+anisotropic mesh adaptation by mesh modifica-
+tion." Computer methods in applied mechanics
+and engineering, vol. 194, no. 48-49, 4915-4950,
+2005
+[16] Remacle J.F., Li X., Shephard M.S., Flaherty
+J.E. "Anisotropic adaptive simulation of tran-
+sient flows using discontinuous Galerkin meth-
+ods." International Journal for Numerical Meth-
+ods in Engineering, vol. 62, no. 7, 899-923, 2005
+[17] Knupp P.M. "Winslow smoothing on two-
+dimensional unstructured meshes." Engineering
+with Computers, vol. 15, no. 3, 263-268, 1999
+[18] Rebay S. "Efficient unstructured mesh gener-
+ation by means of Delaunay triangulation and
+Bowyer-Watson algorithm." Journal of compu-
+tational physics, vol. 106, no. 1, 125-138, 1993
+347

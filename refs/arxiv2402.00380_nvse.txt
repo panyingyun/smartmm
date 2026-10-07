@@ -1,0 +1,1778 @@
+
+===== page 1 =====
+arXiv:2402.00380v1  [math.NA]  1 Feb 2024
+n-Dimensional Volumetric Stretch Energy Minimization for
+Volume-/Mass-Preserving Parameterizations
+Zhong-Heng Tan, Tiexiang Li, Wen-Wei Lin, Shing-Tung Yau
+Abstract
+In this paper, we develop an n dimensional volumetric stretch energy ( n-VSE) functional for
+the volume-/mass-preserving parameterization of the n-manifolds topologically equivalent to n-ball.
+The n-VSE has a lower bound and equal to it if and only if the map is vo lume-/mass-preserving.
+This motivates us to minimize the n-VSE to achieve the ideal volume-/mass-preserving parame-
+terization. In the discrete case, we also guarantee the rela tion between the lower bound and the
+volume-/mass-preservation, and propose the spherical and ball volume-/mass-preserving parameteri-
+zation algorithms. The numerical experiments indicate the accuracy and robustness of the proposed
+algorithms. The modified algorithms are applied to the manif old registration and deformation, show-
+ing the versatility of n-VSE.
+Key words-- n dimensional volumetric stretch energy, volume-/mass-pre serving map, n-manifold, spherical
+parameterization, ball parameterization
+MSC(2020) 49Q10, 52C26, 65D18, 65F05, 68U05
+1 Introduction
+In this paper, we consider M as an n-dimensional manifold which is topologically equivalent t o an n-ball Bn =
+{x ∈ Rn | ∥x∥2
+2 ≤ 1}. An n-dimensional parameterization between M and Bn can be referred as to find a bijective
+map from M to Bn. The mapping induces a canonical coordinate system on the n-manifold, which can be used
+to simplify the process issue arising from digital geometri cal patterns, and medical image data. In particular,
+surface (2-manifold) and volume (3-manifold) parameteriz ations have been widely applied in computer graphics
+[
+5], image remeshing [ 19, 2], morphing [ 22], registration [ 12, 17, 24] and texture mapping [ 1, 15], etc. In recent
+years, several numerical algorithms from different approac hes for the computation of surface [ 6, 3, 8, 16, 23],
+or volume [ 18, 20, 7, 21, 14, 10] parameterizations have been well-developed and proposed by various research
+groups. Most of parameterization algorithms using nongrid mapping method for surfaces and 3-manifolds are
+in view of the minimization of distortions of angle or area fo r 2-manifolds and of volume/mass for 3-manifolds.
+The corresponding parameterizations, called angle-prese rving (conformal), area-preserving (authalic/equiareal )
+parameterizations, and volume-/mass-preserving paramet erizations, are computed by minimizing the Dirichlet
+energy [ 22, 11], stretch energy [ 23] and volumetric stretch energy [ 20, 21, 9], respectively.
+On the other hand, another more general and useful approach, namely, a unifying framework of n-dimensional
+quasi-conformal maps [ 25] to minimize quasi-conformal distortion, volume distorti on, landmark mismatch and
+to ensure the bijectivity and volume prior information for t he computation of n-dimensional quasi-conformal
+mappings between M and Bn. More precisely, based on the idea [ 13], the framework [ 25] minimizes a general-
+ized conformality distortion to measure the dilation of an n-dimensional quasi-conformal maps and satisfies the
+landmark constraints. Furthermore, the orientation const raint (determinant > 0) is converted into an equality
+constraint by using the exponential function with adding a r egularizer to minimize the volume change. The as-
+sociated n-dimensional quasi-conformal maps can be solved by ADMM wit h O( 1
+k ) convergence. The framework
+[25] can be successfully applied to the adaptive remeshing, gra phics and medical image registration.
+Based on the techniques of volumetric stretch energy minimi zation developed in [ 20, 9], in this paper, we first
+introduce the n-dimensional volumetric stretch energy functional on M and the associated volumetric stretch
+1
+===== page 2 =====
+Laplacian matrix with modified cotangent weights. We propos e the n-dimensional volumetric stretch energy min-
+imization ( n-VSEM) for the computation of an approximately n-ball volume-/mass-preserving parameterization
+from M to Bn. The minimal volumetric stretch energy is shown to have the l ower bound ν(Bn)2
+µ(M) , where µ and ν
+are the measure defined on M and Bn, respectively, and the minimizer forms a volume-/mass-pre serving map if
+and only if the volumetric stretch energy attains this lower bound. This conclusion has been proved in [ 9] when
+n = 3 as a special case with ν(·) = | · |. However, the proof used a too strong constraint |f (M)| = µ(M). In this
+paper, we loose the constraint and give the theorems in conti nuous and discrete cases. This relationship critically
+and successfully provides the setting for the modified volum etric stretch energy functional. In fact, n-VSEM with
+constraints have some differences with the unifying framewo rk for n-dimensional quasi-conformal mapping by (i)
+replacing two distortion and smooth balancing items by a vol umetric stretch energy functional with modified
+cotangent weights; (ii) replacing the ADMM method by the fixe d-point type iteration, for which according to
+numerical experiments, both methods have sublinear conver gence rate of O( 1
+k );
+The main contribution of this paper is four folds.
+• We propose a continuous n-dimensional volumetric stretch energy ( n-VSE) functional on M having the
+lower bound ν(Bn)2
+µ(M) and show that the minimizer is volume-/mass-preserving if a nd only if the minimal
+energy attains ν(Bn)2
+µ(M) .
+• The discrete n-VSE can be written as a quadratic form with respect to a Lapla cian matrix with modified
+cotangent weights having local sparse connectivity. The st retch energy defined in [ 23, 20, 21, 9] are equivalent
+to n-VSE when n = 2 and n = 3. A theorem about the lower bound of discrete n-VSE is proposed as the
+motivation for the proposed n-VSEM algorithm.
+• We propose the n-VSEM algorithm for the efficient computation of ε-mass-preserving parameterization.
+The constrained optimization problem induced from the lowe r bound theorem is divided into a small-scale
+constrained boundary subproblem and a large-scale unconst rained interior subproblem. The boundary
+subproblem is solved by the Newton method and the interior su bproblem is solved by the fixed-point
+method.
+• In the numerical experiments, we shows a volume-preserving parameterization of the 3 and 4 dimensional
+ellipsoids as a special case, which indicates the n-VSE can reach the guaranteed lower bound, that is, the
+resulting map is mass-preserving. For the general manifold , the proposed algorithm compute the ε-mass-
+preserving maps with low mass distortion, demonstrating th e robustness and accuracy. The application of n-
+VSEM on manifold registration and deformation also has a rob ust performance by the modified algorithms.
+2 n-dimensional Volumetric Stretch Energy
+Let M = {x = h(u), u = ( u1, u2, · · · , un) ∈ Ω ⊆ Rn} be a smooth n-manifold topologically equivalent to an
+n-dimensional unit ball Bn. Here we suppose that the map h satisfies that the Jacobian matrix Jh is column full
+rank (det( J ⊤
+h Jh) ̸= 0), µ is the measure defined in M and ρµ be the corresponding density function. Hence the
+mass of arbitrary subregion B ⊂ M is µ(B) =
+∫
+B dµ =
+∫
+B ρµdσ. Let N be another n-manifold topologically
+equivalent to M with ν and ρν being the measure and density function defined in it. The dens ity functions satisfy
+0 < L ≤ ρµ, ρν < +∞. An orientation preserving and bijective C 1 map f : M → N is said to be mass-preserving
+if ν(A)/ν(f (M)) = µ(f -1(A))/µ(M) for every subregion A ⊂ f (M). From the mathematical analysis we have
+ν(A) =
+∫
+A
+dν =
+∫
+(f ◦h)-1(A)
+(ρν ◦ f ◦ h)
+√
+det(J ⊤
+f ◦hJf ◦h)ds, (2.1)
+µ(f -1(A)) =
+∫
+f -1(A)
+dµ =
+∫
+(f ◦h)-1(A)
+(ρµ ◦ h)
+√
+det(J ⊤
+h Jh)ds, (2.2)
+where ds is the volume element on Ω. Therefore, the C 1 map f should satisfy
+(ρν ◦ f ◦ h)
+√
+det(J ⊤
+f ◦hJf ◦h)
+∫
+Ω (ρν ◦ f ◦ h)
+√
+det(J ⊤
+f ◦hJf ◦h)ds
+= (ρµ ◦ h)
+√
+det(J ⊤
+h Jh)∫
+Ω (ρµ ◦ h)
+√
+det(J ⊤
+h Jh)ds
+, (2.3)
+By the way, if ρµ = ρν ≡ 1 on M, f is said to be volume-preserving, which is a special case of th e mass-preservation.
+In the rest of the paper, we only discuss the mass-preserving map.
+2
+===== page 3 =====
+To find the ideal mass-preserving map f , we first define the n-dimensional volumetric stretch energy ( n-VSE)
+functional of the map f as
+EV (f ) =
+∫
+M
+[ ρν ◦ f
+ρµ
+Det(∇Mf )
+] 2
+dµ, (2.4)
+where Det(·) is the pseudo-determinant, the product of all nonzero eige nvalues of the matrix, and ∇Mf := Jf ◦hJ †
+h
+is the tangential gradient of the map f on M. By the property that λ(AB⊤) = λ(B⊤A) ∪ { 0, · · · , 0} for
+A, B ∈ Rm×n, m ≤ n with λ being the spectrum of a matrix, we have Det( AB⊤) = Det( B⊤A). Then for
+det(J ⊤
+h Jh) ̸= 0 and det( J ⊤
+f ◦hJf ◦h) ̸= 0,
+Det(∇Mf )2 =Det(∇Mf ⊤∇Mf ) = Det( Jf ◦h(J ⊤
+h Jh)-1J ⊤
+f ◦h) (2.5)
+=Det((J ⊤
+h Jh)-1(J ⊤
+f ◦hJf ◦h)) = det(J ⊤
+f ◦hJf ◦h)
+det(J ⊤
+h Jh) . (2.6)
+Hence, the n-VSE in ( 2.4) can be written as
+EV (f ) =
+∫
+M
+
+
+(ρν ◦ f )
+√
+det(J ⊤
+f ◦hJf ◦h)
+ρµ
+√
+det(J ⊤
+h Jh)
+
+
+2
+dµ (2.7)
+=
+∫
+Ω
+(
+(ρν ◦ f ◦ h)
+√
+det(J ⊤
+f ◦hJf ◦h)
+)2
+(ρµ ◦ h)
+√
+det(J ⊤
+h Jh)
+ds. (2.8)
+Remark 1. In (2.7), the formula
+√
+det(J ⊤
+h Jh) represents the volume ratio of h(τ ) to τ with τ being a infinitesimal
+region on Ω , that is,
+√
+det(J ⊤
+h Jh) = lim |τ |→0
+|h(τ )|
+|τ | . Similarly, we also have
+√
+det(J ⊤
+f ◦hJf ◦h) = lim |τ |→0
+|f ◦h(τ )|
+|τ | .
+Hence, from the derivation in (2.6), Det(∇Mf ) means the volume ratio of the f ◦ h(τ ) on N to h(τ ) on M.
+In the geometric perspective, letting σ = h(τ ), the n-VSE is the sum of square of the mass ratios of each image
+infinitesimal region f (σ) to the origin infinitesimal region σ in M. In other words,
+EV (f ) = lim
+µ(σ)→0
+∑
+σ⊂M
+[ ν(f (σ))
+µ(σ)
+] 2
+µ(σ) (2.9)
+.
+Using the representation ( 2.8), we give a significant theorem for the lower bound of the n-VSE.
+Theorem 1. Let M be an n-manifold to be topologically equivalent to N , µ and ν be the measures defined on M
+and N , ρµ and ρν be the corresponding densities. For n-VSE EV (f ) defined in (2.4), let
+Sf =
+{
+EV (f ) | f : M → N is an orientation preserving and bijective C 1 map with f (∂M) = ∂N
+}
+. (2.10)
+Then we have
+(i) min Sf ≥ ν(N )2
+µ(M) ;
+(ii) f ∗ = argmin Sf = ν(N )2
+µ(M) if and only if f ∗ is mass-preserving.
+Proof. For the representation of the n-VSE in ( 2.8), we treat ( ρν ◦ f ◦ h)
+√
+det(J ⊤
+f ◦hJf ◦h) as the variable ξ. The
+n-VSE becomes
+EV (ξ) =
+∫
+Ω
+ξ2
+(ρµ ◦ h)
+√
+det(J ⊤
+h Jh)
+ds. (2.11)
+Consider the problem
+min
+ξ
+Sξ :=
+{
+EV (ξ)
+⏐
+⏐
+⏐
+⏐
+∫
+Ω
+ξds = ν(N ), ξ ≥ 0
+}
+. (2.12)
+By Euler-Lagrange equation, we have
+2ξ
+(ρµ ◦ h)
+√
+det(J ⊤
+h Jh)
++ λ = 0. (2.13)
+3
+===== page 4 =====
+It follows that 2ξ = -λ(ρµ◦h)
+√
+det(J ⊤
+h Jh). Integrating the both sides and using the equalities ν(N ) = ν(f (M)) =∫
+Ω ξds and µ(M) =
+∫
+Ω (ρµ ◦ h)
+√
+det(J ⊤
+h Jh)ds, we have λ = -2ν(N )/µ(M). Then substituting this formula into
+(2.13), it follows that ξ =
+ν(Bn )(ρµ ◦h)
+√
+det(J ⊤
+h Jh)
+µ(M) . That is
+(ρν ◦ f ◦ h)
+√
+det(J ⊤
+f ◦hJf ◦h)
+ν(N ) = ξ
+ν(N ) = (ρµ ◦ h)
+√
+det(J ⊤
+h Jh)
+µ(M) , (2.14)
+which means the mass-preservation. Additionally, it is eas y to verify that the optimization problem ( 2.12) is
+convex. Therefore, the solution of the Euler-Lagrange equa tion is the minimizer of the optimization problem
+(2.12) and hence min ξ Sξ = ν(N )2
+µ(M) . Since Sf ⊆ Sξ, we have
+min
+f
+Sf ≥ min
+ξ
+Sξ = ν(N )2
+µ(M) , (2.15)
+completing the proof of (i). Meanwhile, ( 2.14) implies that min f Sf reaches the lower bound ν(N )2
+µ(M) if and only if
+the resulting map f ∗ is mass-preserving. Hence, (ii) is proved.
+For the parameterization problem, (i) in the theorem 1 gives a lower bound of the n-VSE under the constraint
+f (M) = N . Meanwhile, (ii) tells that the n-VSE reaches this lower bound only when the map is mass-prese rving.
+This motivate us to seek for the ideal mass-preserving param eterization via the n-VSE minimization problem.
+However, it is worth noting that the existence and uniquenes s of such a mass-preserving map from M to
+Bn are not theoretically guaranteed. The mass-preserving map absolutely satisfying the conditions in ( 3.38) for
+the given manifold M does not necessarily exist. Furthermore, even if the mass-p reserving map exists, it is not
+necessarily unique. Taking the unit disk M = B1 as instance, we can consider the map f in the polar coordinates
+(rf , θf ) = ( rv, θv + krv), where k ∈ R is a parameter, v = (rv cos θv, rv sin θv) and f (v) = ( rf cos θf , rf sin θf ). We
+can confirm that f : B1 → B1 and
+det(Jf ) = det
+( ∂f
+∂(rf , θf )
+)
+det
+(∂(rf , θf )
+∂(rv, θv)
+)
+det
+( ∂v
+∂(rv, θv)
+)-1
+= det
+(∂(rf , θf )
+∂(rv, θv)
+)
+= 1. (2.16)
+Hence, the constructed map f is an area-preserving map and we can select different paramet ers k to obtain
+different area-preserving maps. As shown in Figure 1, we plots the cases k = 0 , 1, 3. When k = 0, f is identity
+map. When k = 1, 3, the red lines in Figure 1a become the curves in Figure 1b and Figure 1c, while the areas of
+the parts formed by the curves remain π/6.
+(a) k = 0 (b) k = 1 (c) k = 3
+Figure 1: The area-preserving map ( rf , θ f ) = ( rv, θ v + krv) with the parameter k = 0, 1, 3.
+Practically, we cannot expect an ideally mass-preserving a nd unique map as above mentioned. Hence, we
+take a step back and aim to find a mass-preserving as possible m ap for the given n-manifold M. To measure the
+degree of mass-preservation, we define the mass-preserving error of a map f as
+ε = EV (f ) - ν(Bn)2
+µ(M) (2.17)
+and find an approximately mass-preserving map, named ε-mass-preserving map.
+Definition 1. A map f : M → Bn is an ε-mass-preserving map if ε = EV (f ) - ν(Bn)2
+µ(M) .
+Then, we further give the following theorem to show the measu rement of the mass-preserving error ε.
+4
+===== page 5 =====
+Theorem 2. Let f : M → Bn be an orientation preserving and bijective C 1 map with f (∂M) = Sn-1 and
+ε = EV (f ) - ν(Bn )2
+µ(M) and
+δ =
+(ρν ◦f )/ν(Bn )
+ρµ /µ(M)
+Det(∇Mf ) - 1. (2.18)
+Then
+ε = ν(Bn)2
+µ(M)2 ∥δ∥2
+L2(M). (2.19)
+Proof. Let
+˜ξ =
+(ρν ◦ f ◦ h)
+√
+det(J ⊤
+f ◦hJf ◦h)
+ν(Bn) , ˜µ = (ρµ ◦ h)
+√
+det(J ⊤
+h Jh)
+µ(M) , (2.20)
+˜µmax := max ˜µ = µmax
+µ(M) , (2.21)
+˜µmin := min ˜µ = µmin
+µ(M) . (2.22)
+Then δ = ˜ξ/ ˜µ - 1 and
+∫
+Ω
+˜ξds =
+∫
+Ω
+˜µds = 1. (2.23)
+Using this equality and ( 2.8), we have
+ε =EV (f ) - ν(Bn)2
+µ(M) = ν(Bn)2
+µ(M)
+[ ∫
+Ω
+˜µ(δ + 1)2ds - 1
+]
+(2.24)
+= ν(Bn)2
+µ(M)
+∫
+Ω
+˜µ[(δ + 1)2 - 1]ds = ν(Bn)2
+µ(M)
+∫
+Ω
+˜µδ2ds (2.25)
+= ν(Bn)2
+µ(M)2
+∫
+M
+δ2dµ = ν(Bn)2
+µ(M)2 ∥δ∥2
+L2(M). (2.26)
+The term δ2 is the square of the relative error of
+(ρν ◦f ◦h)
+√
+det(J ⊤
+f ◦hJf ◦h)
+ν(Bn) and
+(ρµ ◦h)
+√
+det(J ⊤
+h Jh)
+µ(M) , which can
+represent a local error at a point in M. From ( 2.26) we can find that ε is equivalent to the sum of all local errors
+δ2 among the manifold M. Hence, it is appropriate to choose ε as the measurement. In this paper, we aim to
+find the ε-mass-preserving map with as small error ε as possible via minimizing Sf in ( 2.10).
+Remark 2. For ∂M topologically equivalent to S n-1 and the map f : ∂M → S n-1, we can also give the similar
+theorems to Theorem 1 and Theorem 2. The theorems and proofs are almost identical and hence not w orth being
+repeated.
+3 Discrete n-Manifold and n-Volumetric Stretch Energy
+Now, we focus on the algorithm for the mass-preserving param eterization. At first, we introduce the manifolds
+in triangular mesh and the n-VSE in the discrete perspective. The notations used in the p revious section will
+be abused without being misinterpreted to represent the dis crete notations. In this paper, we consider the mass-
+preserving parameterization to the n-ball with ρν = 1. Therefore, in the discrete case, we let ν(·) = | · | and
+ρ := ρµ for simplicity.
+3.1 Discrete n-Manifold
+The discrete n-manifold discussed in this paper is composed of simplices. We first give the definitions of the
+discrete n-manifold and the related n-simplex.
+Definition 2. (1) Let {v0, v1, · · · , vk} ⊆ Rn with k ≤ n. A k-simplex σ = [v0, v1, · · · , vk] is defined by
+σ = [v0, v1, · · · , vk] =
+{
+x ∈ Rn
+⏐
+⏐
+⏐
+⏐
+⏐ x =
+k∑
+i=0
+αivi,
+k∑
+i=0
+αi = 1, αi ≥ 0
+}
+. (3.1)
+5
+===== page 6 =====
+An ℓ-facet fa(σ) of σ with ℓ < k is defined as fa(σ) = {τ ⊆ σ | τ is an ℓ-simplex}. v0, · · · , vk are called the
+vertices of the k-simplex σ. Suppose τ ⊂ σ is also an ℓ-simplex ( ℓ < n ), then τ is an ℓ-facet of σ. Let fa(σ)
+denote the set of all facets of σ.
+(2) A simplicial n-complex S is a union of n-simplices such that (i) if an n-simplex belongs to S, all its facets
+also belongs to S; (ii) if σ1, σ2 ∈ S, σ1 ∩ σ2 ̸= ∅ (empty set), σ1 ∩ σ2 ∈ fa(σ1) and fa(σ2).
+(3) The link of a vertex v ∈ S is the union of (n - 1)-simplex τ ∈ S with v /∈ τ and [v, τ ] being an n-simplex
+of S.
+(4) v ∈ S is an interior vertex, if the link of v is topologically equivalent to Sn-1; otherwise v is a boundary
+vertex.
+Definition 3. (1) A discrete n-manifold M is a simplicial n-complex which is topologically equivalent to Bn.
+(2) ∂M is a discrete (n - 1)-manifold which consists of all (n - 1)-facets of M with all vertices being boundary
+vertices.
+The discrete n-manifold has some properties.
+Property 1. (1) ∂M is topologically equivalent to Sn-1.
+(2) If v ∈ M is an interior vertex, the link of v is topologically equivalent to Sn-1. If v ∈ ∂M is a boundary
+vertex of M, the link of v on ∂M is topologically equivalent to Sn-2.
+A discrete n-manifold M has N vertices
+S0(M) = {vi = (v1
+i , v2
+i , · · · , vn
+i ) ∈ Rn}N
+i=1
+and the set of n-simplex Sn(M) and the set of k-facets Sk(M), for k < n , are defined as follows.
+Sn(M) =
+{
+[vi0 , vi1 , · · · , vin ] ⊆ Rn for some vij ∈ S0(M), j = 0, 1, · · · , n
+}
+. (3.2)
+For k < n ,
+Sk(M) =
+{
+[vi0 , vi1 , · · · , vik ] ⊆ Rn | [vi0 , vi1 , · · · , vik , vik+1 ] ∈ Sk+1(M) with some vik+1 ∈ S0(M)
+}
+. (3.3)
+For every τ ∈ Sk(M), there is σ ∈ Sp(M) such that τ ⊂ σ for k < p ≤ n.
+Since an affine map in Rn is determined by n + 1 independent point correspondences, a piecewise affine map
+f : M → Rn on an n-simplex mesh M can be expressed as an N × n matrix defined by the images f (vi), where
+vi ∈ S0(M), as
+f = [f ⊤
+1 , f ⊤
+2 , · · · , f ⊤
+N ]⊤ = [f 1, f 2, · · · , f n] ∈ RN×n, (3.4)
+where f s = [ f s
+1 , f s
+2 , · · · , f s
+N ]⊤ ∈ RN×1, s = 1 , 2, · · · , n, and ft = f (vt) = ( f 1
+t , f 2
+t , · · · , f n
+t ) ∈ R1×n, for t =
+1, 2, · · · , N. For each point v ∈ S0(M), v must lie into an n-simplex σ = [v0, v1, · · · , vn] without loss of generality.
+The piecewise affine map f : M → Rn can be expressed as a linear combination of {fi}n
+i=0 with the barycentric
+coordinates
+f
+⏐
+⏐
+σ(v) =
+n∑
+i=0
+αif (vi), α i = 1
+|σ|
+⏐
+⏐[v0, · · · , ˆvi, · · · , vn]
+⏐
+⏐, (3.5)
+where ˆvi is replaced by v, for i = 0, 1, · · · , n and |σ| denotes the volume of the n-simplex σ. To prevent folding of
+n-simplex and guarantee the bijectivity via transformation , in this paper, we require the map f to be solved that
+preserves the orientation, i.e. f (M) is a simplicial n-complex. In the following discussion, the n-manifold is that
+topologically equivalent to an n-ball, and the ( n-1)-manifold is that topologically equivalent to an ( n-1)-sphere.
+3.2 Discrete Volumetric Stretch Energy
+For the discrete n-manifold M embedded in Rn and the piecewise affine map f : M → Bn ⊂ Rn, it is easy to
+verify that the Jacobian matrix Jf -1 satisfies
+det
+(
+Jf -1
+⏐
+⏐
+f (σ)
+)
+:=
+∫
+f (σ)
+det
+(
+Jf -1
+)
+ds = |σ|
+|f (σ)| (3.6)
+6
+===== page 7 =====
+for all σ = [ v0, v1, · · · , vn] ∈ Sn(M). This is the ratio of volumes of the n-simplex and its image simplex.
+Hence, like the continuous case, the piecewise affine map f : M → Rn is said to be induced by f and is volume-
+preserving if the Jacobian Jf -1 satisfies det
+(
+Jf -1
+⏐
+⏐
+f (σ)
+)
+= |M|
+|f (M)| , that is |σ|/|M| = |f (σ)|/|f (M)|. Additionally, let
+the density function ρ defined in M be piecewise constant and the mass µ(σ) = ρ(σ)|σ|. The map f : M → Rn
+is mass-preserving if and only if ρ(σ) det
+(
+Jf -1
+⏐
+⏐
+f (σ)
+)
+= µ(M)
+|f (M)| , that is, µ(σ)/µ(M) = |f (σ)|/|f (M)|. The Jacobian
+determinant is an important quantity to measure the mass-pr eservation. As far as ρ(σ) det
+(
+Jf -1
+⏐
+⏐
+f (σ)
+)
+= µ(σ)
+|f (σ)|
+is constant for all σ ∈ Sn(M), the map f is mass-preserving. In [ 23, 20, 9], it is termed the stretch factor as
+σµ,f -1 (σ) = ρ(σ) det
+(
+Jf -1
+⏐
+⏐
+f (σ)
+)
+= µ(σ)
+|f (σ)| , (3.7)
+and expected to be a constant. Using the stretch factor, [ 23, 20, 9] have defined the 2-dimensional stretch energy
+and 3-dimensional stretch energy and given some theorems an d properties associated to the stretch energy when
+n = 2 and 3. Now, we generalize the stretch energy into n-dimensional and define the discrete n-dimensional
+volumetric stretch energy functional as
+EV (f ) = 1
+n trace
+(
+f ⊤LV (f )f
+)
+= 1
+n
+n∑
+s=1
+f s⊤LV (f )f s, (3.8)
+where LV (f ) is a volumetric stretch symmetric Laplacian matrix with
+[
+LV (f )
+]
+ij =
+
+
+
+
+
+
+
+
+
+-wij(f ), if [ vi, vj ] ∈ S1(M),
+∑
+ℓ̸=i wiℓ(f ), if i = j,
+0, otherwise.
+(3.9a)
+in which the modified cotangent weights wij(f ) is defined by
+wij(f ) = 1
+n(n - 1)
+∑
+[vi,vj ]∈S1(σ)
+|f (σˆiˆj)|
+σµ,f -1 (σ) cot θσ
+ij(f ) (3.10a)
+with σˆiˆj being the ( n - 2)-simplex containing the vertices S0(σ) \ {vi, vj } and θσ
+ij(f ) being the dihedral angle
+between subspaces Ui and Uj containing S0(f (σ)) \ {fi} and S0(f (σ)) \ {fj } respectively.
+In the Theorem 3, we will illustrate that this definition in ( 3.8) is equivalent to our defined n-VSE in ( 2.4) in
+the discrete form
+EV (f ) =
+∫
+M
+Det(∇Mf )2
+ρ ds =
+∑
+σ∈Sn(M)
+|f (σ)|2
+µ(σ) . (3.11)
+To proof this theorem, we first generalize the Dirichlet ener gy to n-dimension and give some lemmas associated
+with it. For the smooth n-manifold M and the orientation preserving and bijective C 1 map f : M → Rn, the
+n-dimensional Dirichlet energy functional with respect to f is defined as
+ED(f ) = 1
+n
+∫
+M
+∥∇Mf ∥2
+F ds, (3.12)
+In the discrete case, we consider the discrete n-manifold M and the piecewise affine map f . The discrete Dirichlet
+energy is formulated as a quadratic form.
+Lemma 1. Suppose M is a discrete n-manifold embedded in Rn and f defined on M is a piecewise affine map.
+Then the n-dimensional Dirichlet energy defined in (
+3.12) can be formulated as
+ED(f ) = 1
+n trace(f ⊤LDf ), (3.13)
+where
+[
+LD
+]
+ij =
+
+
+
+
+
+
+
+
+
+- ˜wij, if [vi, vj ] ∈ S1(M),
+∑
+ℓ̸=i ˜wij, if i = j,
+0, otherwise.
+(3.14)
+with the cotangent weight
+˜wij = 1
+n(n - 1)
+∑
+σ∈Sn(M):{vi,vj }⊂σ
+|σˆiˆj | cot θσ
+ij, (3.15)
+in which θσ
+ij is the dihedral angle between subspaces containing S0(σ) \ {vi} and S0(σ) \ {vj } respectively.
+7
+===== page 8 =====
+Proof. Let q be a point in the n-simplex σ = [v0, v1, · · · , vn] ∈ Sn(M). f (q) can be represented by the barycentre
+coordinates according to ( 3.5)
+f (q) =
+n∑
+i=0
+αi(q)fi, α i(q) = 1
+|σ|
+⏐
+⏐[v0, · · · , vi-1, q, vi+1, · · · , vn]
+⏐
+⏐. (3.16)
+For the discrete n-manifold M embedded in Rn and the piecewise affine map f , we have ∇Mf = ∇f . In
+addition, ∇f is a piecewise constant function and can be also represented by the barycentre coordinates as
+∇f =
+n∑
+i=0
+f ⊤
+i ∇αi. (3.17)
+The volume of the simplex in (
+3.16) can be expressed as
+⏐
+⏐[v0, · · · , vi-1, q, vi+1, · · · , vn]
+⏐
+⏐ = 1
+n
+⏐
+⏐σˆi
+⏐
+⏐hσ
+i (q), (3.18)
+where hσ
+i (q) = ( q - vℓ)⊤⃗ ni, ℓ ̸= i, is the height corresponding to the face σˆi, whose gradient with respect to q is
+⃗ ni ∈ R1×n, the inward unit normal vector of the face σˆi. Therefore, by the representation in (
+3.18), we have
+∇αi = ∇
+⏐
+⏐[v0, · · · , vi-1, q, vi+1, · · · , vn]
+⏐
+⏐
+|σ| = 1
+n|σ| |σˆi|⃗ ni. (3.19)
+Hence,
+∥∇f ∥2
+F =
+
+
+
+
+
+n∑
+i=0
+fi∇αi
+
+
+
+
+
+2
+F
+=
+
+
+
+
+
+n∑
+i=0
+|σˆi|
+n|σ| f ⊤
+i ⃗ ni
+
+
+
+
+
+2
+F
+(3.20)
+=
+n∑
+i=0
+n∑
+j=0
+|σˆi||σˆj |
+n2|σ|2 ⟨f ⊤
+i ⃗ ni, f ⊤
+j ⃗ nj⟩ =
+n∑
+i=0
+n∑
+j=0
+|σˆi||σˆj |
+n2|σ|2 (⃗ ni⃗ n⊤
+j )(fif ⊤
+j ) (3.21)
+=
+n∑
+i=0
+|σˆi|2
+n2|σ|2 fif ⊤
+i -
+∑
+[vi,vj ]∈S1(σ)
+|σˆi||σˆj |
+n2|σ|2 (fif ⊤
+j ) cos θσ
+ij. (3.22)
+Similar to ( 3.18), we have ( k - 1)|σˆi| = |σˆiˆj|h
+σˆi
+j , where h
+σˆi
+j is the height corresponding to the face σˆiˆj on the
+(n - 1)-simplex σˆi. It is easy to verify that hσ
+j = h
+σˆi
+j sin θσ
+ij, following that
+|σˆi||σˆj |
+n2|σ|2 = |σˆi|
+n|σ|hσ
+j
+= |σˆiˆj|
+n(n - 1)|σ| sin θσ
+ij
+. (3.23)
+From [4], we have
+|σˆi| = 1
+n - 1
+∑
+[vi,vj ]∈S1(σ)
+|σˆiˆj |hσ
+i cot θσ
+ij. (3.24)
+Substituting (
+3.23) and ( 3.24) into ( 3.22), we have
+∥∇f ∥2
+F = 1
+|σ|
+n∑
+i=0
+∑
+[vi,vj ]∈S1(σ)
+1
+n(n - 1) |σˆiˆj| cot θσ
+ijfijf ⊤
+j = 1
+|σ|
+∑
+[vi,vj ]∈S1(σ)
+˜wσ
+ijfijf ⊤
+i . (3.25)
+As a result,
+ED(f ) = 1
+n
+∫
+M
+∥∇f ∥2
+F ds = 1
+n
+∑
+σ∈Sn(M)
+∥∇f ∥2
+F |σ| (3.26)
+= 1
+n
+∑
+σ∈Sn(M)
+∑
+i∈S0(σ)
+∑
+[vi,vj ]∈S1(σ)
+˜wσ
+ijfijf ⊤
+i = 1
+n
+N∑
+i=1
+∑
+[vi,vj ]∈S1(M)
+˜wijfijf ⊤
+i = 1
+n trace(f ⊤LDf ). (3.27)
+One can see that LD has the identical sparse structure to LV (f ) in ( 3.9a). We further let LD(f ) be
+the Laplacian matrix defined on f (M), as like LD in ( 3.14). The cotangent weight of LD(f ) is ˜ wij(f ) =
+1
+n(n-1)
+∑
+σ∈Sn(M):{vi,vj }⊂σ |f (σˆiˆj)| cot θσ
+ij(f ). Then, a representation of |f (M)| and its gradient associated with
+LD(f ) is as in the following lemma.
+8
+===== page 9 =====
+Lemma 2. The volume of the discrete n-manifold f (M) and its gradient with respect to f can be represented as
+|f (M)| = 1
+n trace(f ⊤LD(f )f ), (3.28)
+∇f |f (M)| = LD(f )f . (3.29)
+Proof. By the definition of the n-dimensional Dirichlet energy in ( 3.12), we have ED(id)
+⏐
+⏐
+M = |M|, where id is
+the identity map. Hence, for the discrete n-manifold, by using the discrete formula (
+3.13), it follows that
+|f (M)| = ED(id)
+⏐
+⏐
+f (M) := 1
+n trace(f ⊤LD(f )f ). (3.30)
+This proves the formula ( 3.28). On the other hand, from the formula (1) in [ 4], that is,
+∇vi |σ| = 1
+n(n - 1)
+∑
+[vi,vj ]∈S1(σ)
+|σˆiˆj | cot θσ
+ijvij =
+∑
+[vi,vj ]∈S1(σ)
+˜wσ
+ijvij, (3.31)
+we have
+∇fi |f (σ)| =
+∑
+[vi,vj ]∈S1(σ)
+˜wσ
+ij(f )fij, i = 1, 2, · · · , N. (3.32)
+It follows that
+∇fi |f (M)| =
+∑
+σ∈Sn(M)
+∇fi |f (σ)| =
+∑
+σ∈Sn(M)
+∑
+[vi,vj ]∈S1(σ)
+˜wσ
+ij(f )fij, i = 1, 2, · · · , N. (3.33)
+Stacking these equations from 1 to N , ( 3.29) is obtained.
+We can see that the definition of the volumetric stretch energ y in ( 3.8) and the volume representation in
+(3.28) only differ in the cotangent weights in the Laplacian matric es LD(f ) and LV (f ). More specifically, the
+edge weights differ in a product of the stretch factor in ( 3.7). That is, wσ
+ij(f ) =
+˜wσ
+ij (f )
+σµ,f -1 (σ) . Using this equality,
+we can provide a simple representation of the volumetric str etch energy functional in ( 3.8).
+Theorem 3. The volumetric stretch energy functional in (3.8) can be formulated as
+EV (f ) =
+∑
+σ∈Sn(M)
+|f (σ)|2
+µ(σ) . (3.34)
+Proof. Split M by its n-simplex {σ} and consider the volumetric stretch energy on σ, then the volumetric stretch
+energy can also be splitted as
+EV (f ) =
+∑
+σ∈Sn(M)
+EV (f )
+⏐
+⏐
+σ. (3.35)
+From (
+3.30) we have ED(id)
+⏐
+⏐
+f (σ) = |f (σ)|. Hence,
+EV (f )
+⏐
+⏐
+σ = 1
+n
+∑
+[vi,vj ]∈S1(σ)
+wσ
+ij(f )∥fij ∥2 = 1
+nσµ,f -1 (σ)
+∑
+[vi,vj ]∈S1(σ)
+˜wσ
+ij(f )∥fij∥2 (3.36)
+= |f (σ)|
+nµ(σ) trace(f ⊤LD(f )f ) = |f (σ)|
+µ(σ) ED(id)
+⏐
+⏐
+f (σ) = |f (σ)|2
+µ(σ) . (3.37)
+Combining ( 3.35) with ( 3.37), ( 3.34) is obtained.
+Theorem 3 unifies the continuous and discrete n-VSE and reveals that the discrete n-VSE is formulated by
+the volumes of the original simplices σ and the image simplices f (σ). Next, we propose the discrete case of
+Theorem 1 for the lower bound of the n-VSE, which is the foundation of our method. Different from Th eorem 1,
+in the discrete case, the volume of the n-ball is not a constant. Hence, we must add a constraint that f (M) is a
+constant.
+Theorem 4. Let M ⊆ Rn be a discrete n-manifold to be topologically equivalent to Bn and µ(·) be the measure
+defined in M. Let
+Sf =
+
+
+EV (f ) | f : M → Bn is orientation preserving and piecewise affine with
+∑
+σ∈Sn(M)
+|f (σ)| = C, f(∂M) = Sn-1
+
+
+ .
+(3.38)
+Then we have
+9
+===== page 10 =====
+(i) min Sf ≥ C2
+∑
+σ ∈Sn (M) µ(σ) ;
+(ii) f ∗ = argmin Sf = C2
+∑
+σ ∈Sn (M) µ(σ) if and only if f ∗ is volume-/mass-preserving, i.e., |f ∗(σ)|∑
+σ ∈Sn (M) |f ∗(σ)| =
+µ(σ)∑
+σ ∈Sn (M) µ(σ) , for each σ ∈ Sn(M).
+Proof. Let m := #
+(
+Sn(M)
+)
+. Treating the volumes |f (σ)| as variables, ( 3.34) is temporarily represented as
+EV (ξ) =
+m∑
+i=1
+ξ2
+i
+µ(σi) , ξ = (ξ1, ξ2, · · · , ξm) ∈ Rm
++ , (3.39)
+For the optimization problem
+min
+ξ
+Sξ ≡
+{
+EV (ξ)
+⏐
+⏐
+⏐
+⏐
+⏐
+m∑
+i=1
+ξi = C, ξ i ≥ 0, i = 1, 2, · · · , m
+}
+, (3.40)
+its Karush-Kuhn-Tucker (KKT) equation is
+2ξi
+µ(σi) + λ = 0, i = 1, 2, · · · , m. (3.41)
+By the total volume constraints ∑ m
+i=1 ξi = C, we have λ = - 2C
+∑ m
+i=1 µ(σi) and ξi = Cµ(σi)
+∑ m
+i=1 µ(σi) . That is
+ξi
+∑ m
+i=1 ξi
+= µ(σi)
+∑ m
+i=1 µ(σi) , i = 1, 2, · · · , m. (3.42)
+Additionally, the problem (
+3.40) is convex, whose objective function and feasible region ar e all convex. Therefore,
+the solution of KKT equation ( 3.41) is the minimizer of the optimization problem ( 3.40) and hence min Sξ =
+C2
+∑
+σ ∈Sn (M) µ(σ) . Since Sf ⊆ S ξ, (i) min Sf ≥ C2
+∑
+σ ∈Sn (M) µ(σ) is obtained. Meanwhile, ( 3.42) demonstrates the
+volume-/mass-preserving property. As a consequence, f ∗ = argmin Sf attains the lower bound C2
+∑
+σ ∈Sn (M) µ(σ) if
+and only if |f ∗(σ)|∑
+σ ∈Sn (M) |f ∗(σ)| = µ(σ)∑
+σ ∈Sn (M) µ(σ) , i = 1, 2, · · · , m, which leads to (ii).
+Like the theorem 1 in the continuous case, (i) gives the lower bound of the discr ete n-VSE under the constraints
+in ( 3.38) and (ii) indicates that the discrete n-VSE reaches the lower bound if and only if the resulting map i s
+mass-preserving. Identically, the existence and uniquene ss of the ideal discrete mass-preserving map from M to a
+unit n-ball Bn are not theoretically guaranteed. Therefore, the minimum o f EV (f ) cannot always reach the lower
+bound C2
+∑
+σ ∈Sn (M) µ(σ) . Hence, we define the mass-preserving error of the map f as
+ε = EV (f ) - C 2
+∑
+σ∈Sn(M) µ(σ) , (3.43)
+and the discrete ε-mass-preserving map.
+Definition 4. A map f : M → Bn is a discrete ε-mass-preserving map if ε = EV (f ) - C2
+∑
+σ ∈Sn (M) µ(σ) .
+For the discrete ε-mass-preserving map, we can also give the measurement of ε.
+Theorem 5. Let f : M → B be an orientation preserving and piecewise affine map with ∑
+σ∈Sn(M) |f (σ)| = C,
+f (∂M) = Sn-1 and ε = EV (f ) - C2
+∑
+σ ∈Sn (M) µ(σ) and
+δ = (δ1, δ2, · · · ), δ i =
+|f (σi)|/∑
+σ ∈Sn (M) |f (σi)|
+µ(σi)/∑
+σ ∈Sn (M) µ(σ)
+- 1, (3.44)
+Then
+µmin
+C 2
+(∑
+σ∈Sn(M) µ(σ)
+)2 ∥δ∥2
+2 ≤ ε ≤ µmax
+C 2
+(∑
+σ∈Sn(M) µ(σ)
+)2 ∥δ∥2
+2. (3.45)
+where µmin and µmax are the minimum and maximum of µ(σ) among all σ ∈ Sn(M), respectively.
+Proof. Suppose m := #(Sn(M)). Let
+˜ξi = |f (σi)|
+∑ m
+i=1 |f (σi)| , ˜µi = µ(σi)
+∑ m
+i=1 µ(σi) , (3.46)
+˜µmax := max
+i
+˜µi = µmax
+∑ m
+i=1 µ(σi) , (3.47)
+˜µmin := max
+i
+˜µi = µmin
+∑ m
+i=1 µ(σi) . (3.48)
+10
+===== page 11 =====
+Then δi = ˜ξi/˜µi - 1 and
+m∑
+i=1
+˜ξi =
+m∑
+i=1
+˜µi = 1. (3.49)
+We have
+ε =EV (f ) - C 2
+∑ m
+i=1 µ(σi) = C 2
+∑ m
+i=1 µ(σi)
+[ m∑
+i=1
+˜µi(δi + 1)2 - 1
+]
+(3.50)
+= C 2
+∑ m
+i=1 µ(σi)
+m∑
+i=1
+˜µi[(δi + 1)2 - 1] = C 2
+∑ m
+i=1 µ(σi)
+m∑
+i=1
+˜µiδ2
+i . (3.51)
+Since ˜µi > 0, we have
+m∑
+i=1
+˜µiδ2
+i ≤ ˜µmax
+m∑
+i=1
+δ2
+i = ˜µmax∥δ∥2
+2, (3.52a)
+m∑
+i=1
+˜µiδ2
+i ≥ ˜µmin
+m∑
+i=1
+δ2
+i = ˜µmin∥δ∥2
+2. (3.52b)
+Plugging (
+3.51), ( 3.47) and ( 3.48) into ( 3.52a) and ( 3.52b), the inequality ( 3.45) is obtained.
+As like the continuous case, Theorem 5 shows that we can use ε to measure the mass-preservation of the map.
+Meanwhile, minimizing Sf in ( 3.38) is a feasible method to find the ε-mass-preserving map.
+4 Volumetric Stretch Energy Minimization
+We aim to achieve the n-dimensional volumetric stretch energy minimization ( n-VSEM), specifically, minimize
+Sf in (
+3.38) to find the ε-mass-preserving map from the n-manifold M to the unit n-ball Bn. We rewrite this
+problem as following.
+minf EV (f ) := 1
+n trace(f ⊤LV (f )f )
+s.t. ∑
+σ∈Sn(M) |f (σ)| = C
+f (∂M) = S n-1
+(4.1)
+This is a large scale and nonlinear optimization problem. We divide this problem ( 4.1) into boundary and interior
+parts instead. Let
+B = {i | vi ∈ S0(∂M)}, I = {i | vi ∈ S0(M) \ S0(∂M)}, (4.2)
+and partition f according to the boundary index B and interior index I as f = [ f ⊤
+B , f ⊤
+I ]⊤. The boundary and
+interior subproblems are as following.
+1) Boundary subproblem: given a measure µ′ defined in ∂M, find the ε-mass-preserving map g : ∂M → S n-1
+by solving
+ming EV (g) := 1
+n-1 trace(g⊤LV (g)g)
+s.t. ∑
+σ∈Sn-1(∂M) |g(σ)| = C ′
+∥gi∥2
+2 = 1, vi ∈ S0(∂M)
+(4.3)
+2) Interior subproblem: fix the boundary map fB = g and find the ε-mass-preserving map f : M → Bn by
+solving
+min
+fI
+EV (f ) := 1
+n trace(f ⊤LV (f )f ). (4.4)
+In the boundary subproblem ( 4.3), the constraint f (∂M) = S n-1 is replaced by a weaken constraint ∥gi∥2 = 1,
+vi ∈ ∂M. This subproblem is a relatively low scale problem compared with (4.1) since the number of the boundary
+vertices is much less than that of whole vertices generally. The boundary subproblem ( 4.3) can be treated as
+an independent problem for the spherical ε-mass-preserving parameterizations from a genus-0 n-manifold to the
+unit n-hypersphere. This problem is to obtain a boundary map for th e computation of the interior map. In the
+interior subproblem ( 4.4), the boundary vertices are fixed. By the divergence theorem , the volume of the n-ball is
+11
+===== page 12 =====
+determined by the enclosed surface. Hence, the volume of f (M) is also fixed, that is, the volume sum constraint
+∑
+σ∈Sn(M) |f (σ)| = C in ( 4.1) is directed satisfied. Hence, we face to an unconstrained op timization problem
+in the subproblem ( 4.4). As a consequence, we divide the large scale and nonlinear p roblem ( 4.1) into a low
+scale constrained subproblem and an high scale unconstrain ed subproblem. By the Theorem 4, the resulting map
+of the subproblems is the ideal ε-mass-preserving map. The mass-preserving error ε depends on the boundary
+subproblem ( 4.3).
+Remark 3. Generally, the orientation preserving condition is satisfi ed for the solution to the subproblems (4.3)
+and (4.4) in numerical experiments. Even if there are overlap n-simplices, the number of them is little. In this
+case, a convex combination postprocess can eliminate the ov erlap n-simplices with a tiny mass-preserving loss.
+Therefore, we ignore the orientation preserving condition in the computation.
+4.1 Initial map for spherical parameterization
+We first introduce the n-dimensional Dirac map inspired by [
+8]. Then the initial map for the boundary subproblem
+(4.3) is obtained by a north-south alternating iteration. The Di rac map in [ 8] is to compute spherical conformal
+parameterization of the genus-0 closed surface by solving a n inhomogeneous Laplace-Beltrami equation. We
+consider the generalized n - 1 dimensional equation
+-∆ ∂Mg =
+( ∂
+∂u1
+, ∂
+∂u2
+, · · · , ∂
+∂un-1
+)
+δp (4.5)
+where p is a point on ∂M, δp is Dirac delta function on p, ( u1, u2, · · · , un-1) is a local orthogonal coordinate on
+the neighborhood of p and ∂
+∂ui
+is the directional differential with respect to ui. The weak formulation of ( 4.5) for
+the test function h is
+∫
+∂M
+⟨
+∇∂Mg, ∇∂Mh
+⟩
+ds =
+⣨ ( ∂
+∂u1
+, ∂
+∂u2
+, · · · , ∂
+∂un-1
+)
+, h
+⟩ ⏐
+⏐
+⏐
+p
+, (4.6)
+Here ∂M is a simplical ( n - 1)-complex. g and h are piecewise affine map induced by g and h, respectively.
+(i) For the left hand term, similar to the proof of Lemma
+1, it can be easily verified that
+∫
+∂M
+⟨
+∇∂Mg, ∇∂Mh
+⟩
+ds = trace(h⊤LDg), (4.7)
+where LD is defined in ( 3.14).
+(ii) For the right hand term, suppose that p is in τp = [v0, v1, · · · , vn-1]. Then we need to find an orthogonal
+coordinate in τp, which can be constructed by the QR decomposition of matrix
+[v⊤
+10, v⊤
+20, · · · , v⊤
+(n-1)0] = QR, (4.8)
+where Q = [q1, q2, · · · , qn-1] ∈ Rn×(n-1) is the required orthogonal coordinates. Hence, the right te rm becomes
+⣨ ( ∂
+∂u1
+, ∂
+∂u2
+, · · · , ∂
+∂un-1
+)
+, h
+⟩ ⏐
+⏐
+⏐
+p
+=
+n-1∑
+i=1
+∂h(i)
+∂qi
+⏐
+⏐
+⏐
+⏐
+p
+= trace(∇h|pQ). (4.9)
+Combining (
+4.7) and ( 4.9), the weak formulation ( 4.6) becomes
+trace(h⊤LDg) = trace( ∇h|pQ), (4.10)
+for the test function h. Letting
+h(v) =
+
+
+
+e⊤
+j , v = vi,
+0, v ̸= vi, v ∈ S0(∂M),
+(4.11)
+for i = 1, · · · , N and j = 1, 2, · · · , n, we have
+LDg = b, (4.12)
+where
+[b]i =
+
+
+
+0, v i /∈ S0(τp),
+∇αiQ, v i ∈ S0(τp).
+(4.13)
+12
+===== page 13 =====
+By the barycentre coodinates formula in ( 3.19), letting R = [r1, r2, · · · , rn-1] in ( 4.8) and r0 = 0, we have
+∇αiQ = 1
+|τp|
+∑
+j̸=i
+˜w
+τp
+ij vij Q = 1
+|τp|
+∑
+j̸=i
+˜w
+τp
+ij (ri - rj)⊤. (4.14)
+To solve the linear system ( 4.12) under the spherical constraint, we introduce the ( n - 1)-dimensional stereo-
+graphic projection Π : S n-1 → R
+n-1
+, defined as
+Π( fi) =
+[ f 1
+i
+1 - f n
+i
+, f 2
+i
+1 - f n
+i
+, · · · , f n-1
+i
+1 - f n
+i
+]
+, (4.15)
+for fi = [f 1
+i , f 2
+i , · · · , f n
+i ]. Let h = Π ◦ g and h = Π( g). Consider the linear system
+LDh = b. (4.16)
+The Laplacian matrix LD is singular, which has a eigenpair (0 , 1), which means that it is unique up to translation.
+Hence, we can fix a point hi to solve it. Since the stereographic projection is a conform al map, the map g := Π -1◦h
+is the solution of ( 4.12). Algorithm 1 shows the computation of the ( n - 1)-dimensional spherical Dirac map.
+Algorithm 1 Spherical parameterization by Dirac map
+Require: (n- 1)-simplicial complex ∂M topologically equivalent to Sn-1.
+Ensure: A spherical Dirac parameterization g : ∂M→S n-1.
+1: Select the most regular ( n- 1)-simplex as τp containing the Dirac point.
+2: Construct the right hand term b as ( 4.13) and ( 4.14).
+3: Let N be the number of vertices. Fix a vertex hi = 0 and set ˆI ={1, 2,···, N}\{ i}.
+4: Compute h by solving the linear system
+[LD]ˆIˆIhˆI = bˆI, (4.17)
+where LD is defined as ( 3.14).
+5: Perform the centralization h← h- 1
+N 1N 1⊤
+N h.
+6: Obtain the spherical Dirac map by the inverse stereographic proje ction g = Π -1(h).Inspired from SEM algorithm in [ 20], we can apply the stereographic projection to design a nort h-south
+alternating iteration algorithm in 2. The resulting map of this algorithm has small ε. Hence, it can provide an
+ε-mass-preserving map as the initial map and the sum of the vol ume C ′ for our proposed algorithm.
+Algorithm 2 SEM for spherical mass-preserving parameterization
+Require: (n- 1)-simplicial complex ∂M topologically equivalent to Sn-1, interior radius r, and a
+tolerance tol.
+Ensure: A ε-mass-preserving parameterization g : ∂M→ Sn-1 induced by g.
+1: Let m = #S0(∂M).
+2: Compute a Dirac map g by Algorithm 1.
+3: Compute hi = Π( gi), i = 1, 2,···, m .
+4: Let Eold← EV (g) and δE = +∞ .
+5: while δE > tol do
+6: Update L← LV (g) as in ( 3.9a).
+7: h← diag(|h|-2)h.
+8: Set I ={i||hi|< r}, B ={1, 2,···, m}\ I.
+9: Update h by solving [ LS]IIhI =- [LS]IBhB.
+10: Compute gi = Π -1(hi), i = 1, 2,···, m .
+11: Let Enew← EV (g) and δE = Eold- Enew.
+12: end while
+13
+===== page 14 =====
+4.2 Spherical ε-mass-preserving parameterization
+The spherical ε-mass-preserving parameterization is achieved by solving the spherical subproblem ( 4.3) as follow-
+ing,
+ming EV (g) := 1
+n-1 trace(g⊤LV (g)g)
+s.t. ∑
+σ∈Sn-1(∂M) |g(σ)| = C ′
+∥gi∥2
+2 = 1, vi ∈ S0(∂M)
+(4.18)
+We adopt the Newton method to this problem. We first present a t heorem for the gradient of the n-VSE.
+Theorem 6. The gradient of volumetric stretch energy functional in (
+3.8) can be formulated as
+∇EV (f ) = 2 LV (f )f . (4.19)
+Proof. By Theorem 3, we have
+EV (f ) =
+∑
+σ∈Sn(M)
+|f (σ)|2
+µ(σ) . (4.20)
+Using the chain rule, we can represent its gradient as
+∇EV (f ) = 2
+∑
+σ∈Sn(M)
+|f (σ)|
+µ(σ) ∇|f (σ)|. (4.21)
+Plugging the gradient formula of |f (σ)| in ( 3.32) into it, we have
+∂
+∂fi
+EV (f ) =2
+∑
+σ∈Sn(M)
+∑
+[vi,vj ]∈S1(σ)
+[ 1
+n(n - 1)
+|f (σ-ij )|
+σµ,f -1 (σ) cot θσ
+ij(f )
+]
+fij (4.22)
+=2
+∑
+σ∈Sn(M)
+∑
+[vi,vj ]∈S1(σ)
+wσ
+ij(f )(fi - fj) = 2
+∑
+[vi,vj ]∈S1(M)
+wij(f )(fi - fj) (4.23)
+=2e⊤
+i LV (f )f , (4.24)
+completing the proof.The gradient formula in ( 4.19) also holds for S n-1 without loss of generality. Then, we consider the Lagrange
+multiplier,
+L(g, λ, s) = EV (g) + λ(
+∑
+σ∈Sn-1(∂M)
+|g(σ)| - C ′) + 1
+2
+∑
+i
+si(∥gi∥2
+2 - 1). (4.25)
+From Lemma
+2 and Theorem 6, the Karush-Kuhn-Tucker equations are
+2LV (g)g + λLD(g)g + diag(s)g = 0, (4.26)
+∑
+σ∈Sn-1(∂M)
+|g(σ)| - C ′ = 0, (4.27)
+1
+2 (∥g∥2 - 1) = 0 , (4.28)
+where ∥g∥ means the column vector with the i-th entry being ∥gi∥2. For this primal-dual problem, the Newton
+step is obtained by solving the linear system
+
+
+
+
+∇2
+vec(g)L vec(LD(g)g) cdiag( g)
+vec(LD(g)g)⊤ 0 0
+cdiag(g)⊤ 0 0
+
+
+
+
+
+
+
+
+∆vec( g)
+∆ λ
+∆ s
+
+
+
+ = -
+
+
+
+
+vec(2LV (g)g + λLD(g)g + gdiag(s))
+∑
+σ∈Sn-1(∂M) |g(σ)| - C ′
+∥g∥2 - 1
+
+
+
+ , (4.29)
+in which vec means the vectorization of a matrix, cdiag( g) is a block diagonal matrix with its i-th block being gi,
+and ∇2
+vec(g)L is the Hessian matrix with respect to vec( g) of the Lagrange multiplier (
+4.25). It can be verified that
+the Hessian matrix ∇2
+gL is of identical sparsity as 1(n-1)×(n-1) ⊗ LD. Here we can estimate it by finite difference
+method. Hence, we propose the Algorithm
+3 for the ( n - 1)-spherical mass-preserving parameterization.
+14
+===== page 15 =====
+Algorithm 3 (n- 1)-VSEM for the ( n- 1)-spherical mass-preserving parameterization
+Require: (n- 1)-simplicial complex ∂M topologically equivalent toSn-1 with the measure µ , tolerance
+tol.
+Ensure: A spherical mass-preserving parameterization g : ∂M→S n-1.
+1: Compute a Dirac map g by Algorithm 2 and set C′ =|g(∂M)|.
+2: Let Eold = EV (g) and δE = +∞ .
+3: while δE < tol do
+4: Compute the Newton step by solving the linear system ( 4.29).
+5: Find a step size α by the linear search and update
+g← g + α ∆ g, λ ← λ + α ∆ λ, s← s + α ∆ s. (4.30)
+6: Let Enew← EV (g) with g induced by g and δE = Eold- Enew. Set Eold← Enew.
+7: end while
+4.3 Ball ε-mass-preserving parameterization
+The ball ε-mass-preserving parameterization need a fixed boundary ma p according to the above discussion. How-
+ever, a sliver n-manifold may lead to a boundary map with low quality in the nu merical perspective. To obtain a
+better boundary map, we stretch the boundary vertices VB := [v⊤
+1 , v⊤
+2 , · · · , v⊤
+m]⊤ along the principal axes, such that
+the n-manifold becomes a ball-like shape. Generally, this stret ched n-manifold may result in a better boundary
+map. Moreover, this stretch transformation is also a mass-p reserving map. Specifically, the stretch transformation
+is obtained by solving the eigenvalue problem
+˜V ⊤
+B ˜VBX = XΛ , (4.31)
+where ˜VB = ( I - 1
+m 11⊤)VB with m = # B, X = [ x1, · · · , xn] is the directions of the principal axes and Λ =
+[λ1, · · · , λn] are the square of length of the principal axes. Then ˜VBXΛ - 1
+2 are the vertices of the ball-like manifold.
+The solution of this problem can be calculated by the singula r value decomposition of ˜VB. We can verify that the
+left singular vector U = ˜VBXΛ - 1
+2 .
+After the computation of the boundary map fB = g, we focus on the ball subproblem ( 4.4) as following,
+min
+fI
+EV (f ) := 1
+n trace(f ⊤LV (f )f ). (4.32)
+Different from the spherical subproblem, since the boundary vertices are fixed, the volume of the enclosed region
+of the boundary surface is determined. Hence, the condition s in ( 3.38) are satisfied. By the Theorem 4, the
+solution to the unconstrained problem ( 4.32) is the target ε-mass-preserving map.
+Partition LV (f ) according to the boundary index B and interior index I
+LV (f ) =
+[
+[LV (f )]BB [LV (f )]BI
+[LV (f )]IB [LV (f )]II
+]
+. (4.33)
+From the Theorem 6, the subproblem ( 4.32) reaches the minimum if [ LV (f )f ]I = 0, that is,
+[LV (f )]IIfI = -[LV (f )]IBfB. (4.34)
+This motivate us to solve the linear system ( 4.34) to compute the interior vertices f (i)
+I by the Laplacian matrix
+LV (f (i-1)) at the i-th iterative step. We summarize this strategy in Algorithm 4.
+5 Numerical Experiments
+In this section, we indicate the numerical performance of ou r proposed algorithms for the n-manifold M and the
+(n-1)-manifold. We mainly focus on the 3-dimensional and 4-dim ensional cases. The 3-dimensional surface bench-
+marks are taken from AIM@SHAPE shape repository (
+http://visionair.ge.imati.cnr.it/ontologies/shapes/),
+15
+===== page 16 =====
+Algorithm 4 n-VSEM for the n-ball mass-preserving parameterization
+Require: n-simplicial complexM topologically equivalent to Bn with the measure µ , tolerance tol.
+Ensure: An n-ball mass-preserving parameterization f :M→ Bn induced by f .
+1: Let B ={i| vi∈ S0(∂M)}, and I ={i| vi∈ S0(M)\ S0(∂M)}. Set m = #B.
+2: Compute the left singular matrix U of ˜VB = (I- 1
+m 11⊤)VB and set VB← U .
+3: Compute a spherical mass-preserving map g : ∂M→S n-1 with a measure µ ′ by Algorithm 3.
+4: Construct the Laplacian matrix L← LD as ( 3.14) for the n-manifoldM.
+5: Fix fB = g and Compute the interior vertices by solving the linear system LIIfI =- LIBfB.
+6: Let Eold = EV (f ) with f induced by f and δE = +∞ .
+7: while δE > tol do
+8: Update L← LV (f ) as in ( 3.9a).
+9: Update fI by solving the linear system LIIfI =- LIBfB.
+10: Let Enew← EV (f ) and δE = Eold- Enew. Set Eold← Enew.
+11: end while
+the Stanford 3D scanning repository ( http://graphics.stanford.edu/data/3Dscanrep), and TurboSquid (https://www.turbosquid.com/
+The 3-dimensional solid benchmarks are generated with the a bove surfaces by the builtin function generateMesh
+of MATLAB. The 4-dimensional benchmarks are manually gener ated. All experimental programs are executed
+in MATLAB R2021a on a personal computer with a 2.50 GHz CPU and 64 GB RAM. We consider the volume-
+preserving map if no special illustration. In other words, t he measures of the benchmarks are µ(·) = | · |.
+5.1 Ellipsoid case
+First, we give 3- and 4-ellipsoids as a special case for the n-VSEM. Let En(a) be a n-ellipsoid with ai being the
+length of the i-th axis. We can find that the map f ∗ : (v1, v2, · · · , vn) →
+(
+v1
+a1
+, v2
+a2
+, · · · , vn
+an
+)
+is a volume-preserving
+map. We aim to compute the this volume-preserving map f ∗ to confirm the mass-preservation of n-VSEM. It
+is worth noting that the boundary map f ∗(∂E n(a)) = S n-1 is not a volume-preserving map. The ratio of the
+volume |f (τ )|/|τ | with τ = [v0, v1, · · · , vn-1] satisfies
+|f ∗(τ )|
+|τ | = |f ∗
+10 ∧ f ∗
+20 ∧ · · · ∧ f ∗
+n0|
+|v10 ∧ v20 ∧ · · · ∧ vn0| =
+√ ∑ n-1
+i=1 det([f ∗⊤
+(i+1)0, · · · , f ∗⊤
+(n-1)0, f ∗⊤
+10 , · · · , f ∗⊤
+(i-1)0])
+√ ∑ n-1
+i=1 det([v⊤
+(i+1)0, · · · , v⊤
+(n-1)0, v⊤
+10, · · · , v⊤
+(i-1)0])
+. (5.1)
+Hence, we choose µ′(τ ) = |τ |
+|f ∗(τ )| and C ′ = ∑
+τ ∈Sn-1(∂M) |f ∗(τ )| for the boundary map in the Algorithm 3. The
+initial map is the exact solution with a perturbation 10 -4. Then we compute the map f by the Algorithm 4 with
+the computed boundary map. Since the normalization for the b all-like shape in Algorithm 4 directly leads to the
+exact solution, we do not execute this normalization proces s to show the effect of the proposed algorithms. The
+Algorithm 3 converges within 20 iterative steps and Algorithm 4 converges within 3 iterative steps. Table 1 shows
+the 3 and 4 dimensional ellipsoids for the experiment and the mass-preserving performances of Algorithm 3 and
+Algorithm 4, where # B and # I are the the number of the boundary and vertices vertices, res pectively. And the
+definitions of ε and δ are in ( 3.43) and ( 3.44), respectively. We can see that the measurements ε and δ are closed to
+10-16, which indicates that our proposed algorithms compute the m ass-preserving parameterization numerically.
+5.2 General cases
+Now we focus on the general cases, which have not exact volume -preserving solutions. Hence, we compute the
+ε-volume-preserving parameterization with as small ε as possible. Figure
+3 shows the 3 dimensional benchmarks
+and the projected surfaces along a direction of the 4 dimensi onal benchmarks. Table 2 demonstrates the basic
+information and the results of the proposed algorithms on th e 3 and 4 dimensional benchmarks, where n is
+the dimension of the manifolds. We set |∂M| = |S n-1| and |M| = |Bn| in the measurement ε for the better
+presentation and comparison.
+16
+===== page 17 =====
+Apple DavidHead LionStatue VenusHead
+Dumbbell Tesseract
+Figure 2: The 3 and 4 dimensional benchmarks for the experiments. The first row is 3 dimensional
+benchmarks and the second row is the projection along a direction o f 4 dimensional benchmarks.
+Figure 3: Histograms of volume ratios δ + 1 on the benchmarks.
+17
+===== page 18 =====
+n a #B #I Sphere Ball
+ε mean(δ) SD( δ) ε mean(δ) SD( δ)
+3 (0. 8, 1, 1. 2) 6707 48811 3.5e-15 4.2e-11 1.6e-8 2.4e-14 6.6e-11 7.8e-8
+(0. 5, 1, 1. 5) 7210 42489 2.3e-14 1.6e-11 9.5e-9 2.3e-14 3.8e-11 6.8e-8
+4 (0. 7, 0. 9, 1. 1, 1. 3) 4003 40030 5.4e-15 2.5e-12 1.7e-10 5.7e-14 1.9e-12 7.69e-10
+(0. 5, 0. 8, 1. 1, 1. 4) 5121 45000 4.6e-14 7.1e-12 1.6e-9 1.3e-12 1.0e-11 1.26e-8
+Table 1: The meshes of 3 and 4 dimensional ellipsoids with the axis length s and the number of boundary
+and interior vertices. The columns Sphere and Ball are the measure ments of the resulting maps of
+Algorithm 3 for the boundary map and Algorithm 4 for the whole map.
+n Mesh #B #I Sphere Ball
+ε mean(δ) SD( δ) ε mean(δ) SD( δ)
+3
+Apple 7947 54185 1.2e-6 1.2e-6 3.8e-4 1.0e-4 4.2e-5 1.6e-2
+DavidHead 10671 9313 2.5e-6 3.4e-7 4.7e-4 2.4e-2 8.4e-3 1.2e-1
+LionStatue 23057 50080 1.9e-4 6.8e-5 5.8e-3 3.2e-2 7.1e-3 1.2e-1
+VenusHead 9129 36105 2.8e-6 1.9e-6 9.5e-4 3.9e-3 1.1e-3 4.4e-2
+4 Dumbbell 5043 45387 1.3e-1 3.4e-3 1.3e-1
+Tesseract 10736 10000 8.1e-2 5.9e-4 6.7e-2 3.0e-1 2.1e-3 2.4e-1
+Table 2: The 3 and 4 dimensional benchmarks with the number of boun dary and interior vertices. The
+columns Sphere and Ball are the measurements of the resulting map s of Algorithm 3 for the boundary
+maps and Algorithm 4 for the whole maps.
+From the Table 2, we can see that the proposed spherical and ball algorithms h ave well performances on
+the volume-preservation among all the benchmarks. For the b oundary problem, the measurements ε are on
+the order 10 -6 to 10 -4 and the local relative error delta are from 10 -7 to 10 -5. For the interior problem, the
+measurements ε are on the order 10 -4 to 10 -2 and the local relative error delta are 10 -5 to 10 -3. For the 4
+dimensional benchmarks, the measurements are slightly lar ger. Improving the accuracy of higher dimensional
+parameterizations is still worthy and significant work in th e future. Additionally, the histograms in Figure 2
+specifically show the distributions of the local volume rati os δi + 1 =
+|f (σ i )|/∑
+σ ∈Sn (M) |f (σ i )|
+µ (σ i )/∑
+σ ∈Sn (M) µ (σ ) . We can see that the
+ratios concentrate in 1 tightly, indicating the high volume -preservation of our proposed algorithms.
+6 Applications
+6.1 Registration
+6.2 Deformation
+7 Conclusion
+In this paper, we propose the n-VSE functional to achieve the mass-preserving parameteri zation for the n-manifold
+topologically equivalent to the n-ball. The n-VSE can be treated as the sum of the mass ratios among the mani fold.
+We give a lower bound of the n-VSE and proof that the n-VSE reaches the lower bound if and only if the map
+is mass-preserving. This is the foundation of our proposed a lgorithms that aim to minimize the n-VSE. In the
+discrete case, the n-VSE is equivalent to the energies defined in [
+23, 20, 9] when n = 2 and n = 3. The discrete
+n-VSE can be formulated as the quadratic form with respect to t he Laplacian matrix and the gradient of the
+discrete n-VSE is of the simple formulation, that is, the product of the Laplacian matrix and the image vertices.
+This property makes the n-VSEM more practical. To compute the mass-preserving param eterization of the n-
+18
+===== page 19 =====
+manifold, we solve the boundary and interior subproblems by developing the spherical and the interior algorithms,
+respectively. The numerical experiment shows the high accu racy of our developed algorithms, especially for the
+3-manifolds.
+However, the efficiency and accuracy, especially for the high er dimensional manifolds, are not fully satisfactory.
+The high dimensional manifolds need more vertices and simpl ices to represent with high resolution, which makes
+the scale of the problem more huge. It is still a challenging p roblem.
+References
+[1] L´ evy Bruno, Petitjean Sylvain, Ray Nicolas, and Maillot J´ erome. Least squares conformal maps for automatic
+texture atlas generation. ACM Transactions on Graphics , 21(3):362-371, 2002.
+[2] Chi Po Choi, Xianfeng Gu, and Lok Ming Lui. Subdivision co nnectivity remeshing via teichm¨ uller extremal
+map. Inverse Problems and Imaging , 11(5):825-855, 2017.
+[3] Pui Tung Choi and Lok Ming Lui. Fast disk conformal parame terization of simply-connected open surfaces.
+Journal of Scientific Computing , 65(3):1065-1090, 2015.
+[4] Keenan Crane. The n-dimensional cotangent formula., 2019.
+[5] Mark Gillespie, Boris Springborn, and Keenan Crane. Dis crete conformal equivalence of polyhedral surfaces.
+ACM Transactions on Graphics , 40(4):1-20, 2021.
+[6] Amita Giri, Gary P.T. Choi, and Lalan Kumar. Open and clos ed anatomical surface description via hemi-
+spherical area-preserving map. Signal Processing, 180:107867, 2021.
+[7] Xianfeng Gu, Feng Luo, Jian Sun, and Shing-Tung Yau. Vari ational principles for minkowski type problems,
+discrete optimal transport, and discrete monge-ampere equ ations. Asian Journal of Mathematics , 20(2):383-
+398, 2016.
+[8] Steven Haker, Sigurd Angenent, Allen Tannenbaum, Ron Ki kinis, Guillermo Sapiro, and Michael Halle.
+Conformal surface parameterization for texture mapping. IEEE Transactions on Visualization and Computer
+Graphics, 6(2):181-189, 2000.
+[9] Tsung-Ming Huang, Wei-Hung Liao, Wen-Wei Lin, Mei-Heng Yueh, and Shing-Tung Yau. Convergence
+analysis of volumetric stretch energy minimization and its associated optimal mass transport. SIAM Journal
+on Imaging Sciences , 16(3):1825-1855, 2023.
+[10] Yao Jin, Gui-Ping Qian, Jie-Yi Zhao, Jian Chang, Ruo-Fe ng Tong, and Jianjun Zhang. Stretch-minimizing
+volumetric parameterization. Journal of Computer Science and Technology , 30(3):553-564, 2015.
+[11] Yueh-Cheng Kuo, Wen-Wei Lin, Mei-Heng Yueh, and Shing- Tung Yau. Convergent conformal energy mini-
+mization for the computation of disk parameterizations. SIAM Journal on Imaging Sciences , 14(4):1790-1815,
+2021.
+[12] Ka Chun Lam and Lok Ming Lui. Landmark- and intensity-ba sed registration with large deformations via
+quasi-conformal maps. SIAM Journal on Imaging Sciences , 7(4):2364-2392, 2014.
+[13] Yin Tat Lee, Ka Chun Lam, and Lok Ming Lui. Landmark-matc hing transformation with large deformation
+via n-dimensional quasi-conformal maps. Journal of Scientific Computing , 67(3):926-954, 2015.
+[14] Jia-Wei Lin, Tiexiang Li, Wen-Wei Lin, and Tsung-Ming H uang. Ellipsoidal conformal and area-/volume-
+preserving parameterizations and associated optimal mass transportations. Advances in Computational Math-
+ematics, 49(4), 2023.
+[15] Lok Ming Lui, Ka Chun Lam, Tsz Wai Wong, and Xianfeng Gu. T exture map and video compression using
+beltrami representation. SIAM Journal on Imaging Sciences , 6(4):1880-1902, 2013.
+[16] Rohan Sawhney and Keenan Crane. Boundary first flattenin g. ACM Transactions on Graphics , 37(1):5:1-
+5:14, 2017.
+[17] Rui Shi, Wei Zeng, Zhengyu Su, Jian Jiang, Hanna Damasio , Zhonglin Lu, Yalin Wang, Shing-Tung Yau,
+and Xianfeng Gu. Hyperbolic harmonic mapping for surface re gistration. IEEE Transactions on Pattern
+Analysis and Machine Intelligence , 39(5):965-980, 2017.
+19
+===== page 20 =====
+[18] Kehua Su, Wei Chen, Na Lei, Junwei Zhang, Kun Qian, and Xi anfeng Gu. Volume preserving mesh param-
+eterization based on optimal mass transportation. Computer-Aided Design, 82:42-56, 2017.
+[19] Kehua Su, Na Lei, Wei Chen, Li Cui, Hang Si, Shikui Chen, a nd Xianfeng Gu. Curvature adaptive surface
+remeshing by sampling normal cycle. Computer-Aided Design, 111:1-12, 2019.
+[20] Mei-Heng Yueh, Tiexiang Li, Wen-Wei Lin, and Shing-Tun g Yau. A novel algorithm for volume-preserving
+parameterizations of 3-manifolds. SIAM Journal on Imaging Sciences , 12(2):1071-1098, 2019.
+[21] Mei-Heng Yueh, Tiexiang Li, Wen-Wei Lin, and Shing-Tun g Yau. A new efficient algorithm for volume-
+preserving parameterizations of genus-one 3-manifolds. SIAM Journal on Imaging Sciences , 13(3):1536-1564,
+2020.
+[22] Mei-Heng Yueh, Wen-Wei Lin, Chin-Tien Wu, and Shing-Tu ng Yau. An efficient energy minimization for
+conformal parameterizations. Journal of Scientific Computing , 73(1):203-227, 2017.
+[23] Mei-Heng Yueh, Wen-Wei Lin, Chin-Tien Wu, and Shing-Tu ng Yau. A novel stretch energy minimization
+algorithm for equiareal parameterizations. Journal of Scientific Computing , 78(3):1353-1386, 2019.
+[24] Chun Pang Yung, Gary P.T. Choi, Ke Chen, and Lok Ming Lui. Efficient feature-based image registration
+by mapping sparsified surfaces. Journal of Visual Communication and Image Representation , 55:561-571,
+2018.
+[25] Daoping Zhang, Gary P. T. Choi, Jianping Zhang, and Lok M ing Lui. A unifying framework for n-dimensional
+quasi-conformal mappings. SIAM Journal on Imaging Sciences , 15(2):960-988, 2022.
+20

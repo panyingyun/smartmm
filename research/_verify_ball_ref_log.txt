@@ -1,0 +1,169 @@
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.007
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.002
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.013
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 178
+  Mesh tetrahedra: 469
+  Mesh faces: 1098
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 16
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.008
+Creating surface mesh ...
+Surface mesh seconds:  0
+Recovering boundaries...
+Boundary recovery seconds:  0
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.003
+Refining mesh...
+Refinement seconds:  0.001
+Smoothing vertices...
+Mesh smoothing seconds:  0.001
+Improving mesh...
+Mesh improvement seconds:  0
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.013
+Statistics:
+
+  Input points: 162
+  Input facets: 320
+  Input segments: 480
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 178
+  Mesh tetrahedra: 469
+  Mesh faces: 1098
+  Mesh faces on exterior boundary: 320
+  Mesh faces on input facets: 320
+  Mesh edges on input segments: 480
+  Steiner points inside domain: 16
+
+parsing switches
+success
+Delaunizing vertices...
+Delaunay seconds:  0.019
+Creating surface mesh ...
+Surface mesh seconds:  0.001
+Recovering boundaries...
+Boundary recovery seconds:  0.001
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  0.001
+Recovering Delaunayness...
+Delaunay recovery seconds:  0.009
+Refining mesh...
+Refinement seconds:  0.01
+Smoothing vertices...
+Mesh smoothing seconds:  0.009
+Improving mesh...
+Mesh improvement seconds:  0.001
+
+Writing nodes.
+Writing elements.
+
+Writing faces.
+Writing edges.
+
+Output seconds:  0
+Total running seconds:  0.051
+Statistics:
+
+  Input points: 642
+  Input facets: 1280
+  Input segments: 1920
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 859
+  Mesh tetrahedra: 3088
+  Mesh faces: 6816
+  Mesh faces on exterior boundary: 1280
+  Mesh faces on input facets: 1280
+  Mesh edges on input segments: 1920
+  Steiner points inside domain: 217
+
+mesh: 178 verts, 469 tets
+
+[PASS] V1 all tets positively oriented (TetGen output)  min vol = 9.807e-04
+[PASS] V2a -0.5*tr(f^T L_tau f) == 3|f(tau)|^2/(2 mu)  [arXiv:2210.09654 Thm 3.1]  max rel err over 20 random tets = 2.508e-13
+[PASS] V2b the OTHER sign (+0.5 tr) does NOT satisfy Thm 3.1 (sign matters!)  rel err with the opposite sign = 2.000e+00
+[PASS] V3 grad_f E_V == -3 L_V(f) f  [arXiv:2210.09654 Thm 3.2, finite diff]  relative gradient error = 1.619e-09
+[PASS] V3b the +3 L_V f form is WRONG by a factor -1 in this convention  rel err with +3 L_V f = 2.000e+00
+[PASS] V4a E_V >= (3/2) V(f) always  E_V=6.682075  1.5*V(f)=6.055190
+[PASS] V4b VSEM reaches the lower bound 3/2*V(f) within 1e-3  E_V=6.07056702  bound=6.07056702  gap=1.776e-15
+[PASS] V4c VSEM map is volume preserving (ratio std < 1%)  std=7.826e-16
+[PASS] V4d VSEM map has no flipped tets  min ratio = 1.000000
+[PASS] V5a K * 1 = 0 (constant fields are harmonic)  max |K 1| = 1.332e-15
+[PASS] V5b local stiffness == -(1/6) l_kl cot(theta_ij^kl) formula  max rel diff = 3.453e-16
+[PASS] V5c local tet stiffness annihilates constants  max = 1.388e-17
+[PASS] V5d local tet stiffness symmetric  max asym = 0.000e+00
+[PASS] V5e local tet stiffness PSD with one zero eigenvalue  eigs = [0.         0.04779065 0.05798246 0.51223076]
+[PASS] V5f global K == scatter of element matrices  max err = 0.000e+00
+[PASS] V5g B^{-1} B = I  =>  grad(lambda_k).(v_j - v_0) = delta_kj for k,j = 1..3  max |B^-1 B - I| = 1.659e-16
+[PASS] V5h element matrix rebuilt from those gradients == the assembled element matrix  max err = 0.000e+00
+[PASS] V5j regular tet has all 6 dihedral angles = arccos(1/3) = 70.5288 deg  got [70.528779 70.528779 70.528779 70.528779 70.528779 70.528779]
+[PASS] V5k regular tet element stiffness: rowsum 0, PSD, one zero eigenvalue  rowsum max = 2.78e-17
+[PASS] V6a .node/.ele round trip: points  max diff = 0.000e+00
+[PASS] V6b round trip: tets  
+[PASS] V6c round trip: point marker 'tetgen:ref'  
+[PASS] V6d round trip: cell attribute 'tetgen:ref'  
+
+  .node header line:  178 3 0 1
+  first .node data :  0 4.6259292692714853e-18 -8.3266726846886741e-17 1.0000000000000000e+00 1
+  .ele header line :  # This file was created by meshio v5.3.5
+  first .ele data  :  # attribute names: tetgen:ref
+[PASS] V7a on a GEOMETRIC ball the radial BC is the identity -> exact zero distortion (this is why the failure mode needs a non-convex shape)  max |ratio-1| = 4.663e-15
+  [non-convex 'peanut'] harmonic + radial BC : mean=2.4684 std=2.0934 min=1.9285e-01 max=8.8809 J<0.5=16.483%
+[PASS] V7b harmonic map of a NON-convex 3-ball with radial BC is severely distorted and near-degenerate  3088 tets, 0 flipped (0.000%), J<0.5 = 16.483%, ratio range [1.929e-01,8.881e+00]
+  [non-convex 'peanut'] VSEM            : mean=1.2543 std=0.2364 min=1.1565e-01 max=3.2799
+[PASS] V8 VSEM on the non-convex solid: no flips, and cuts the volume-distortion std by >3x vs the plain harmonic map  harmonic std=2.0934 -> VSEM std=0.2364, min ratio=0.115647
+  VSEM energy deficit vs 1.5*V(f_image): 1.7185  (V_ref=3.3354, V_image=4.1529)
+[PASS] V9 VSEM on the non-convex solid has a strictly positive fixed-boundary energy deficit (no volume-preserving map exists for the frozen boundary)  deficit = 1.7185
+[PASS] V9b the same mesh WITH a free (globe-gliding) boundary can reach the bound = this is exactly the motivation for IEM over VSEM  see arXiv:2407.19272 Sec. 1: 'the original VSEM method assumes the total image volume is constant ... which may not hold if the boundary points are allowed to glide along the unit sphere'
+
+28 passed, 0 failed

@@ -1,0 +1,1037 @@
+  
+===== page 1 =====  
+AM O V I N GM E S HA D A P T A T I O NM E T H O DB Y  
+OPTIMAL TRANSPORT  
+Dongsheng An 1 Na Lei 2B Tong Zhao3 Hang Si 4 Xianfeng Gu 1  
+1Stony Brook University, NY, U.S.A. {doan, gu }@cs.stonybrook.edu  
+2Dalian University of Technology, Liaoning, China. nalei@dlut.edu.cn  
+3Universit´ e Cˆ ote d'Azur, Inria, France. tong.zhao@inria.fr  
+4Weierstrass Institute for Applied Analysis and Stochastics (WIAS), Berlin, Germany. si@wias-berlin.de  
+ABSTRACT  
+Optimal transportation finds the most economical way to transport one probability measure to another, and it plays  
+an important role in geometric modeling and processing. In this paper, we propose a moving mesh method to  
+generate adaptive meshes by optimal transport. Given an initial mesh and a scalar density function defined on the  
+mesh domain, our method will redistribute the mesh nodes such that they are adapted to the density function. Based  
+on the Brenier theorem, solving an optimal transportation problem is reduced to solving a Monge-Amp` ere equation,  
+which is di cult to compute due to the high non-linearity. On the other hand, the optimal transportation problem  
+is equivalent to the Alexandrov problem, which can finally induce an e↵ective variational algorithm. Experiments  
+show that our proposed method finds the adaptive mesh quickly and e ciently.  
+Keywords: Optimal transport, Monge-Amp` ere equation, Adaptive mesh  
+1. INTRODUCTION  
+Motivation The central task in numerical simula-  
+tion is to solve partial di↵erential equations that model  
+various physical, chemical or biological processes. For  
+dynamic processes, it may be advantageous to vary  
+the resolution dynamically.  
+Obtaining a numerical approximation to the solution  
+of such problems usually involves generating a mesh.  
+Typically, a uniform-resolution mesh is used. How-  
+ever, if the domain is with complicated geometry, the  
+mesh cannot adequately resolve the small scale fea-  
+tures for high curvature regions; or the physical ma-  
+terial is highly an-isotropic, the uniform mesh can-  
+not capture the directional feature; or the mesh is  
+evolving, the initial mesh is not conformal to the dis-  
+torted shape, then the mesh may lead to computa-  
+tional results with poor qualities. In such situations,  
+it is necessary to use dynamic mesh adaptivity to re-  
+solve evolving small scale features and other aspects  
+of the solution. Therefore, it is highly desirable to de-  
+velop a practical computational tool, which can gen-  
+erate adaptive meshes according to monitor functions  
+defined on space-time. One approach is local mesh re-  
+finement in which new samples are added to regions  
+where greater resolution is needed. Another approach  
+is mesh relocation, in which the mesh vertices are  
+moved around preserving the connectivity. This work  
+proposes a robust and general-purpose algorithm for  
+generating adaptive meshes based on optimal trans-  
+portation.  
+Optimal T ransportation Optimal transportation  
+finds the most economical way to transform one proba-  
+bility distribution to another. Recently, optimal trans-  
+portation has become one of the fundamental tools  
+in geometric modeling and processing. It has been  
+applied for area-preserving parameterizations [1], 3D  
+surface registration and comparison [2], medical image  
+registration [3] and so on. It has been applied broadly  
+130  
+===== page 2 =====  
+(a) Source measure (⌦,µ) (b) Target measure (⌦ ⇤,⌫) (c) Brenier potential u (d) Brenier potential  
+Figure 1:T h e o p t i m a l t r a n s p o r t a t i o n m a pT:( ⌦,µ)!(⌦⇤,⌫)is the gradient of the Brenier potential u:⌦!R.  
+in generative models in deep learning, e.g. WGAN [4],  
+where the generator computes the optimal transporta-  
+tion map, and the discriminator calculates the Wasser-  
+stein distance. It is also used for reflector and refractor  
+design in optics field [5, 6].  
+For the application of mesh adaption, suppose we are  
+given a geometric domain ⌦⇢Rn, and a desired sam-  
+pling density function⌫defined on ⌦. We model⌫as  
+the target probability measure, and the uniform distri-  
+butionµas the source measure. Then we can compute  
+a unique optimal transportation mapT:⌦!⌦, such  
+thatTmapsµto⌫. We uniformly sample the domain  
+⌦a n do b t a i ns a m p l e s{p1,p2,...,pn}and map them  
+by the optimal transportation map T. The distribu-  
+tion of the images{T(p1),T(p2),...,T(pn)}converges  
+to the prescribed sampling density⌫.I n t h i s w a y , w e  
+can transform uniform sampling density to any sam-  
+pling density. The OT method continuously move  
+the locations of the mesh vertices without changing  
+its connectivity. This can e↵ectively avoid the sharp  
+changes in resolution and it has no spurious wave prop-  
+agation behavior like other methods [7].  
+Geometric V ariational Approach for OT Ac-  
+cording to the Brenier's theorem [8], the optimal trans-  
+portation map is the gradient of a convex function,  
+the so-called Brenier potential. The Brenier poten-  
+tial satisfies the Monge-Amp` ere equation, which has  
+deep roots in convex geometry and is intrinsically re-  
+lated to the Alexandrov problem [9]. This inspires us  
+to use a geometric variational approach to solve the  
+OT problem. The work in [9] proves that the Brenier  
+theorem is equivalent to the classical Alexandrov the-  
+orem in convex geometry. The Alexandrov theorem  
+states that a convex polyhedron is fully determined,  
+uniquely up to a vertical translation, by its face nor-  
+mals and face areas. The Alexandrov polyhedron is in  
+fact equivalent to the graph of the Brenier potential.  
+In more details, the Alexandrov polyhedron can be  
+constructed as the upper envelope of its supporting  
+planes with known normals and unknown heights. The  
+projection of the upper envelope induces a power di-  
+agram of the plane. We can adjust the heights of the  
+supporting planes to vary the upper envelope, such  
+that the area of each cell in the domain ⌦ equals to  
+the prescribed area. Alexandrov theorem guarantees  
+the existence and uniqueness (unique up to a verti-  
+cal translation) of the Alexandrov polyhedron using  
+algebraic topological argument.  
+The work in [9] gives a variational approach to com-  
+pute the heights. Geometrically, the vertical lines  
+through the boundary of ⌦ form a topological cylin-  
+der, the xy-plane, the upper envelope and the cylinder  
+together bound a 3-dimensional domain. The volume  
+of this domain minus a linear term gives us a convex  
+energy (Thm. 3.2). The critical point of the energy  
+gives us the Alexandrov polyhedron, namely the Bre-  
+nier potential. The gradient of the energy equals to  
+the di↵erence between the corresponding target cell  
+areas and the current cell areas, and the each element  
+of the Hessian matrix consists of the length ratio be-  
+tween the corresponding weighted Delaunay triangu-  
+lation and the power diagram. Therefore, we can use  
+Newton's method to optimize the energy.  
+Fig. 1 shows an optimal transportation map computed  
+using this method. As shown in frame (a), the source  
+measureµis the uniform distribution defined on the  
+unit disk ⌦; (b) shows the target measure ⌫,w h i c h  
+is also the uniform distribution on a seahorse shaped  
+domain ⌦⇤.⌫is discretized as the summation of  
+Dirac measures, each vertexyi2⌦⇤is a sample point  
+with a desired target measure ⌫i. Frame (c) and (d)  
+show the convex Brenier potential u:⌦!Rfrom  
+di↵erent viewpoints. Its graph is a convex polyhe-  
+dron (Alexandrov polyhedron), each face is a plane  
+⇡i(x): =hx, yii hi, whose slope is the corresponding  
+sampleyi2⌦⇤,hiis the unknown height parame-  
+ter. The projection of Alexandrov polyhedron induces  
+a power diagram of ⌦, and the area of the cell corre-  
+sponding to⇡iequals to⌫i.  
+131  
+===== page 3 =====  
+(a) The given density function (b) The adaptive mesh (c) The Brenier potential u (d). The Legendre dual u⇤  
+Figure 2 :T h e m o v i n g a d a p t i v e m e s h b a s e d o n t h e o p t i m a l t r a n s p o r t a t i o n m a p .( a ) s h o w s t h e o r i g i n a l m e s h s t r u c t u r e  
+defined on [0, 1]2 and the brightness gives the PDF of the function. (b) gives the computed adaptive mesh, in which the  
+cell are is proportional to the brightness of (a). (c) shows the Brenier potential u :[ 0 , 1]2 ! R and its projection on the  
+source domain. (d) shows the Legendre dual u⇤(y)=s u p x2D2 {hx, yi  u(x)}.  
+Contribution The main contribution of the work is  
+to propose to use the optimal transportation method  
+for moving mesh adaption, which maps a uniform  
+distribution to any sampling density, and converts  
+the uniform sampling to the desired sampling. The  
+method has solid theoretic foundation and e cient al-  
+gorithm based on geometric variational method. The  
+method can be generalized to arbitrary dimension as  
+well.  
+Notation We define the domain of the fixed com-  
+putational mesh as ⌦, in which the uniform distribu-  
+tion dµ = f (x)dx is defined. The target domain is  
+given by ⌦ ⇤ where the positive scalar monitor func-  
+tion g(y) is defined. The monitor function can be  
+treated as a probability density function defined on  
+⌦⇤ after normalization and is used to represent some  
+physical system of interest, like the climate simula-  
+tion. We also use x and y to represent positions in ⌦  
+and ⌦ ⇤, respectively. In the following, we set ⌦ to be  
+[ 1, 1]2,a n d g is discretized on the grids and repre-  
+sented by the discrete measure ⌫ = Pn  
+i=1 ⌫i (y   pi),  
+where ⌫i =4 g(pi)/ Pn  
+i=1 g(pi). Thus, the total mea-  
+sure of µ and ⌫ is equal. Here pis are the locations of  
+the vertex on ⌦ ⇤.  
+The work is organized in the following way: in sec-  
+tion 2, we briefly review the theory, computational  
+algorithms and direct applications of optimal trans-  
+portation maps; in section 3, we briefly recall Brenier  
+theorem in optimal transportation, Alexandrov the-  
+orems in convex geometry, and the geometric varia-  
+tional theorem; in section 4, we explain the details for  
+solving the adaptive mesh generation problem; the ex-  
+perimental results are reported in section 5. Finally  
+the work is concluded in section 6.  
+2. RELATED WORK  
+This section briefly reviews the solutions of the adap-  
+tive mesh problem and the algorithms of optimal  
+transportation. We refer readers to the textbook [7]  
+for detailed analysis of the moving mesh problem and  
+to [10, 11] for a comprehensive review of the theory  
+and [12] for computational algorithms of the optimal  
+transportation.  
+2.1 Mesh Generation  
+There are typically two kinds of methods for the adap-  
+tive mesh generation problem, especially when we need  
+the meshes to adequately fit the small scale features.  
+The first class uses a form of local mesh refinement  
+called h adaptivity [13, 14, 15], in which mesh points  
+are adaptively added to the regions where greater res-  
+olution is required during the computation. This kind  
+of methods change the connectivity of the vertices  
+in the optimization and thus unstable. The second  
+type method, which is called r adaptivity, continu-  
+ously move the locations of the mesh vertices without  
+changing its connectivity relationship. By avoiding the  
+sharp changes in resolution, r adaptivity methods has  
+no spurious wave propagation behavior. For detailed  
+reviews, we refer the reader to the textbook [7]. The  
+redistributin of one-dimensional mesh of r adaptivity  
+has been implemented in several software libraries like  
+the bifurcation package AUTO and the currently used  
+weather forecasting software [16, 17]. R-adaptivity  
+has also been applied to the geophysical problems  
+[18, 19, 20]. There is a long history to solve the two-  
+dimensional or three-dimensional r adaptivity prob-  
+lem through optimal transport or the Monge-Amp` ere  
+equation [21, 22, 23, 24, 25]. Given a prescribed scalar  
+monitor function, these methods find the correspond-  
+ing adaptive mesh by minimizing a deformation func-  
+tion. In this paper, we adopt the geometric varia-  
+tional method [9] to solve such an equidistribution  
+132  
+===== page 4 =====  
+problem by computing its corresponding semi-discrete  
+OT map.  
+2.2 Optimal Transport  
+Monge raised the optimal transportation map prob-  
+lem as finding the most economical way to transfer  
+one measure to the other in [26]. Kantorovich relaxed  
+the transportation maps to transportation plans and  
+solved the problem using linear programming [27, 28].  
+Brenier [8] discovered the OT map is the gradient of  
+a convex function, which satisfies the Monge-Amp` ere  
+equation. Benamou-Brenier [29] developed the the-  
+ory for computing the OT maps using fluid dynamics.  
+Comprehensive theories on optimal transportation can  
+be found in [11, 30] and so on.  
+There are many methods for solving the optimal trans-  
+portation problem, which can be classified into four  
+main categories: Kantorovich approach, Brenier ap-  
+proach, Fluid dynamics approach and discretizing the  
+Monge-Amp` ere equation approach. The first approach  
+is based on the Kantorovich theorem, the optimal  
+transportation problem is solved by linear program-  
+ming. De Goes [31] proposed point-to-simplex algo-  
+rithm similar to linear programming. Sinkhorn [32]  
+method added an entropy regularizer to the Kan-  
+torovich potential and greatly improved the e ciency.  
+The heat kernel was used in [32, 33, 34] to approxi-  
+mate the Wasserstein distance. The second approach  
+is based on the Brenier theorem and the Brenier po-  
+tential can be found by geometric optimization. Au-  
+renhammer et al. [35] connected the OT map with  
+the power diagram in computational geometry. Gu  
+and Yau et al. [36] linked the Brenier theory and the  
+Alexandrov theory, and proposed a geometric varia-  
+tional approach. De Goes et al. found the equivalence  
+between the capacity-constrained Voronoi tessellation  
+and the OT problem in [37]. Levy [38] and Merigot  
+et al. [39] proposed the multi-scale approaches to ac-  
+celerate the computation based on the Brenier theory  
+for large-scale optimal transportation problems. The  
+third approach is based on fluid dynamic theory. Be-  
+namou and Brenier developed a method [40] to solve  
+the Monge-Amp` ere equation by minimizing the kinetic  
+energy of a flow field. Haker and Tananbaum [3] de-  
+veloped a method to compute the OT maps using fluid  
+dynamics through removing the curl component from  
+the vector field. It is still unclear whether Haker's  
+method can obtain the optimal transportation map  
+for high dimensional cases. The last kind of meth-  
+ods [41, 42] approximated the Monge-Amp` ere equa-  
+tion and solve the OT problem by discretizing the Hes-  
+sian matrix. The optimal transportation methods by  
+solving the Monge-Amp` ere equation have been gener-  
+alized to spherical cases by [5, 6, 43].  
+3. THEORETICAL FOUNDATION  
+In this section, we briefly review the theoretical foun-  
+dation of optimal transportation, concentrating on  
+the Brenier theorem and the geometric variational  
+method.  
+3.1 Equidistribution  
+To solve the moving adaptive mesh problem, we aim  
+to find the map  
+ˆT (x):⌦ ! ⌦⇤  
+such that the positive scalar function g is equidis-  
+tributed, as shown in Fig. 2(a) and Fig. 2(b). If  
+the density function defined on the source domain ⌦  
+is given by dµ = f (x)dx, then the equidistribution  
+problem is equivalent to solving the following partial  
+di↵erential equation (PDE):  
+g(y)d e tJ = f (x)( 1 )  
+where J is the Jacobian of the map ˆT given by:  
+J = @y  
+@x  
+The above problem is actually equivalent to finding  
+a measure preserving mapping from dµ = f (x)dx to  
+d⌫ = g(y)dy.  
+Suppose ⌦ , ⌦⇤ ⇢ Rd are domains in an Euclidean  
+space, with probability measures µ and ⌫ respectively  
+satisfying the equal total mass condition: µ(⌦) =  
+⌫(⌦⇤). The density functions are dµ = f (x)dx and  
+d⌫ = g(y)dy. The transportation map T :⌦ ! ⌦⇤ is  
+measure preserving, if for any Borel set B ⇢ ⌦⇤,  
+Z  
+T  1 (B)  
+dµ(x)=  
+Z  
+B  
+d⌫(y),  
+denoted as T#µ = ⌫. The measure preserving map  
+from µ to ⌫ is not unique. Thus, there are many  
+solutions to the equidistribution problem Eqn. (1).  
+To solve this problem, many constraints or regulariza-  
+tions have been proposed to make the solutions for the  
+r adaptive methods unique. One of the commonly  
+used constraint is to minimize the total transport cost  
+from µ to ⌫, namely solving the corresponding optimal  
+transportation problem from µ to ⌫ [42].  
+3.2 Optimal Transportation  
+Monge raised the optimal transportation problem :  
+given the transportation cost function c :⌦ ⇥⌦⇤ ! R+,  
+we aim to find a transportation map T :⌦ ! ⌦⇤ that  
+minimizes the total transportation cost ,  
+(MP )m i n  
+⇢Z  
+⌦  
+c(x, T (x))dµ(x): T :⌦ ! ⌦⇤ and T #µ = ⌫  
+   
+.  
+133  
+===== page 5 =====  
+The above equation gives the Monge problem (MP)  
+and the minimizer is called the optimal transportation  
+map (OT map). The transportation cost of the OT  
+map is called the OT cost between the measures.  
+Theorem 3.1 (Brenier Theorem [8]) . Suppose the  
+measures µ and ⌫ are with compact supports ⌦, ⌦⇤ ⇢  
+Rd respectively, and they have equal total mass µ(⌦) =  
+⌫(⌦⇤).A s s u m e t h e c o r r e s p o n d i n g d e n s i t y f u n c t i o n s  
+satisfy f, g 2 L1(Rd),a n dt h ec o s tf u n c t i o ni sc(x, y)=  
+1  
+2 |x   y|2,t h e nt h eo p t i m a lt r a n s p o r t a t i o nm a pf r o mµ  
+to ⌫ exists and is unique. It is the gradient of a convex  
+function u :⌦ ! R,t h es o - c a l l e dB r e n i e rp o t e n t i a l ,  
+and u is unique up to adding a constant. Then the  
+OT map is given by T = ru.  
+An example of the Brenier potential is given by Fig.  
+2(c). If the Brenier potential is C2, then by measure  
+preserving condition, it satisfies the Monge-Amp` ere  
+equation,  
+detD2u(x)= f (x)  
+g  r u(x) ,s . t . ru(⌦) = ⌦ ⇤, (2)  
+where detD2u is the determinant of the Hessian matrix  
+of u and the unique OT map is given by T = ru.  
+3.3 Geometric Variational Method  
+The above Monge-Amp` ere equation requires the Bre-  
+nier potential to be at least C2.I f u is not smooth,  
+we can still define the Alexandrov solution of it. The  
+sub-gradient of a convex function u at x is defined as  
+@u(x): =  
+n  
+p 2 Rd : u(z)  h p, z   xi + u(x), 8z 2 ⌦  
+o  
+The sub-gradient defines a set-valued map: @u :⌦ !  
+⌦⇤, x 7! @u(x). We can use the sub-gradient map to  
+replace the gradient map in the Monge-Amp` ere equa-  
+tion Eqn. (2), and define the Alexandrov Solution as  
+follows:  
+Definition 3.1 (Alexandrov Solution) . If a convex  
+function u :⌦ ! R satisfies the equation ( @u)#µ = ⌫,  
+or equivalently µ((@u) 1(B)) = ⌫(B), for all Borel set  
+B ⇢ ⌦⇤,t h e n u is called an Alexandrov solution to  
+the Monge-Amp` ere equation Eqn. (2).  
+The work of [36] gives a geometric variational approach  
+for computing the Alexandrov solution to the semi-  
+discrete optimal transportation problem.  
+3.4 Semi-discrete Optimal Transportation  
+Suppose the source measure is (⌦ ,µ ), ⌦ is a com-  
+pact convex domain with non-empty interior in Rd,  
+the density function f (x) is continuous. In practice,  
+the target measure (⌦ ⇤,⌫ ) is usually discretized as ⌫ =  
+Pn  
+i=1 ⌫i (y   pi), where p1,...,p n ⇢ Rd are distinct  
+n points and ⌫1,...,⌫ n > 0s ot h a t Pn  
+i=1 ⌫i = µ(⌦).  
+In this situation, the discrete Brenier potential is a  
+piecewise linear convex function. In fact, there exists  
+a height vector h =( h1,...,h n) 2 Rn,s ot h a tt h e up-  
+per envelope uh of the hyper-planes ⇡i(x): = hx, pii+hi  
+defined as  
+uh(x)=  
+n  
+max  
+i=1  
+{hx, pii + hi}, (3)  
+gives the discrete Brenier potential. The projection of  
+the envelope Env( {⇡i}n  
+i=1) induces a power diagram,  
+Rd =  
+n[  
+i=1  
+Wi(h),W i(h): = {x 2 Rd : ruh = pi}.  
+The µ-volume of each cell µ(Wi(h) \ ⌦) = ⌫i,a n d  
+the semi-discrete optimal transportation map is given  
+by T (x)= ruh(x), or equivalently T : Wi(h) \ ⌦ 7!  
+pi 8i =1 , 2,...,n . The discrete Brenier potential can  
+be obtained by optimizing the following convex energy.  
+Theorem 3.2 (Gu et al. [36]) . Let ⌦ be a compact  
+convex domain in Rd, {p1,. . . ,pn} be a set of distinct  
+points in Rd and f :⌦ ! R be a positive continuous  
+function. Then for any ⌫1,...,⌫ n > 0 with Pn  
+i=1 ⌫i =R  
+⌦ f (x)dx,t h e r ee x i s t sh =( h1,h 2,...,h n) 2 Rn,  
+unique up to adding a constant (c, c, . . . , c),s ot h a t  
+µ(Wi(h)\⌦) =  
+Z  
+Wi (h)\⌦  
+f (x)dx = ⌫i 8i =1 , 2,...,n .  
+(4)  
+The height vector h is exactly the optimal solver of the  
+following convex function  
+E(h)=  
+Z h  
+0  
+nX  
+i=1  
+µ(Wi(h) \ ⌦)dhi    
+nX  
+i=1  
+hi⌫i (5)  
+on the open convex set (the admissible solution space)  
+H = {h 2 Rn|µ(Wi(h) \ ⌦) > 0,i 2{ 1, 2,...,n }}  
+\  
+( nX  
+i=1  
+hi =0  
+)  
+.  
+(6)  
+Furthermore, the gradient map ruh minimizes the  
+quadratic cost 1  
+2  
+R  
+⌦ |x   T (x)|2f (x)dx among all the  
+measure preserving transportation maps T :( ⌦ ,µ ) !  
+(Rd, ⌫ = Pn  
+i=1 ⌫i (y   pi)), T#µ = ⌫.  
+Finally, we can build the map ˆT :⌦ ! ⌦⇤ as follows:  
+for each cell Wi its corresponding mass cell center is  
+computed as mi =  
+R  
+Wi  
+xdµ(x)/⌫i,t h e nw eh a v et h e  
+one-to-one map ˆT induced by the optimal transport  
+map T from µ to ⌫: ˆT (mi)= pi,i =1 , 2,...,n .  
+134  
+===== page 6 =====  
+4. COMPUTATIONAL ALGORITHMS  
+This section explains the algorithmic details to solve  
+the semi-discrete OT problem. The algorithm is imple-  
+mented using computational geometric method, hence  
+we start with the fundamental concepts in computa-  
+tional geometry [44].  
+4.1 Basic Concepts from Computational  
+Geometry  
+A hyperplane in Rd+1 is represented as ⇡(x): = hp, xi+  
+h, x 2 Rd, h 2 R. Given a family of hyperplanes  
+{⇡i(x)= hpi,x i+hi}n  
+i=1,t h e i rupper envelope denoted  
+as Env( {⇡i}n  
+i=1) is the graph of the function  
+u(x): =  
+n  
+max  
+i=1  
+{hpi,x i + hi} .  
+The Legendre dual of u is defined as  
+u⇤(y): =m a x  
+x2Rd  
+{hx, yi  u(x)}.  
+Each hyperplane ⇡i(x)h a sad u a lp o i n ti nRd+1, ⇡⇤  
+i :=  
+(pi,  hi), and the graph of u⇤ is the lower convex hull  
+of the dual points {⇡⇤  
+i }n  
+i=1,w h i c hi sa l s ot h em i n i m a l  
+convex set containing {⇡⇤  
+i }n  
+i=1. The projection of the  
+upper envelope induces a nearest power diagram D(⌦)  
+of ⌦ given by  
+⌦=  
+n[  
+i=1  
+Wi(u),W i(u): = {x 2 ⌦|ru(x)= pi} .  
+The projection of the lower convex hull u⇤ induces a  
+nearest weighted Delaunay triangulation T (⌦⇤)o f⌦ ⇤.  
+D(⌦) and T (⌦⇤) are dual to each other, namely pi  
+connects pj in T (⌦⇤)i fa n do n l yi f Wi(u) is adjacent  
+to Wj (u). Fig. 2(c) and Fig. 2(d) show these basic  
+concepts.  
+4.2 Algorithm Pipeline  
+Given the domain ⌦ ⇤ and the corresponding density  
+function g, we firstly sample from the grids of ⌦ ⇤, rep-  
+resented by {pi}n  
+i=1, then the target measure is de-  
+fined as ⌫ = Pn  
+i=1 ⌫i (y   pi). Here ⌫i is computed  
+by ⌫i = g(pi),i =1 , 2,...,n and then normalized as  
+⌫i = ⌫i/ Pn  
+i=1 ⌫i.F i g .3 ( b ) g i v e s a n e x a m p l e o f t h e  
+target measure, where g is set to be the normal distri-  
+bution and the intensity of the vertices is given as ⌫is.  
+The source measure is set to be the Uniform distribu-  
+tion defined on ⌦ which is slightly larger than ⌦ ⇤,a s  
+shown in Fig. 3(a).  
+The algorithm mainly optimizes the energy E(h)o f  
+Eqn. (5) in the admissible solution space H of Eqn. (6)  
+using Newton's method. At the beginning, the height  
+vector h0 is initialized as hi = 1  
+2 (|pi|2   1) for each  
+Algorithm 1: Adaptive mesh generation  
+Input: The source domain ⌦ and the  
+corresponding Uniform distribution µ;t h e  
+density function g and its corresponding  
+rectangular domain ⌦ ⇤  
+Output: The map ˆT and the generated adaptive  
+mesh.  
+Construct the target measure  
+⌫ = Pn  
+i=1 ⌫i (y   pi)o n⌦ ⇤ with grid vertices  
+{pi}n  
+i=1,s e t ⌫i = g(pi) and then normalize as  
+⌫i = µ(⌦) ⌫iPn  
+i=1 ⌫i  
+;  
+Initialize hi = 1  
+2 (|pi|2   1);  
+while true do  
+Compute the lower convex hull of  
+{(pi,  hi)}n  
+i=1;  
+Compute the upper envelope of the planes  
+{hpi,x i + hi}n  
+i=1;  
+Project the upper envelope to the plane to get  
+a power diagram ⌦ = Sn  
+i=1 Wi(h);  
+Compute the µ-volume of each finite cell  
+wi(h)= µ(Wi(h)) using Eqn. (7);  
+Compute the gradient of the energy E(h)  
+using Eqn. (8), rE(h)=( ⌫i   wi(h));  
+if krE(h)k <" then  
+return h ;  
+end  
+Compute the µ-lengths of the power Voronoi  
+edges Wi(h) \ Wj (h);  
+Construct the Hessian matrix of the energy  
+E(h):  
+Hess(E(h))ij := @2E(h)  
+@hi@hj  
+=   µ(Wi(h) \ Wj (h))  
+|pi   pj |  
+Hess(E(h))ii := @2E(h)  
+@h2  
+i  
+=  
+X  
+j⇠i  
+µ(Wi(h) \ Wj (h))  
+|pi   pj |  
+Solve the linear system:  
+Hess(E(h))d = rE(h);  
+   1;  
+repeat  
+if h +  d /2H then  
+   1  
+2  ;  
+continue;  
+end  
+Compute the power diagram D(h +  d);  
+until no empty power cell ;  
+Update the height vector h  h +  d;  
+end  
+Compute the cell centers {mi}n  
+i=1 of {Wi}n  
+i=1,  
+and we have ˆT (mi)= pi ;  
+Generate the adaptive mesh of {mi}n  
+i=1 according  
+to the connectivity of {pi}n  
+i=1;  
+vertex pi. According to the definition of Power dia-  
+135  
+===== page 7 =====  
+(a)Source measure (b) Target measure (c) OT map given by (d). The deformed mesh  
+(⌦,µ) {(pi,⌫i)}n  
+i=1 Env(⇡i(x)) ˆT(mi)=pi  
+Figure 3:( a ) T h e s o u r c e d o m a i n⌦is with uniform distributionµ.( b ) T h e t a r g e t m e a s u r e i s d e fi n e d o n t h e v e r t i c e s  
+and given by⌫:=Pn  
+i=1⌫i (y pi).( c ) T h e b l u e g r i d g i v e s t h e o r i g i n a l m e s h w h e r e⌫is defined, the dotted red mesh  
+gives the cell decomposition{Wi}n  
+i=1of⌦,w i t hµ(Wi)=⌫i.T h e s e m i - d i s c r e t e O T m a p i s g i v e n b yT:Wi!pifor all  
+i=1,2,...,n.T h e n w e m a p t h e c e l l c e n t e rmiofWi(the red stars of⌦)t ot h ec o r r e s p o n d i n gv e r t e xpiof the target  
+mesh (the blue stars of⌦⇤), given byˆT(mi)=pi. The map relationship is represented by the green dotted lines. (d) We  
+generate the deformed mesh by connecting the cell centers miandmjif the correspondingpiandpjare connected in the  
+target measure.  
+gram, it is easy to show that h02Hof Eqn. (6).  
+At each step, the convex hull of{(pi, hi)}n  
+i=1is con-  
+structed. The lower convex hull is projected to induce  
+a weighted Delaunay triangulationTof{pi}n  
+i=1.E a c h  
+vertex on the convex hullqi=(pi, hi) corresponds to  
+a supporting plane⇡i(h,x)=hpi,xi+hi.E a c h e d g e  
+[qi,qj] in the convex hull corresponds to the intersec-  
+tion of the hyperplanes⇡iand⇡j. Each face [qi,qj,qk]  
+in the convex hull is dual to the vertex in the envelope,  
+which is the intersection point of ⇡i,⇡jand⇡k.T h e  
+lower convex hullu⇤is dual to the upper envelope u.  
+The projection of the upper envelope uinduces the  
+nearest power diagram. The relationship is given in  
+Fig. 2(c) and Fig. 2(d).  
+To optimizeE(h), we compute theµ-volume of each  
+power cellWi(h)u s i n g  
+wi(h): =  
+Z  
+Wi(h)  
+f(x)dx, (7)  
+and the gradient of the energy is given by  
+rE(h)=(⌫1 w1(h),⌫2 w2(h),...,⌫n wn(h)).  
+(8)  
+The Hessian matrix Hess(E(h)) for the o↵ diagonal  
+elements of the energy can be constructed as follows:  
+@2E(h)  
+@hi@hj  
+=@wi(h)  
+@hj  
+=  1  
+|pi pj|  
+Z  
+Wi(h)\Wj(h)  
+f(x)dx  
+= µ(¯eij)  
+|eij|.  
+(9)  
+wheref(x) is the Uniform distribution defined on ⌦,  
+eijis the edge in the weighted Delaunay triangulation  
+T(h)c o n n e c t i n gpiandpj,¯eijis the dual edge in the  
+power diagramD(h), namely the intersection ofWi(h)  
+andWj(h). The diagonal elements are given as:  
+@2E(h)  
+@h2  
+i  
+=@wi(h)  
+@hi  
+=  
+X  
+j⇠i  
+µ(¯eij)  
+|eij|. (10)  
+where⇠means the neighbourhood relationship. Then  
+we solve the following linear system to find the update  
+direction,  
+Hess(E(h))d=rE(h). (11)  
+Finally, we need to determine the step length  ,s u c h  
+thath+ dis still in the admissible solution spaceH,  
+H={h2Rn|µ(Wi(h))>0,i=1,2,...,n}.(12)  
+We initially set the step length to be 1. Ifh+ d  
+is not in the admissible space H,n a m e l ys o m ec e l l s  
+disappear in the power diagram D(h+ d), then we  
+cut to a half,  1/2 , and iterate again. This  
+process is repeated until we find an appropriate step  
+length so thath+ dis in the admissible space of  
+Eqn. (12). Then we update hash+ d. We repeat  
+the above procedures until the norm of the gradient of  
+the energy is less than a prescribed threshold ".E a c h  
+nearest power cellWi(h) corresponding to the sample  
+pointpiwill be of the desired measure ⌫i.T h e n w e  
+compute the mass centermiof each cellWiand build  
+the mapˆTasˆT(mi)=pi.F i n a l l y , t h e a d a p t i v e m e s h  
+is constructed as follows: we connectmiandmjifpi  
+andpjis connected in the target mesh. We conclude  
+our algorithm for solving the moving mesh adaption  
+problem in Alg. 1.  
+During the optimization, the connectivity of the power  
+diagramsD(h) keeps changing. Instead of construct-  
+ing the convex hullu⇤from scratch at every step, we  
+136  
+===== page 8 =====  
+can locally modify the connectivity such as a variation  
+of Lawson's edge flip algorithm [45] can be used to im-  
+prove the e ciency. Furthermore, in order to improve  
+the numerical stability, we can use adaptive arithmetic  
+during the construction of convex hulls.  
+Fig. 3(c) gives the computing results of the proposed  
+algorithm with the source measure in Fig. 3(a) and the  
+target discrete measure in Fig. 3(b). The blue mesh of  
+Fig. 3(c) represents the grid structure of {pi}n  
+i=1 and  
+the blue stars are the corresponding vertices of the  
+mesh. The dotted red mesh represents the induced  
+cell decomposition {Wi}n  
+i=1 of ⌦ with µ(Wi)= ⌫i by  
+the computed OT map from µ to ⌫.T h e n w e c o m -  
+pute the mass center mi of each cell Wi,g i v e nb yt h e  
+red stars. In such a way, we get the one-to-one map  
+that maps pis to the corresponding mis, and we show  
+the correspondence relationship by dotted green lines.  
+Finally, we get the deformed mesh through connect-  
+ing mi and mj if ( pi,p j )i sa ne d g eo ft h eg i v e nq u a d  
+mesh, as shown in Fig. 3(d).  
+5. EXPERIMENTS  
+We conduct experiments to test the e cacy and e -  
+ciency of the proposed OT map algorithm on generat-  
+ing adaptive meshes.  
+5.1 Experimental setup  
+All the algorithms are developed using generic C++  
+compatible with Windows and Linux platforms. We  
+mainly use Eigen [46] for the numerical computa-  
+tions and OpenGL for the user interface. The surface  
+meshes are represented by the half-edge data struc-  
+ture. All the experiments are conducted on a Win-  
+dows laptop with Intel Core i7-7700HQ CPU and 16  
+GB memory.  
+5.2 Source and Target Measures  
+In order to test the proposed algorithm Alg. 1, we  
+conduct several experiments. The source measure µ is  
+the uniform distribution defined on the planar square  
+[ 1, 1]2. We then set four target measures (⌦ ⇤,⌫ )w i t h  
+⌦⇤ =[  0.9, 0.9]2 and ⌫ = Pn  
+i=1 ⌫i (y   pi). Here pis  
+are defined on the grids of ⌦ ⇤ and ⌫is come from the  
+given density function g, namely ⌫i = g(pi). For the  
+purpose of visualization, ⌦ ⇤ is meshed as 41 ⇥ 41 grid.  
+The first model that comes from [42] is the ring model  
+given by  
+g(y)=1+1 0 sech2(200kyk2   0.252)  
+The second is the bell model [42] given by  
+g(y)=1+5 0 sech2(100kyk2)  
+The original quad meshes and the corresponding de-  
+formed meshes of the ring and the bell models are  
+shown in Fig. 4. It is obvious that the original meshes  
+are deformed according to their given densities. Basi-  
+cally, the grids with higher densities will be enlarged,  
+and those with lower densities will be compressed.  
+The third asymmetric model comes from the Gaussian  
+mixture model and is given by  
+g(y)=0 .3N (µ1, ⌃2  
+1)+0 .1N (µ2, ⌃2  
+2)+0 .6N (µ3, ⌃2  
+3)  
+where N represents the Gaussian distribution. µ1 =  
+[ 0.50 .1]T ,⌃ 1 = diag([0.03 0 .1]); µ2 =[ 0 .70 .3]T ,  
+⌃2 = diag([0.10 .03]); µ3 =[ 0 .0   0.7]T ,⌃ 3 =  
+diag([0.03 0 .03]). It has three peaks which can be eas-  
+ily recognized from the adaptive mesh (the right frame  
+of the first row of Fig. 5), and the third peak cannot  
+be easily found from the density function image (the  
+left frame of the first row of Fig. 5).  
+The next model comes from the Franke's function [47],  
+which has two Gaussian peaks of di↵erent heights, and  
+as m a l l e rd i p :  
+g(y)=0 .75 exp (  (9y1   2)2  
+4   (9y2   2)2  
+4 )  
++0 .75 exp (  (9y1 +1 )2  
+49   9y2 +1  
+10 )  
++0 .5e x p(  (9y1   7)2  
+4   (9y2   3)2  
+4 )  
+  0.2e x p( (9y1   4)2   (9y2   7)2)  
+The generated adaptive meshes of the Gaussian mix-  
+ture function and the Franke's in Fig. 5 also show  
+that the generated meshes fit the density functions  
+well, and the adaptive mesh can be used to identify  
+the small peaks and dips of the given density func-  
+tions.  
+Finally, we test on the scalar monitor function given  
+by the grayscale images from Digital Image Processing  
+[48]. The sampling resolution of the target mesh is set  
+to be 400 ⇥ 400. For the purpose of visualization, we  
+simplify the final mesh to be 40 ⇥40 (shown in Fig. 6).  
+For the complex density function with high curvatures,  
+our method also works well.  
+To show the performance of the proposed method in  
+terms of running iterations and running time, we use  
+di↵erent resolution of the grids (namely di↵erent num-  
+ber of vertices) for the Franke's function. The stopping  
+condition is given as max i(|wi   ⌫i|/⌫i) < 1e   8w i t h  
+wi = µ(Wi) in Alg. 1. The results are given by Tab.  
+1. From the table we can find that our method can  
+easily handle the mesh with 401 ⇥ 401 grids with small  
+running iterations.  
+Furthermore, we show the evolution of the his-  
+tograms of {log(wi/⌫i)}n  
+i=1 in di↵erent iterations for  
+137  
+===== page 9 =====  
+Table 1:T h e i t e r a t i o n s a n d r u n n i n g t i m e o f t h e p r o p o s e d  
+method for di↵erent number of vertices or di↵erent sam-  
+pling resolution of the Franke's function [47].  
+Vertex Iterations Time (s)  
+1681 8 0.227  
+10201 10 1.544  
+40401 12 7.938  
+160801 12 53.307  
+the Franke's function model (401 ⇥ 401 grid) in Fig. 7.  
+If the algorithm converges well, we'll finally get that  
+wi = ⌫i for all i =1 , 2,...,n ,n a m e l yl o g (wi/⌫i)=0 .  
+Only after seven iterations, the algorithm converges  
+well and nearly all of log( wi/⌫i) concentrates on 0.  
+Also, we give the moving meshes of di↵erent itera-  
+tions in Fig. 8. It is obvious that the mesh moves  
+consistently and does not change a lot even after 5  
+iterations.  
+6. CONCLUSION  
+In this work, we introduce a practical algorithm to  
+solve the adaptive mesh generation problem given the  
+corresponding density function. By dynamically up-  
+date the locations of the vertices, the proposed method  
+is fast and stable. Our experimental results demon-  
+strate that the proposed method works well for dif-  
+ferent kinds of density functions and high resolution  
+grids.  
+Acknowledgement This research was partially sup-  
+ported by the National Natural Science Foundation  
+of China (61720106005, 61772105, 61936002), NSF  
+CMMI-1762287 collaborative research: computational  
+framework fordesigning conformal stretchable elec-  
+tronics, and NSF DMS-1737812 collaborative research:  
+ATD:theory and algorithms for discrete curvatures on  
+network data from human mobility and monitoring.  
+References  
+[1] Zhao X., Su Z., Gu X., Kaufman A. "Area-  
+Preservation Mapping using Optimal Mass Trans-  
+port." IEEE Transactions on Visualization and  
+Computer Graphics.,v o l .1 9 ,n o .1 2 ,2 8 3 8-2 8 4 7 ,  
+2013  
+[2] Su Z., Wang Y., Shi R., Zeng W., Sun J., Luo  
+F., Gu X. "Optimal Mass Transport for Shape  
+Matching and Comparison." Pattern Analysis  
+and Machine Intelligence, IEEE Transactions on ,  
+vol. 37, no. 11, 2246-2259, 2015  
+[3] Haker S., Zhu L., Tannenbaum A., Angenent  
+S. "Optimal mass transport for registration and  
+warping." International Journal of computer vi-  
+sion,v o l .6 0 ,n o .3 ,2 2 5 - 2 4 0 ,2 0 0 4  
+[4] Arjovsky M., Chintala S., Bottou L. "Wasser-  
+stein generative adversarial networks." Proceed-  
+ings of the 34th International Conference on Ma-  
+chine Learning-Volume 70 ,p p .2 1 4 - 2 2 3 .2 0 1 7  
+[5] Wang X.J. "On the design of a reflector antenna  
+II." Calculus of Variations and Partial Di↵eren-  
+tial Equations ,v o l .2 0 ,n o .3 ,3 2 9 - 3 4 1 ,2 0 0 4  
+[6] Wang X.J. "On the design of a reflector antenna."  
+Inverse problems ,v o l .1 2 ,n o .3 ,3 5 1 ,1 9 9 6  
+[7] Huang W., Russell R.D. Adaptive Moving Mesh  
+Methods. Springer Science+Business Media,  
+LLC, 2011  
+[8] Brenier Y. "Polar Factorization and Mono-  
+tone Rearrangement of Vector-Valued Func-  
+tions." Communications on Pure and Applied  
+Mathematics,v o l .4 4 ,n o .4 ,3 7 5 - 4 1 7 ,1 9 9 1  
+[9] Gu X., Luo F., Sun J., Yau S.T. "Variational  
+principles for Minkowski type problems, discrete  
+optimal transport, and discrete Monge-Ampere  
+equations." arXiv preprint arXiv:1302.5472 ,2 0 1 3  
+[10] Villani C. Topics in optimal transportation .5 8 .  
+American Mathematical Soc., 2003  
+[11] Villani C. Optimal transport: old and new ,v o l .  
+338. Springer Science & Business Media, 2008  
+[12] Peyr´ e G., Cuturi M., et al. "Computational Op-  
+timal Transport: With Applications to Data Sci-  
+ence." Foundations and Trends ® in Machine  
+Learning,v o l .1 1 ,n o .5 - 6 ,3 5 5 - 6 0 7 ,2 0 1 9  
+[13] Hu Y., Randolphr M. "H-adaptive FE analysis  
+of elasto-plastic non-homogeneous soil with large  
+deformation." Computers and Geotechnics ,1 9 9 8  
+[14] Rodriguez J., Power H. "h-Adaptive mesh refine-  
+ment strategy for the boundary element method  
+based on local error analysis." Engineering Anal-  
+ysis with Boundary Elements ,2 0 0 1  
+[15] Albuquerque D.M.S., Pereira J.M.C., Pereira  
+J.C.F. "Residual Least-Squares Error Estimate  
+for Unstructured h-Adaptive Meshes." Numeri-  
+cal Heat Transfer, Part B: Fundamentals ,v o l .6 7 ,  
+no. 3, 187-210, 2015  
+[16] Piccolo C., Cullen M. "Adaptive mesh method in  
+the Met O ce variational data assimilation sys-  
+tem." Quarterly Journal of the Royal Meteorolog-  
+ical Society,2 0 1 1  
+[17] Piccolo C., Cullen M. "A new implementation  
+of the adaptive mesh transform in the Met O ce  
+3D-Var System." Quarterly Journal of the Royal  
+Meteorological Society,2 0 1 2  
+138  
+===== page 10 =====  
+[18] Dietachmayer G.S., Droegemeier K.K. "Applica-  
+tion of Continuous Dynamic Grid Adaption Tech-  
+niques to Meteorological Modeling. Part I: Basic  
+Formulation and Accuracy." Monthly Weather  
+Review,1 9 9 2  
+[19] M.Prusaa J., Smolarkiewicz P.K. "An all-scale  
+anelastic model for geophysical flows: dynamic  
+grid deformation." Journal of Computational  
+Physics,2 0 0 3  
+[20] K¨ uhnlein C., Smolarkiewicz P.K., D¨ ornbrack A.  
+"Modelling atmospheric flows with adaptive mov-  
+ing meshes." Journal of Computational Physics ,  
+2012  
+[21] Budd C., Williams J.F. "Moving Mesh Genera-  
+tion Using the Parabolic Monge-Amp` ere Equa-  
+tion." SIAM Journal on Scientific Computing ,  
+2009  
+[22] Chac´ on L., Delzanno G.L., Finn J.M. "Ro-  
+bust, multidimensional mesh-motion based on  
+Monge-Kantorovich equidistribution." Journal of  
+Computational Physics ,2 0 1 1  
+[23] Budd C., Russell R.D., Walsh E. "The Geome-  
+try of r-adaptive meshes generated using Optimal  
+Transport Methods." Journal of Computational  
+Physics,2 0 1 4  
+[24] Browne P., Budd C., Piccolo C., Cullen M.  
+"Fast three dimensional r-adaptive mesh redistri-  
+bution." Journal of Computational Physics ,2 0 1 4  
+[25] Browne P., Prettyman J., Weller H., Pryer T.,  
+lent J.V. "Nonlinear solution techniques for solv-  
+ing a Monge-Amp` ere equation for redistribution  
+of a mesh." https://arxiv.org/abs/1609.09646,  
+2016  
+[26] Monge G. "M´ emoire sur la th´ eorie des d´ eblais et  
+des remblais." Histoire de l'Acad´ emie Royale des  
+Sciences de Paris ,1 7 8 1  
+[27] Kantorovich L. "On a problem of Monge." Us-  
+pekhi Mat. Nauk. ,v o l .3 ,2 2 5 - 2 2 6 ,1 9 4 8  
+[28] Kantorovich L.V. "On a problem of Monge."  
+Journal of Mathematical Sciences ,v o l .1 3 3 ,n o .4 ,  
+1383-1383, 2006  
+[29] Benamou J.D., Brenier Y. "A computational fluid  
+mechanics solution to the Monge-Kantorovich  
+mass transfer problem." Numerische Mathematik,  
+vol. 84, no. 3, 375-393, 2000  
+[30] Santambrogio F. "Optimal transport for applied  
+mathematicians." Birk¨ auser, NY,v o l .5 5 ,n o .5 8 -  
+63, 94, 2015  
+[31] De Goes F., Cohen-Steiner D., Alliez P., Desbrun  
+M. "An optimal transport approach to robust  
+reconstruction and simplification of 2d shapes."  
+Computer Graphics Forum ,v o l .3 0 ,p p .1 5 9 3 -  
+1602. Wiley Online Library, 2011  
+[32] Cuturi M. "Sinkhorn distances: Lightspeed com-  
+putation of optimal transport." Advances in  
+neural information processing systems ,p p .2 2 9 2 -  
+2300. 2013  
+[33] Solomon J., Rustamov R., Guibas L., Butscher  
+A. "Earth mover's distances on discrete surfaces."  
+ACM Transactions on Graphics (TOG) ,v o l .3 3 ,  
+no. 4, 67, 2014  
+[34] Solomon J., De Goes F., Peyr´ e G., Cuturi M.,  
+Butscher A., Nguyen A., Du T., Guibas L. "Con-  
+volutional wasserstein distances: E cient opti-  
+mal transportation on geometric domains." ACM  
+Transactions on Graphics (TOG) ,v o l .3 4 ,n o .4 ,  
+66, 2015  
+[35] Aurenhammer F. "Power diagrams: properties,  
+algorithms and applications." SIAM Journal on  
+Computing,v o l .1 6 ,n o .1 ,7 8 - 9 6 ,1 9 8 7  
+[36] Gu X., Luo F., Sun J., Yau S.T. "Varia-  
+tional principles for Minkowski type problems,  
+discrete optimal transport, and discrete Monge-  
+Amp` ere equations."Asian Journal of Mathemat-  
+ics,v o l .2 0 ,n o .2 ,3 8 3 - 3 9 8 ,2 0 1 6  
+[37] De Goes F., Breeden K., Ostromoukhov V., Des-  
+brun M. "Blue noise through optimal transport."  
+ACM Transactions on Graphics (TOG) ,v o l .3 1 ,  
+no. 6, 171, 2012  
+[38] L´ evy B., Schwindt E.L. "Notions of optimal  
+transport theory and how to implement them on a  
+computer." Computers & Graphics ,v o l .7 2 ,1 3 5 -  
+148, 2018  
+[39] M´ erigot Q. "A multiscale approach to optimal  
+transport." Computer Graphics Forum ,v o l .3 0 ,  
+pp. 1583-1592. Wiley Online Library, 2011  
+[40] Benamou J., Brenier Y., Guittet K. "The Monge-  
+Kantorovitch mass transfer and its computational  
+fluid mechanics formulation." International Jour-  
+nal for Numerical Methods in Fluids ,2 0 0 2  
+[41] Nader G., Guennebaud G. "Instant Transport  
+Maps on 2D Grids." ACM Trans. Graph.,v o l .3 7 ,  
+no. 6, 2018  
+[42] McRae A.T.T., Cotter C.J., Budd C.J. "Optimal-  
+Transport-Based Mesh Adaptivity on the Plane  
+and Sphere Using Finite Elements." SIAM Jour-  
+nal on Scientific Computing ,2 0 1 8  
+139  
+===== page 11 =====  
+[43] Cui L., Qi X., Wen C., Lei N., Li X., Zhang  
+M., Gu X. "Spherical optimal transportation."  
+Computer-Aided Design,v o l .1 1 5 ,1 8 1 - 1 9 3 ,2 0 1 9  
+[44] Berg M.d., Cheong O., Kreveld M.v., Over-  
+mars M. Computational Geometry: Algorithms  
+and Applications. Springer-Verlag TELOS, Santa  
+Clara, CA, USA, 3rd ed. edn., 2008  
+[45] Lawson C.L. "Transforming triangulations." Dis-  
+crete Mathematics ,1 9 7 2  
+[46] Guennebaud G., Jacob B., et al. "Eigen v3."  
+http://eigen.tuxfamily.org, 2010  
+[47] Franke R. "A critical comparison of some meth-  
+ods for interpolation of scattered data." NA V AL  
+POSTGRADUATE SCHOOL MONTEREY CA ,  
+1979  
+[48] Gonzalez R.C., Woods R.E. Digital Image Pro-  
+cessing. Pearson, 3rd ed. edn., 2007  
+140  
+===== page 12 =====  
+(a) The density functions. (b) The generated adaptive meshes.  
+Figure 4 : The adaptive meshes of the ring and the bell models [42]. Zoom in/out for better visualization.  
+141  
+===== page 13 =====  
+(a) The density functions. (b) The generated adaptive meshes.  
+Figure 5: The adaptive meshes of the Gaussian mixture density function and the Franke's function [47]. Zoom in/out for  
+better visualization.  
+142  
+===== page 14 =====  
+(a) The density functions. (b) The generated adaptive meshes.  
+Figure 6 : The adaptive meshes of the density function defined by real image in [48]. Zoom in/out for better visualization.  
+Figure 7 : The histograms of the area distortion of the Franke's function model [47] in di↵erent iterations of the proposed  
+method. The numbers in the title of each figure shows the corresponding iteration number.  
+143  
+===== page 15 =====  
+Iter #1 Iter #3  
+Iter #5 Iter #7  
+Figure 8 : The moving meshes of the Franke's function model [47] in di↵erent iterations of the proposed method. The  
+numbers below each figure shows the corresponding iteration number. Zoom in/out for better visualization.  
+144

@@ -1,0 +1,911 @@
+  
+===== page 1 =====  
+Robust Surface Remeshing Based on Conformal Welding  
+Wei Chen∗ Siquan Sun† Yue Wang† Na Lei‡ Chander Sadasivan†  
+Apostolos Tassiopoulos† Shikui Chen† Hang Si§ Xianfeng Gu†  
+Abstract  
+This work proposes a novel algorithm to eliminate the self-  
+overlapping based on conformal welding theory, to improve  
+the robustness of the surface remeshing algorithm. The  
+proposed algorithm constructs a planar annulus with a high-  
+quality triangulation, then weld the input surface with the  
+annulus along their corresponding boundary components.  
+The welded surface has a well-defined Riemannian metric  
+and can be conformally mapped onto a convex planar  
+domain by using the dynamic discrete surface Ricci flow  
+method. This method guarantees the conformal mapping  
+restricted on the input surface is a global embedding, and  
+resolves the problem of self-intersections in the neighborhood  
+of the boundary. The conformal welding method has been  
+tested to remesh real car models. The experimental results  
+demonstrate the method is highly effective in practice and  
+greatly improves the robustness of the remeshing algorithm  
+based on conformal uniformization.  
+1 Introduction  
+Surface mesh generation plays a fundamental role in  
+CAD/CAE fields. Planar mesh generation methods  
+are relatively mature, such as the Delaunay refinement  
+method [2], and the centroidal Voronoi diagram method  
+[6]. Surface meshing is much more challenging.  
+Recently, Si et. al. [15] introduced a novel algo-  
+rithm for generating high quality triangulations on sur-  
+faces with complicated topologies based on conformal  
+uniformization. The original CAD model is converted  
+to a low-quality triangle mesh, obtained by triangula-  
+tion on the parameter domain and refined by necessary  
+preprocessing steps, such that the mesh is a water-tight  
+manifold. The key idea is to flatten the input trian-  
+gle mesh onto a planar domain by an angle-preserving  
+(conformal) map, then a high quality planar mesh is  
+generated and pulled back to the 3D surface. Since  
+the mapping is angle-preserving, the Delaunay property  
+is preserved in the surface triangulation. Furthermore,  
+the planar sampling density is adaptive to the surface  
+area element and the curvature, this ensures the surface  
+meshing quality. Fig. 1 shows one example of remeshing  
+a car chassis model based on conformal uniformization:  
+∗Capital Normal University.  
+†Stony Brook University.  
+‡Corresponding author, nalei@dlut.edu.cn, Dalian University  
+of Technology.  
+§Cadence Design Systems Inc.  
+frame (a) shows the 3D car chassis model; frame (b)  
+illustrates the surface is flattened by a conformal map-  
+ping; frame (c) demonstrates the conformality of the  
+mapping by checkerboard texture mapping, all the right  
+corner angles of the checkers are well preserved; the pla-  
+nar image is triangulated using Delaunay refinement al-  
+gorithm, the pull back triangulation on the surface has  
+high qualities as shown in frame (d).  
+In most scenarios, the quality of the input triangle  
+mesh is often low, posing a significant risk to the sta-  
+bility and convergence of standard conformal mapping  
+algorithms. We choose the dynamic surface Ricci flow  
+method [11, 10] to compute the parameterization be-  
+cause it has a theoretic guarantee to produce the unique  
+Riemannian metric, conformal to the initial metric and  
+inducing the prescribed curvature. Furthermore, dy-  
+namic surface Ricci flow is capable of handling low-  
+quality input meshes and automatically improves the  
+triangulation to remain Delaunay with final Rieman-  
+nian metric.  
+However, the parameterization result depends on  
+the input geometry and the target curvature, it is pos-  
+sible that the final mapping is only a local embed-  
+ding, namely the mapping restricted to the neighbor-  
+hood of each vertex is injective and surjective, but  
+globally the image of the whole input mesh may have  
+self-intersections. Especially, if the surface has con-  
+cave boundaries, the image of the neighborhood of the  
+boundary may have overlaps. This causes great diffi-  
+culties for the downstream planar Delaunay refinement  
+algorithm. As shown in Fig. 2, frame (a) shows a shield  
+of a car tire model, frame (b) illustrates the conformal  
+parameterization result, and the self-intersections can  
+be found in the neighborhood of the boundary.  
+To tackle this challenge, this work proposes a novel  
+algorithm to improve the robustness of surface remesh-  
+ing based on conformal welding technnique [9, 17]. Sup-  
+pose the input surface M is a topological poly-annulus,  
+namely a genus zero surface with multiple boundary  
+components {γ1, . . . , γk}, We can seamlessly merge M  
+with a topological annulus A having boundaries τ1  
+and τ2, aligning them correspondingly with γ1 and τ1,  
+φ : γ1 → τ1. The merged surface S ← M ∪φ A is a topo-  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 2 =====  
+(a) 3D chassis model (b) conformal flattening (c) texture mapping (d) remeshing result  
+Figure 1: Remeshing a whole car chassis model based on conformal uniformization.  
+logical poly-annulus having boundaries τ2, γ2, . . . , γn.  
+We treat τ2 as the exterior boundary component, and  
+γ2, . . . , γn as the interior boundary components, and use  
+the dynamic Ricci flow to map S onto a planar domain,  
+such that the image of the exterior boundary τ2 is con-  
+vex (or nearly convex), so the mapping is an embedding,  
+the input surface M is conformally flattened without  
+any self-intersection. This conformal welding technique  
+can greatly improve the robustness of the algorithm. As  
+shown in Fig. 2, the input surface is welded with a topo-  
+logical annulus and the welded surface is conformally  
+flattened in frame (c), the mapping restricted to the  
+input surface has no overlap. Frame (d) shows confor-  
+mality of the parameterization by checkerboard texture  
+mapping.  
+1.1 Contribution This work proposes a novel algo-  
+rithm to improve the robustness of surface remeshing  
+based on conformal welding method. Suppose the in-  
+put surface is a poly-annulus, we construct a topological  
+cylinder with high quality triangulation and weld the in-  
+put surface with the annulus along one boundary loop.  
+By using dynamic discrete surface Ricci flow, the welded  
+surface is conformally flattened onto a near convex do-  
+main on the plane. This method guarantees the confor-  
+mal mapping restricted to the input surface is an em-  
+bedding, and resolves the problem of self-intersections  
+in the neighborhood of the boundary. In our experi-  
+ments, we use the conformal welding method to remesh  
+real car models, which shows the method is rigorous  
+and practical, and significantly improves the robustness  
+of the remeshing algorithm.  
+2 Previous W ork  
+The objective of surface triangle mesh generation is to  
+tessellate a given 3D surface into triangles, creating  
+a discrete representation suitable for various applica-  
+tions, such as finite element analysis. Over the years,  
+researchers have developed numerous algorithms and  
+methods to address this challenge efficiently and accu-  
+rately. This literature review highlights some prominent  
+contributions in the field.  
+Delaunay-Based Approaches Delaunay triangu-  
+lation is a widely used technique for surface mesh  
+generation [2]. Shewchuk's Triangle [22] is a popular  
+tool for computing Delaunay triangulations of planar  
+straight-line graphs and is often used as a building  
+block in surface meshing algorithms. In 3D, adaptive  
+refinement techniques, such as Bowyer-Watson and  
+incremental insertion [3], are employed to generate  
+high-quality triangle meshes from point clouds or  
+surfaces. Centroidal voronoi tessellation is also a pop-  
+ular method for high quality planar mesh generation [6].  
+Constrained Delaunay T riangulation Handling  
+constraints, such as sharp edges and features, is crucial  
+in surface meshing. Recent developments include the  
+CGAL library, which provides efficient algorithms for  
+constrained Delaunay triangulation and mesh genera-  
+tion [20]. These advancements enable the preservation  
+of geometric features in the generated meshes.  
+Surface Reconstruction Methods Surface recon-  
+struction aims to recover a continuous surface from  
+point clouds or scattered data. Poisson surface recon-  
+struction [16] is a notable technique that combines  
+surface reconstruction and mesh generation. It lever-  
+ages the Poisson equation to create a smooth surface  
+representation and subsequently generates triangle  
+meshes.  
+V ariational Approaches Variational methods, such  
+as surface fairing and optimization-based meshing,  
+have gained attention. Garland and Heckbert's surface  
+simplification algorithm [8] is a classic example. It  
+iteratively collapses edges to create simplified triangle  
+meshes while preserving important geometric charac-  
+teristics.  
+Multi-resolution T echniques Multi-resolution  
+representations are valuable for adaptive meshing.  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 3 =====  
+(a). wheel housing model (b). conformal flattening (c). conformal flattening (d). conformal texture mapping  
+with self intersections of the welded model  
+Figure 2: Robust conformal parameterization of a shield of the car tire model. The conformal welding method  
+eliminates the self-intersections.  
+The work of Alliez et al. on Progressive Meshes [1]  
+introduced a framework for constructing levels of detail  
+in triangle meshes. This concept has applications in  
+real-time graphics and efficient transmission of 3D  
+models.  
+Conformal Uniformization Based Method Re-  
+cently, Si et. al. [15] introduced a novel algorithm for  
+generating high quality triangulations on surfaces with  
+complicated topologies based on conformal uniformiza-  
+tion. The key idea is to flatten the input surface onto a  
+planar domain by an angle-preserving (conformal) map,  
+then a high quality planar mesh is generated and pulled  
+back to the 3D surface. Since the mapping is angle-  
+preserving, the Delaunay property is preserved to the  
+surface triangulation. Furthermore, the planar sam-  
+pling density is adaptive to the surface area element  
+and the curvature, this guarantees the surface meshing  
+quality.  
+However, for surfaces with complicated topologies,  
+conformal parameterization algorithms can only guar-  
+antee the mapping is locally embedding, and globally  
+immersion. Namely, they may produce self-intersections  
+for concave boundary images. This will cause intrinsic  
+difficulty for the planar Delaunay refinement algorithm  
+since it always assumes the input has no self overlap-  
+ping. The current work proposes to use the conformal  
+welding method to glue the input surface with a topo-  
+logical annulus and map the glued surface onto a planar  
+domain with convex boundary condition so that the re-  
+striction of the mapping on the initial surface is injec-  
+tive. This will greatly improve the robustness of the  
+remeshing algorithm.  
+3 Theoretic F oundation  
+This section briefly introduces the theoretic background  
+for surface conformal geometry and surface Ricci flow.  
+For more details, we refer readers to [12, 13, 11, 10] for  
+more thorough treatments.  
+3.1 Riemann Surface  
+Definition 3.0.1. (Holomorphic Function) A  
+complex function f : C → C, f (x + iy) = u + iv,  
+satisfies the following Cauchy-Riemann equation  
+∂u  
+∂x = ∂v  
+∂y , ∂u  
+∂y = - ∂v  
+∂x ,  
+then f is called a holomorphic function. If the inverse  
+function f -1 exists and is also holomorphic, then f is  
+called a bi-holomorphic function.  
+Given a topological surface S with an atlas A =  
+{(Uα, φα)}, where Uα is an open set, φα : Uα → C  
+is a homeomorphism, ( Uα, φα) is a local chart . if  
+Uα ∩ Uβ ̸= ∅, then the transition map is defined as  
+φαβ : φα(Uα ∩ Uβ) → φβ(Uα ∩ Uβ), φαβ = φβ ◦ φα.  
+If all the transition maps are bi-holomorphic, then A is  
+called a conformal structure.  
+Definition 3.0.2. (Riemann Surface) A topolog-  
+ical surface with a conformal structure is called a  
+Riemann surface.  
+Definition 3.0.3. (Isothermal parameter)  
+Suppose (S, g) is an oriented metric surface, and U is  
+a neighborhood U ⊂ S with the local coordinates (u, v)),  
+such that the Riemannian metric has a special form  
+g(u, v) = e2λ(u,v)(du2 + dv2),  
+then (u, v) are called the isothermal parameter on U  
+and λ : U → R is called the conformal factor function.  
+According to classicial surface differential geometry, for  
+any point p ∈ S, one can always find an neighborhood  
+of p, Up, such that on Up, one can define isothermal  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 4 =====  
+coordinates φp : Up → C. The union of isothermal co-  
+ordinate charts {(Up, φp)} form a conformal structure,  
+hence S is a Riemann surface.  
+Under the isothermal parameter, the Gaussian cur-  
+vature of the surface can be computed as  
+K(x, y) = -∆gλ(x, y) = - 1  
+e2λ(x,y) ∆λ(x, y).  
+The total Gaussian curvature is a topological invariant.  
+Theorem 3.1. (Gauss-Bonnet) Suppose (S, g) is  
+surface with a Riemannia metric, then  
+Z  
+S  
+KdA +  
+Z  
+∂S  
+kgds = 2πχ(S),  
+where χ(S) is the Euler characteristic number of S.  
+3.2 Smooth Surface Ricci Flow  
+Definition 3.1.1. (Pull Back Metric) Suppose  
+(S, g) and (T, h) are two surfaces with Riemannian  
+metrics, the local parameters of them are (x, y) and  
+(u, v) respectively. The local representation of the  
+metric tensor h is  
+h(u, v) =  
+ h11 h12  
+h21 h22  
+   
+(u, v)  
+A C 1 mapping φ : S → T has a local representation,  
+(x, y) 7→ (u(x, y), v(x, y)).  
+The pull back metric on S induced by φ is defined as  
+φ∗h(x, y) = DφT hDφ,  
+where Dφ is the Jacobi matrix of the mapping φ. φ∗h  
+has the local representation  
+φ∗h =  
+ ux uy  
+vx vy  
+ T  h11 h12  
+h21 h22  
+   ux uy  
+vx vy  
+   
+.  
+Definition 3.1.2. (Conformal Mapping) Suppose  
+(S, g) and (T, h) are surfaces with Riemannian metrics.  
+A C 1 mapping φ : S → T is conformal, if  
+(3.1) φ∗h = e2λg,  
+where λ is the conformal factor function, λ : S → R.  
+A conformal mapping between two surfaces preserves  
+local shapes and angles.  
+Suppose we conformally deform the surface Rie-  
+mannian metric, g → ¯ g= e2λg, then the Gaussian  
+curvature changes according to the Yamabe equation,  
+¯K = 1  
+e2λ (K - ∆gλ) .  
+If we set ¯K to be constant, then we obtain the famous  
+Koebe-Poincar´ e uniformization theorem.  
+Theorem 3.2. (Koebe-Poincar ´e Uniformization)  
+Suppose (S, g) is an orientable closed surface, then  
+there is a scalar function λ : S → R, such that ¯ g= e2λg  
+induces constant Gaussian curvature ¯K, where ¯K  
+equals one of {+1, 0, -1} according to χ(S) > 0,  
+χ(S) = 0 and χ(S) < 0.  
+The constant curvature metric is called the uniformiza-  
+tion metric of the surface. Yamabe equation can be  
+solved using Hamilton's Ricci flow, which has been used  
+for the proof of Poincar´ e's conjecture [18, 19].  
+Definition 3.2.1. (Hamilton's Ricci Flow)  
+Suppose (S, g) is a closed orientable metric surface, the  
+normalized Ricci flow is defined as  
+∂tg(p, t) = 2  
+  2πχ(S)  
+A(0) - K(p, t)  
+   
+g(p, t).  
+Hamilton [14] and Chow [5] proved the convergence of  
+surface Ricci flow.  
+3.3 Discrete Surface Ricci Flow Smooth surface  
+Ricci flow theory can be generalized to the discrete  
+polyhedral surfaces. A smooth surfaces is approximated  
+by a polyhedral surface S with vertex set V . We call  
+(S, V) a marked surface. Given a marked surface, we can  
+define different triangulations. A discrete Riemannian  
+metric for a marked surface ( S, V) with a triangulation  
+T can be represented as edge lengths d : E → R+,  
+satisfying the triangle inequality, namely on each face  
+[vi, vj, vk],  
+d(vi, vj) + d(vj, vk) > d(vi, vk).  
+The discrete Riemannian metric determines the corner  
+angles, by the cosine law  
+(3.2) cos θjk  
+i = d2(vi, vj) + d2(vk, vi) - d2(vj, vk)  
+2d(vi, vj)d(vk, vi) .  
+where θjk  
+i is the corner angle at vi in the face [vi, vj, vk].  
+Fix a discrete Riemannian metric, there are many  
+triangulations, among them, the Delaunay triangulation  
+is highly preferred.  
+Definition 3.2.2. (Delaunay Triangulation)  
+Given a closed marked surface (S, V) with a discrete  
+Riemannian metric d, a triangulation T is called  
+Delaunay, if for any edge [vi, vj] shared by two faces  
+[vi, vj, vk] and [vj, vi, vl], the condition  
+(3.3) θij  
+k + θji  
+l ≤ π  
+always holds.  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 5 =====  
+Definition 3.2.3. (Edge Flip Operator) Given a  
+closed marked surface (S, V) with a discrete Rieman-  
+nian metric d and a triangulation T , an edge [vi, vj]  
+shared by two faces [vi, vj, vk] and [vj, vi, vl]. The  
+edge flip operator swaps the edge [vi, vj] to [vk, vl], and  
+changes the triangles to [vi, vl, vk] and [vj, vk, vl].  
+It is well known that we can modify a triangulation to  
+be Delaunay by a sequence edge flip operators, such that  
+a diagonal, for which the sum of its opposite angles is  
+greater than π, is replaced by another diagonal.  
+The discrete Gaussian curvature is defined as the  
+angle deficit,  
+(3.4) K(vi) =  
+(  
+2π - P  
+jk θjk  
+i vi ̸∈ ∂M  
+π - P  
+jk θjk  
+i vi ∈ ∂M  
+The total discrete Gaussian curvature also satisfies the  
+Gauss-Bonnet theorem,  
+X  
+vi∈∂M  
+K(vi) +  
+X  
+vi̸∈∂M  
+K(vi) = 2πχ(M ).  
+The conformal deformation is defined analogously  
+Definition 3.2.4. (Vertex Scaling) Suppose M =  
+(V, E, F) is a triangulated polyhedral surface, with a  
+discrete metric d : E → R+. λ : V → R is the discrete  
+conformal factor function defined on the vertex set V ,  
+the vertex scaling operator is defined as follows:  
+(3.5) d(vi, vj) 7→ eui d(vi, vj)euj , ∀ [vi, vj] ∈ E.  
+The discrete conformal equivalence can be defined as  
+follows: suppose d and d′ are two polyhedral metrics of  
+the marked surface ( S, V), if there exists a sequence of  
+triangulations Ti's and discrete metrics di's,  
+T1, T2, . . . , Tn, d = d1, d2, . . . , dn = d′,  
+such that  
+1. Ti is Delaunay with respect to di;  
+2. if Ti ̸= Ti+1 then they differ by an edge flip and  
+di = di+1;  
+3. if di ̸= di+1 then they differ by a vertex scaling and  
+Ti = Ti+1.  
+Definition 3.2.5. (Discrete Conformal) Two  
+triangulated polyhedral metrics d and d′ on a closed  
+marked surface (S, V) are discrete conformal, if they  
+are related by a sequence of two types of moves: vertex  
+scaling and edge flip preserving Delaunay property.  
+The discrete surface Ricci flow is defined similar to the  
+smooth one.  
+Definition 3.2.6. (Discrete Surface Ricci Flow)  
+Given a marked surface (S, V) with a polyhedral metric  
+d and a triangulation T , suppose the target Gaussian  
+curvature ¯K : T → R is given, then the Ricci flow is  
+defined as  
+dλ(vi, t)  
+dt = ¯K(vi) - K(vi, t),  
+during the flow, the triangulation is updated to preserve  
+the Delaunay property.  
+The discrete surface Ricci flow is the gradient flow of  
+the following convex Ricci energy:  
+(3.6) E(λ) :=  
+Z λ nX  
+i=1  
+( ¯K(vi) - K(vi))dλi.  
+The Hessian matrix of the Ricci energy can be rep-  
+resented by the cotangent edge weight, for each edge  
+[vi, vj],  
+(3.7) wij = cot θij  
+k + cotji  
+l ,  
+and the Hessain matrix is H = (hij)  
+(3.8) hij =  
+  P  
+k̸=i wik i = j  
+-wij i ̸= j  
+The existence and the uniqueness of the solution to  
+the discrete surface Ricci flow is shown in the following  
+theorem, the detail of the proof is in [11].  
+Theorem 3.3. (Discrete Surface Flow [11])  
+Given a polyhedral metric d on a closed marked surface  
+(S, V), and target curvature ¯K : V → (-∞, 2π),  
+such that ¯K satisfies the Gauss-Bonnet conditionP K(v) = 2 πχ(S), there is a ¯d discrete conformal to  
+d, and ¯d realized the curvature ¯k. ¯d is unique update to  
+a scaling, and can be obtained by the discrete surface  
+Ricci flow.  
+3.4 Conformal W elding Suppose ( S1, g1) and  
+(S2, g2) are two oriented compact surfaces with Rie-  
+mannian metrics. Suppose γ1 ⊂ ∂S1 is a connected  
+component on the boundary of S1, γ2 ⊂ ∂S2 a con-  
+nected component on the boundary of S2. Without loss  
+of generality, we can assume the total lengths of γ1 and  
+γ2 are equal, otherwise we can perform a scaling. Fur-  
+thermore, γ1 and γ2 are smooth curves. Let φ : γ1 → γ2  
+is an isometric map between the two loops. We weld  
+the two surfaces using φ as follows: each point p ∈ γ1 is  
+equivalent to its image φ(p) ∈ γ2, the glued surface is  
+S := S1  
+[  
+p∼φ(p)  
+S2.  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 6 =====  
+Let U1(p) be a neighborhood of p, φ1 : U1(p) → D2  
+be a local conformal chart mapping U1(p) to the upper  
+half disk of D2; U2(p) be a neighborhood of φ(p),  
+φ2 : U2(p) → D2 be a local conformal chart mapping  
+U2(p) to the lower half disk of D2. φ maps γ1|U1 to  
+γ2|U2 . By Schwartz reflection principle, φ1 and φ2 can  
+be glued to a conformal map from  
+φ1 ∪ φ2 : U1(p) ∪ U2(φ(p)) → D2.  
+This means S is a Riemann surface with well defined  
+conformal structure.  
+4 Computational Algorithms  
+4.1 Overview The algorithmic pipeline is illustrated  
+in Fig. 3. For a complex surface, the initial step involves  
+segmenting it into several parts, each constituting a  
+topological disk with or without holes. In the second  
+step, for every part, each hole is filled by simply adding  
+a vertex at the midpoint of the hole and connecting it  
+to the edges along the boundary; thereafter, conformal  
+welding is performed. The third step employs the  
+discrete surface Ricci flow algorithm to compute the  
+parameterization of the welded surface, with subsequent  
+recovery of all boundaries. In the fourth step, planar  
+Delaunay refinement is applied to the parameterization  
+domain of the surface. Finally, in the last step, the  
+remeshing result on the planar domain is pulled back  
+onto the surface to obtain the final result.  
+Figure 3: Pipeline of the algorithm.  
+4.2 Surface Segmentation Suppose the input sur-  
+face is a genus g closed surface, we need to either manu-  
+ally or automatically decompose it into genus zero sur-  
+face with multiple boundaries. This can be achieved  
+using persistent homology method [7] to compute the  
+handle loops and tunnel loops, and cut the surface along  
+these loops. Another method is pants decomposition.  
+Given a triangle mesh M , we compute its Poincar´ e  
+dual mesh ¯M , each vertex v, edge e and face f on M is  
+dual to a face ¯v, edge ¯e and vertex ¯f on ¯M . We treat  
+¯M as a graph of vertices and compute a spanning tree  
+¯T , then the cut graph Γ is defined as  
+Γ := {e ∈ |¯e ̸∈ ¯T }.  
+We slice M along Γ to obtain ¯M , for each vertex  
+v ∈ Γ, there are v+, v- ∈ ∂ ¯M , the shortest path ¯ γ  
+Algorithm 1 Shortest homotopically non-trivial loop  
+Require: A connected triangle mesh M ;  
+Ensure: The shortest loop γ that is homotopically non-  
+trivial;  
+Compute the cut graph Γ of M ;  
+Prune valence one edges from Γ;  
+Slice M along γ to obtain sliced mesh ¯M ;  
+γ∗ ← ∅, L∗ ← ∞;  
+for each v ∈ Γ do  
+Find the corresponding vertices v+, v- ∈ ∂ ¯M ;  
+Compute the shortest path γ from v+ to v-;  
+if L∗ > length(γ) then  
+γ∗ ← γ, L∗ ← length(γ);  
+end if  
+end for  
+on ¯M corresponds to a loop γ on M . Furthermore, γ  
+transversely intersects Γ, therefore γ is non-trivial in the  
+homotopy group of the original mesh π1(M, p). We slice  
+the surface along γ to reduce the topological complexity.  
+By repeating this procedure, we eventually decompose  
+the surface input 3 g - 3 pairs of pants. Each pair of  
+pants is a genus zero surface. The algorithmic details  
+can be found in Alg. 1 and 2.  
+Algorithm 2 Pants Decomposition  
+Require: A closed triangle mesh M with genus g;  
+Ensure: Decompose M into 3g - 3 pairs of pants;  
+updated ← true;  
+while updated do  
+updated ← false;  
+for each connected component Mi of M do  
+Compute the shortest loop γi of Mi using Alg. 1;  
+if γi is not empty then  
+Slice Mi along γi;  
+updated ← true  
+end if  
+end for  
+end while  
+In the following steps, we remesh each surface  
+patch with boundary constraints and eventually glue  
+the remeshed patches together with consistent boundary  
+conditions.  
+4.3 Conformal W elding Suppose M1 is a triangle  
+mesh with boundary components, suppose γ1 ∈ ∂M1.  
+We trace γ1 to collect an ordered sequence of oriented  
+edges denoted as {e1  
+1, e1  
+2, . . . , e1  
+n}. After scaling, we can  
+assume the total length of γ1 is 2π. We construct a pla-  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 7 =====  
+nar annulus M2, with exterior boundary γ2 represented  
+as an ordered sequence of oriented edges{e1  
+2, e2  
+2, . . . , e2  
+n},  
+such that the length of e1  
+k equals to the length of e2  
+k.  
+The inner boundary loop is on a smaller circle centered  
+at the origin with radius δ, 0 < δ < 1. We use De-  
+launay refinement algorithm to generate a high quality  
+triangulation of the interior of the annulus to obtain the  
+triangle mesh M2. We glue M1 with M2, such that e1  
+k  
+is glued with e2  
+k isometrically, the union is denoted as  
+M . Please note that the vertex positions of M is not  
+well defined. Suppose v1  
+k ∈ γ1 corresponding to v2  
+k ∈ γ2,  
+they have different coordinates in M1 and M2 respec-  
+tively. However, the edge lengths on M are well defined.  
+The discrete surface Ricci flow only requires the edge  
+lengths, hence M is appropriate for our purpose. The  
+algorithmic details can be found in Alg. 3.  
+Algorithm 3 Conformal Welding  
+Require: A triangle mesh M1 with a boundary com-  
+ponent γ1;  
+Ensure: M1 is glued with a planar annulus M2;  
+Trace γ1 to obtain an ordered sequence of oriented  
+edges e1  
+1, e1  
+2, . . . , e1  
+n;  
+Normalize M1 such that the total length of γ1 is 1;  
+Decompose the unit circle γ2 to e2  
+1, e2  
+2, . . . , e2  
+n, such  
+that the arc length of e2  
+k equals to the length of e1  
+k;  
+Construct an inner circle γ3 centered at the origin  
+with radius δ <1;  
+Generate a planar triangulation bounded by γ2 and  
+γ3 using Delaunay refinement algorithm to obtain a  
+triangle mesh M2;  
+Glue M1 and M2 by identifying e1  
+k ∈ γ1 and e2  
+k ∈ γ2,  
+the result mesh is M with well defined edge length;  
+return the welded triangle mesh M .  
+4.4 Discrete Uniformization First, we compute  
+the discrete conformal metric by setting the target cur-  
+vature satisfying the Gauss-Bonnet condition. The tar-  
+get curvatures for interior vertices are zeros. Suppose  
+∂M = γ0-γ1-· · ·-γn, for an interior boundary compo-  
+nent γi with ni vertices, we set the target curvature for  
+each vertex on γi as -2π/ni. For the exterior boundary  
+component γ0 with n0 vertices, we set the target vertex  
+on γ0 as 2π/n0, this will ensure the planar image of M  
+is a convex domain with inner holes. We use Alg. 4 to  
+compute the desired metric.  
+Once the target metric is obtained, we can isomet-  
+rically embed the whole mesh on the plane face by face.  
+4.5 Planar Delaunay Refinement The input ob-  
+ject is a two-dimensional polygonal domain Ω, possibly  
+with holes and constraining edges and vertices inside  
+Algorithm 4 Discrete Surface Ricci Flow  
+Require: Triangle mesh M , target curvature ¯K  
+Ensure: Discrete Conformal Factor λ  
+Initialize λi ← 0, for all vi ∈ V  
+while true do  
+Update edge length using vertex scaling Eqn. (3.5)  
+Update triangulation to be Delauny by edge flips  
+Update corner angles using Eqn. (3.2)  
+Update vertex curvature using Eqn. (3.4)  
+if max | ¯Ki - Ki| < ε then  
+Return λ  
+end if  
+Compute the gradient ∇E = ( ¯Ki - Ki)  
+Compute the Hessian matrix H Eqn. (3.8)  
+Solve linear system Hµ = ∇E  
+Update the conformal factor λ ← λ - µ  
+end while  
+the domain. The boundary ∂Ω is a set of vertices and  
+edges which separates the interior of Ω from its exte-  
+rior. ∂Ω is a planar straight line graph (PSLG). We  
+want to generate a mesh T of Ω, such that T contains  
+good quality triangles. In order to obtain a good quality  
+mesh, it is necessary for T to include additional points,  
+called Steiner points, vertices of the mesh that are not  
+vertices of the input PSLG. We want the total number  
+of Steiner points to be as small as possible.  
+Various approaches have been developed for this  
+purpose, such as advancing-front methods, quadtree  
+methods, Delaunay-based methods, [4, 21], and the  
+combinations of them. Most of them work well in  
+practice but come with no guarantee on the quality  
+and size of the generated mesh. The algorithm we  
+use is Delaunay refinement proposed by Chew [4] and  
+Ruppert [21]. It is a simple technique to incrementally  
+placing Steiner points at the circumcenters of bad-  
+quality Delaunay triangles.  
+A circumcenter of a triangle may lie outside the  
+domain. When it happens, at least a boundary edge  
+(segment) is very close to some existing vertices. Call  
+a vertex encroaches upon a segment if it lies inside its  
+diametrical circumcircle. The algorithic details is given  
+in the Alg. 5.  
+5 Experimental Results  
+All algorithms have been developed using generic C++  
+under Visual Studio 2022 on the Windows platform. All  
+the experiments are conducted on a laptop with Intel(R)  
+Core(TM) i7-10750H CPU @2.60GHz with 6 cores and  
+64GB of memory.  
+We have tested our proposed method in real car  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 8 =====  
+Figure 4: The whole remeshed car model. Left: front view, right: back view.  
+Algorithm 5 Delaunay Refinement (Ω, θmin)  
+Require: A 2d polygonal domain Ω; the desired mini-  
+mal angle of output triangles θmin  
+Ensure: A mesh T of Ω  
+Construct an initial Delaunay mesh T of ∂Ω;  
+while ∃τ ∈ Tand MinAngle(τ ) > θmin do  
+let c be the circumcenter of τ ;  
+if c encroaches upon any segment of T then  
+split an encroached segment;  
+else  
+insert c into the Delaunay mesh T ;  
+end if  
+end while  
+models for fluid dynamics simulation. As shown in  
+Fig. 4, the initial CAD model is converted to a triangle  
+mesh, after hole filling, defeaturing and other prepro-  
+cessing steps, the input mesh is a water-tight manifold  
+with 15 , 013k faces. By surface remeshing, the surface  
+triangulation quality has been improved prominently  
+and the number of faces is reduced to 3, 398k. As shown  
+in Fig. 4, the sampling density is adapted to the geome-  
+try of the model and the requirement of the simulation.  
+For example, the back surface of the mirror is highly  
+curved, hence the sampling is denser. The triangula-  
+tions of regions of the body fascia front, the handles  
+and the wheel rims are refined since they are more im-  
+portant for CFD simulation. Experiments show that  
+with the same level of accuracy, the number of cells in  
+the tetrahedral final mesh is reduced by 43 .56%, and  
+the volumetric mesh generation is 3 .29 times faster, the  
+CFD simulation is 3 .47 times faster.  
+Fig. 5 shows the topological and geometric complex-  
+ities of the car model. Some mechanical parts have very  
+high genus, and some geometric structures are highly  
+refined and almost self-intersecting. Our proposed algo-  
+rithm can partition high genus surfaces into poly-annuli  
+automatically, preserve sharp geometric features, and  
+avoid self-intersections.  
+Fig. 7 shows parts of the suspension system: in  
+the first row, the left frame displays the original model  
+and the right frame shows the planar image of the  
+welded surface under the conformal mapping; in the  
+second row, the right frame shows the planar image of  
+the model with the welded annulus removed, the left  
+frame demonstrates the conformality of the mapping by  
+checkerboard texture mapping; the third row compares  
+the initial low mesh quality (left frame) and the high  
+mesh quality of the remeshing result (right frame).  
+Similarly, Fig. 8 and Fig. 6 show the remeshing process  
+of the radiator shell and part of the chassis (of a different  
+car) respectively.  
+Figure 5: The remeshed car model (the bottom view).  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 9 =====  
+Fig. 9 demonstrates a challenging case. The genus  
+of the input brake surface is 83, the conventional surface  
+segmentation algorithm will decompose it input 246  
+pairs of pants, and each patch is relatively small, hence  
+the whole processing in inefficient. In this case, we  
+compute the mid-plane of the model, which cut through  
+all the handles and divide the surface into two halves,  
+each half is a genus zero surface with 84 boundary  
+components. The dynamic Ricci flow combined with  
+the conformal welding technique can handle this type of  
+poly-annulus without any difficulty. The first row right  
+frame shows the image of conformal parameterization  
+of the welded model. The second row right frame shows  
+the planar image of the brake model only, the left frame  
+shows the conformality of the mapping by checkerboard  
+texture mapping. The third row compares the original  
+meshing (left frame) and the remeshed result (right  
+frame). This example shows the proposed method can  
+handle surfaces with complicated topologies.  
+Table 1 summarizes the statistics of our experi-  
+ments. We selected some representative mechanical  
+parts of the car body, and give the running time for con-  
+formal parameterization step and the remeshing step.  
+The table also gives the comparison between the geo-  
+metric complexity of the original mesh and the remeshed  
+mesh in terms of the numbers of vertices and faces.  
+Finally, we evaluate the mesh quality based on  
+angles and skewness. The skewness here refers to the  
+measure of the deformation of individual triangles in  
+a mesh. In general, low skewness values indicate well-  
+shaped elements that are closer to ideal shapes, while  
+high skewness values suggest distorted elements.  
+Figure 6: One part of the car chassis.  
+Figure 7: The car suspension part.  
+Model #Vertices #Faces Param. Remesh  
+Suspension 7 87k/23k 173k/43k 3m40s 6s  
+Shield 2 134k/59k 263k/113k 6m39s 18s  
+Shell 8 263k/69k 524k/137k 8m15s 36s  
+Chassis 6 338k/81k 673k/158k 11m21s 25s  
+Brake 9 804k/175k 1572k/315k 34m48s 5m31s  
+Table 1: Runtimes of the parameterization step and  
+remeshing step on the selective parts of a car model, the  
+numbers before and after slash represent the numbers  
+of the cells in original model and remeshed model  
+respectively.  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 10 =====  
+Figure 8: One part of the radiator shell.  
+Figure 9: The brake block of the car.  
+Fig. 10 displays a histogram illustrating mesh qual-  
+ity in terms of angles and skewness of the original and  
+remeshed car models. The vertical axis represents the  
+proportion rather than the quantity, offering a quan-  
+titative insight into the distribution. The remeshed  
+mesh exhibits superior quality compared to the original  
+mesh, characterized by a higher concentration of angles  
+near 60 degrees and a greater prevalence of triangles  
+approaching the ideal regular triangle.  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 11 =====  
+(a). angle evaluation  
+(b). skewness evaluation  
+Figure 10: The comparison of mesh quality before and  
+after remeshing for the car model. Blue: the result of  
+original surface; Orange: the result of remeshing result.  
+6 Conclusion  
+This work proposal a practical algorithm to improve  
+the robustness of surface remeshing based on conformal  
+welding technique. The input surface is a topological  
+annulus, it is welded with a topological cylinder along  
+one of its boundary component, and flattened onto a  
+convex planar domain. This guarantees the conformal  
+parameterization of the input surface is an embedding,  
+so that the planar image can be triangulated using clas-  
+sical planar Delaunay refinement algorithm, the planar  
+triangulation is pulled back to the original surface to  
+produce high quality surface triangulation. Our experi-  
+ments on real car models demonstrate the effectiveness  
+of the proposed method.  
+In the future, we will explore further to generalize  
+the method to surfaces with more complicated topolo-  
+gies.  
+Acknowledgement  
+This research was supported by the National Natural  
+Science Foundation of China T2225012, 61936002, Na-  
+tional Institutes of Health grant #R21EB029733 and  
+National Science Foundation grant #2213852.  
+References  
+[1] Alliez, P., Desbrun, M.: Progressive meshes. In: Pro-  
+ceedings of the 28th Annual Conference on Com-  
+puter Graphics and Interactive Techniques. pp. 99-108  
+(2001)  
+[2] Berg, M.d., Cheong, O., Kreveld, M.v., Overmars, M.:  
+Computational Geometry: Algorithms and Applica-  
+tions. Springer-Verlag TELOS, Santa Clara, CA, USA,  
+3rd ed. edn. (2008)  
+[3] Cheng, S.W., Dey, T.K., Shewchuk, J.R.: Delaunay  
+Mesh Generation. CRC Press (2010)  
+[4] Chew, L.P.: Guaranteed-quality triangular meshes.  
+Tech. Rep. TR 89-983, Dept. of Comp. Sci., Cornell  
+University (1989)  
+[5] Chow, B.: The Ricci flow on the 2-sphere. J. Differen-  
+tial Geom. 33(2), 325-334 (1991)  
+[6] Du, Q., Faber, V., Gunzburger, M.: Centroidal voronoi  
+tessellations: Applications and algorithms. SIAM Re-  
+view 41, 637-676 (1999)  
+[7] Edelsbrunner, H., Harer, J.L.: Computational Topol-  
+ogy: An Introduction. American Mathematical Society  
+(2010)  
+[8] Garland, M., Heckbert, P.S.: Surface simplification  
+using quadric error metrics. In: Proceedings of the  
+24th Annual Conference on Computer Graphics and  
+Interactive Techniques. pp. 209-216 (1997)  
+[9] Gary P. T. Choi, Yusan Leung-Liu, X.G., Lui, L.M.:  
+Parallelizable global conformal parameterization of  
+simply-connected surfaces via partial welding. SIAM  
+Imaging Sciences 13(3), 1049-1083 (2010)  
+[10] Gu, X., Guo, R., Luo, F., Sun, J., Wu, T.: A  
+discrete uniformization theorem for polyhedral surfaces  
+i. Journal of Differential Geometry (JDG)109(3), 431-  
+466 (2018)  
+[11] Gu, X., Luo, F., Sun, J., Wu, T.: A discrete uni-  
+formization theorem for polyhedral surfaces i. Jour-  
+nal of Differential Geometry (JDG) 109(2), 223-256  
+(2018)  
+[12] Gu, X., Yau, S.T.: Computational Conformal Geome-  
+try, Advanced Lectures in Mathematics, vol. 3. Inter-  
+national Press and Higher Education Press (2007)  
+[13] Gu, X., Yau, S.T.: Computational Conformal Geom-  
+etry. International Press and Higher Education Press  
+(2020)  
+[14] Hamilton, R.: The Ricci Flow on Surfaces. A.M.S.  
+Contemp. Math. 71(1), 237-261 (1986)  
+[15] Hang Si, N.L., Gu, X.: Surface remeshing based on  
+conformal uniformization. In: Proceedings of the SIAM  
+International Meshing Roundtable 23 (2023)  
+[16] Kazhdan, M., Bolitho, M., Hoppe, H.: Poisson sur-  
+face reconstruction. In: Proceedings of the fourth Euro-  
+graphics symposium on Geometry processing. pp. 61-  
+70 (2006)  
+[17] Lok Ming Lui, Wei Zeng, S.T.Y., Gu, X.: Shape anal-  
+ysis of planar multiply-connected objects using confor-  
+mal welding. IEEE Transactions on Pattern Analysis  
+and Machine Intelligence (IEEE TPAMI) 36(7), 1384-  
+1401 (2013)  
+[18] Perelman, G.: The entropy formula for the  
+ricci flow and its geometric applications (2002).  
+https://doi.org/10.48550/ARXIV.MATH/0211159,  
+https://arxiv.org/abs/math/0211159  
+[19] Perelman, G.: Ricci flow with  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited  
+===== page 12 =====  
+surgery on three-manifolds (2003).  
+https://doi.org/10.48550/ARXIV.MATH/0303109,  
+https://arxiv.org/abs/math/0303109  
+[20] Peyr´ e, J., Oudot, S., Keriven, R., Cohen-Steiner,  
+D.: Cgal: Computational geometry algorithms library.  
+ACM Transactions on Mathematical Software (TOMS)  
+46(3), 1-27 (2020)  
+[21] Ruppert, J.: A Delaunay refinement algorithm for  
+quality 2-dimensional mesh generation. Journal of Al-  
+gorithms 18(3), 548-585 (1995)  
+[22] Shewchuk, J.R.: Triangle: Engineering a 2d quality  
+mesh generator and delaunay triangulator. In: Applied  
+Computational Geometry: Towards Geometric Engi-  
+neering. pp. 203-222 (1996)  
+Copyright © 2024 by SIAM  
+Unauthorized reproduction of this article is prohibited

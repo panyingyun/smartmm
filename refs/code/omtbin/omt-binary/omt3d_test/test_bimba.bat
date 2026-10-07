@@ -1,0 +1,1 @@
+..\bin\omt3d -input bimba_h.t -output bimba_omt.tet6 -clip cube

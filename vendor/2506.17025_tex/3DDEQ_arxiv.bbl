@@ -1,0 +1,110 @@
+\begin{thebibliography}{10}
+
+\bibitem{choi2015flash}
+P.~T. Choi, K.~C. Lam, and L.~M. Lui, ``{FLASH}: Fast landmark aligned spherical harmonic parameterization for genus-0 closed brain surfaces,'' {\em SIAM J. Imaging Sci.}, vol.~8, no.~1, pp.~67--94, 2015.
+
+\bibitem{su2016area}
+K.~Su, L.~Cui, K.~Qian, N.~Lei, J.~Zhang, M.~Zhang, and X.~D. Gu, ``Area-preserving mesh parameterization for poly-annulus surfaces based on optimal mass transportation,'' {\em Computer Aided Geometric Design}, vol.~46, pp.~76--91, 2016.
+
+\bibitem{yueh2019novel}
+M.-H. Yueh, T.~Li, W.-W. Lin, and S.-T. Yau, ``A novel algorithm for volume-preserving parameterizations of 3-manifolds,'' {\em SIAM J. Imaging Sci.}, vol.~12, no.~2, pp.~1071--1098, 2019.
+
+\bibitem{tan2025dimensional}
+Z.-H. Tan, T.~Li, W.-W. Lin, and S.-T. Yau, ``-dimensional volumetric stretch energy minimization for volume-/mass-preserving parameterizations with applications,'' {\em SIAM Journal on Imaging Sciences}, vol.~18, no.~2, pp.~1141--1175, 2025.
+
+\bibitem{zhang2022unifying}
+D.~Zhang, G.~P.~T. Choi, J.~Zhang, and L.~M. Lui, ``A unifying framework for n-dimensional quasi-conformal mappings,'' {\em SIAM J. Imaging Sci.}, vol.~15, no.~2, pp.~960--988, 2022.
+
+\bibitem{su2017volume}
+K.~Su, W.~Chen, N.~Lei, J.~Zhang, K.~Qian, and X.~Gu, ``Volume preserving mesh parameterization based on optimal mass transportation,'' {\em Computer-Aided Design}, vol.~82, pp.~42--56, 2017.
+
+\bibitem{angenent1999conformal}
+S.~Angenent, S.~Haker, A.~Tannenbaum, and R.~Kikinis, ``Conformal geometry and brain flattening,'' in {\em Medical Image Computing and Computer-Assisted Intervention--MICCAI’99: Second International Conference, Cambridge, UK, September 19-22, 1999. Proceedings 2}, pp.~271--278, Springer, 1999.
+
+\bibitem{levy2023least}
+B.~L{\'e}vy, S.~Petitjean, N.~Ray, and J.~Maillot, ``Least squares conformal maps for automatic texture atlas generation,'' in {\em Seminal Graphics Papers: Pushing the Boundaries, Volume 2}, pp.~193--202, 2023.
+
+\bibitem{gu2004genus}
+X.~Gu, Y.~Wang, T.~F. Chan, P.~M. Thompson, and S.-T. Yau, ``Genus zero surface conformal mapping and its application to brain surface mapping,'' {\em IEEE Trans. Med. Imaging}, vol.~23, no.~8, pp.~949--958, 2004.
+
+\bibitem{luo2004combinatorial}
+F.~Luo, ``Combinatorial yamabe flow on surfaces,'' {\em Communications in Contemporary Mathematics}, vol.~6, no.~05, pp.~765--780, 2004.
+
+\bibitem{zeng2012computing}
+W.~Zeng, L.~M. Lui, F.~Luo, T.~F.-C. Chan, S.-T. Yau, and D.~X. Gu, ``Computing quasiconformal maps using an auxiliary metric and discrete curvature flow,'' {\em Numerische Mathematik}, vol.~121, no.~4, pp.~671--703, 2012.
+
+\bibitem{choi2020parallelizable}
+G.~P.~T. Choi, Y.~Leung-Liu, X.~Gu, and L.~M. Lui, ``Parallelizable global conformal parameterization of simply-connected surfaces via partial welding,'' {\em SIAM J. Imaging Sci.}, vol.~13, no.~3, pp.~1049--1083, 2020.
+
+\bibitem{choi2024fast}
+G.~P.~T. Choi, ``Fast ellipsoidal conformal and quasi-conformal parameterization of genus-0 closed surfaces,'' {\em J. Comput. Appl. Math.}, vol.~447, p.~115888, 2024.
+
+\bibitem{choi2016spherical}
+G.~P.-T. Choi, K.~T. Ho, and L.~M. Lui, ``Spherical conformal parameterization of genus-0 point clouds for meshing,'' {\em SIAM J. Imaging Sci.}, vol.~9, no.~4, pp.~1582--1618, 2016.
+
+\bibitem{choi2018linear}
+G.~P.-T. Choi and L.~M. Lui, ``A linear formulation for disk conformal parameterization of simply-connected open surfaces,'' {\em Advances in Computational Mathematics}, vol.~44, pp.~87--114, 2018.
+
+\bibitem{nadeem2016spherical}
+S.~Nadeem, Z.~Su, W.~Zeng, A.~Kaufman, and X.~Gu, ``Spherical parameterization balancing angle and area distortions,'' {\em IEEE Trans. Vis. Comput. Graph.}, vol.~23, no.~6, pp.~1663--1676, 2016.
+
+\bibitem{zhao2013area}
+X.~Zhao, Z.~Su, X.~D. Gu, A.~Kaufman, J.~Sun, J.~Gao, and F.~Luo, ``Area-preservation mapping using optimal mass transport,'' {\em IEEE transactions on visualization and computer graphics}, vol.~19, no.~12, pp.~2838--2847, 2013.
+
+\bibitem{gastner2004diffusion}
+M.~T. Gastner and M.~E.~J. Newman, ``Diffusion-based method for producing density-equalizing maps,'' {\em Proc. Natl. Acad. Sci.}, vol.~101, no.~20, pp.~7499--7504, 2004.
+
+\bibitem{gastner2018fast}
+M.~T. Gastner, V.~Seguy, and P.~More, ``Fast flow-based algorithm for creating density-equalizing map projections,'' {\em Proc. Natl. Acad. Sci.}, vol.~115, no.~10, pp.~E2156--E2164, 2018.
+
+\bibitem{choi2018density}
+G.~P.~T. Choi and C.~H. Rycroft, ``Density-equalizing maps for simply connected open surfaces,'' {\em SIAM J. Imaging Sci.}, vol.~11, no.~2, pp.~1134--1178, 2018.
+
+\bibitem{lyu2024bijective}
+Z.~Lyu, G.~P.~T. Choi, and L.~M. Lui, ``Bijective density-equalizing quasiconformal map for multiply connected open surfaces,'' {\em SIAM J. Imaging Sci.}, vol.~17, no.~1, pp.~706--–755, 2024.
+
+\bibitem{lyu2024spherical}
+Z.~Lyu, L.~M. Lui, and G.~P.~T. Choi, ``Spherical density-equalizing map for genus-0 closed surfaces,'' {\em SIAM J. Imaging Sci.}, vol.~17, no.~4, pp.~2110--–2141, 2024.
+
+\bibitem{lyu2024ellipsoidal}
+Z.~Lyu, L.~M. Lui, and G.~P.~T. Choi, ``Ellipsoidal density-equalizing map for genus-0 closed surfaces,'' {\em Preprint, arXiv:2410.12331}, 2024.
+
+\bibitem{paille2012conformal}
+G.-P. Paill{\'e} and P.~Poulin, ``As-conformal-as-possible discrete volumetric mapping,'' {\em Computers \& Graphics}, vol.~36, no.~5, pp.~427--433, 2012.
+
+\bibitem{chern2015close}
+A.~Chern, U.~Pinkall, and P.~Schr{\"o}der, ``Close-to-conformal deformations of volumes,'' {\em ACM Transactions on Graphics (TOG)}, vol.~34, no.~4, pp.~1--13, 2015.
+
+\bibitem{kovalsky2015large}
+S.~Z. Kovalsky, N.~Aigerman, R.~Basri, and Y.~Lipman, ``Large-scale bounded distortion mappings.,'' {\em ACM Trans. Graph.}, vol.~34, no.~6, pp.~191--1, 2015.
+
+\bibitem{rabinovich2017scalable}
+M.~Rabinovich, R.~Poranne, D.~Panozzo, and O.~Sorkine-Hornung, ``Scalable locally injective mappings,'' {\em ACM Transactions on Graphics (TOG)}, vol.~36, no.~4, p.~1, 2017.
+
+\bibitem{jin2015stretch}
+Y.~Jin, G.-P. Qian, J.-Y. Zhao, J.~Chang, R.-F. Tong, and J.~Zhang, ``Stretch-minimizing volumetric parameterization,'' {\em Journal of Computer Science and Technology}, vol.~30, no.~3, pp.~553--564, 2015.
+
+\bibitem{yueh2020new}
+M.-H. Yueh, T.~Li, W.-W. Lin, and S.-T. Yau, ``A new efficient algorithm for volume-preserving parameterizations of genus-one 3-manifolds,'' {\em SIAM Journal on Imaging Sciences}, vol.~13, no.~3, pp.~1536--1564, 2020.
+
+\bibitem{lehto1973quasiconformal}
+O.~Lehto and K.~I. Virtanen, {\em Quasiconformal mappings in the plane}, vol.~126.
+\newblock Springer Berlin, Heidelberg, 1973.
+
+\bibitem{ahlfors2006lectures}
+L.~V. Ahlfors, {\em Lectures on quasiconformal mappings}, vol.~38.
+\newblock American Mathematical Society, Providence, RI, 2006.
+
+\bibitem{chen2024novel3dmappingrepresentation}
+Q.~Chen and L.~M. Lui, ``A novel {3D} mapping representation and its applications,'' 2024.
+
+\bibitem{wang2003volumetric}
+Y.~Wang, X.~Gu, and S.-T. Yau, ``Volumetric harmonic map,'' {\em Commun. Inf. Syst.}, vol.~3, no.~3, pp.~191--202, 2003.
+
+\bibitem{su2019curvature}
+K.~Su, N.~Lei, W.~Chen, L.~Cui, H.~Si, S.~Chen, and X.~Gu, ``Curvature adaptive surface remeshing by sampling normal cycle,'' {\em Computer-Aided Design}, vol.~111, pp.~1--12, 2019.
+
+\bibitem{lai2025point}
+K.~H. Lai and L.~M. Lui, ``Point cloud surface parametrization with hand and leg: Hausdorff approximation from node-wise distances and localized energy for geometry,'' {\em arXiv preprint arXiv:2501.13737}, 2025.
+
+\end{thebibliography}

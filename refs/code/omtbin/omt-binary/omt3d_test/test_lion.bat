@@ -1,0 +1,1 @@
+..\bin\omt3d -input lion_h.t -output lion_omt.tet6 -clip cube

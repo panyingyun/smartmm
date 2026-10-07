@@ -1,0 +1,771 @@
+
+===== page 1 =====
+Theory of Optimal Mass Transportation
+David Gu1
+1Computer Science Department
+Stony Brook University, USA
+Center of Mathematical Sciences and Applications
+Harvard University
+Geometric Computation and Applications
+Trinity College, Dublin, Ireland
+David Gu Applications of OMT
+===== page 2 =====
+Thanks
+Thanks for the invitation.
+David Gu Applications of OMT
+===== page 3 =====
+Collaborators
+The work is collaborated with Shing-Tung Y au, Feng Luo, Jian
+Sun, Na Lei, Li Cui and Kehua Su etc.David Gu Applications of OMT
+===== page 4 =====
+Motivation
+David Gu Applications of OMT
+===== page 5 =====
+Mesh Parameterization
+David Gu Applications of OMT
+===== page 6 =====
+Conformal Parameterization
+Conformal parameterization: angle-preserving
+Infinitesimal circles are mapped to infinitesimal circle.
+David Gu Applications of OMT
+===== page 7 =====
+Area-preserving Parameterization
+Area-preserving parameterization
+Infinitesimal circles are mapped to infinitesimal ellipses,
+preserving the areas.
+David Gu Applications of OMT
+===== page 8 =====
+Surface Parameterization
+Area-preserving parameterization
+(a) Cortical surface (b) Conformal (c) Area-preserving
+David Gu Applications of OMT
+===== page 9 =====
+Surface Parameterization
+David Gu Applications of OMT
+===== page 10 =====
+Surface Parameterization
+(a) Gargoyle model; (b) Angle-preserving; (c) Area-preserving.
+David Gu Applications of OMT
+===== page 11 =====
+Volume Parameterization
+harmonic map volume-preserving map
+David Gu Applications of OMT
+===== page 12 =====
+Volume Parameterization
+harmonic map
+volume-preserving map
+David Gu Applications of OMT
+===== page 13 =====
+Registration
+David Gu Applications of OMT
+===== page 14 =====
+Conformal Parameterization for Surface Matching
+Existing method, 3D surface matching is converted to image
+matching by using conformal mappings.
+f
+¯f
+φ 1 φ 2
+David Gu Applications of OMT
+===== page 15 =====
+Conformal Parameterization for Surface Matching
+Disadvantages: conformal parameterization may induce
+exponential area shrinkage, which produces numerical
+instability and matching mistakes.
+David Gu Applications of OMT
+===== page 16 =====
+Optimal Mass Transport Map
+Advantage: the parameterization is area-preserving, improves
+the robustness.
+David Gu Applications of OMT
+===== page 17 =====
+Registration based on Optimal Mass Transport Map
+David Gu Applications of OMT
+===== page 18 =====
+Geometric Clustering
+David Gu Applications of OMT
+===== page 19 =====
+Wasserstein Distance
+Given a metric surface (S,g), a Riemann mapping
+ϕ : (S,g)→ D2, the conformal factor e2λ gives a probability
+measure on the disk. The shape distance is given by the
+Wasserstein distance.
+David Gu Applications of OMT
+===== page 20 =====
+Expression Classification
+David Gu Applications of OMT
+===== page 21 =====
+Expression Classification
+Compute the Wasserstein distances, embed isometrically using
+MDS method, perform clustering.
+David Gu Applications of OMT
+===== page 22 =====
+From Shape to IQ
+Can we tell the IQ from the shape of the cortical surface?
+David Gu Applications of OMT
+===== page 23 =====
+Optimal Mass Transport Mapping
+David Gu Applications of OMT
+===== page 24 =====
+Optimal Transport Problem
+(Ω, /u1D707)
+(/u1D437, /u1D708)
+/u1D719
+/u1D45D
+/u1D719(/u1D45D)
+Earth movement cost.
+David Gu Applications of OMT
+===== page 25 =====
+Optimal Mass Transportation
+Problem Setting
+Find the best scheme of transporting one mass distribution
+(
+µ,U) to another one (ν ,V ) such that the total cost is
+minimized, where U,V are two bounded domains in Rn, such
+that ∫
+U
+µ(x)dx =
+∫
+V
+ν (y)dy,
+0≤ µ∈ L1(U) and 0≤ ν∈ L1(V ) are density functions.
+(/u1D707, /u1D448 ) (/u1D708, /u1D449 )
+/u1D453
+/u1D465 /u1D453 (/u1D465 )
+David Gu Applications of OMT
+===== page 26 =====
+Optimal Mass Transportation
+For a transport scheme s ( a mapping from U to V)
+s : x∈ U→ y∈ V ,
+the total cost is
+C(s) =
+∫
+U
+µ(x)c(x,s(x))dx
+where c(x,y) is the cost function.
+(/u1D707, /u1D448 ) (/u1D708, /u1D449 )
+/u1D453
+/u1D465 /u1D453 (/u1D465 )
+David Gu Applications of OMT
+===== page 27 =====
+Cost Function c(x,y )
+The cost of moving a unit mass from point x to point y.
+Monge(1781) : c(x,y) =|x- y|.
+This is the natural cost function. Other cost functions include
+c(x,y) = |x- y|p,p̸= 0
+c(x,y) = -log|x- y|
+c(x,y) =
+√
+ε +|x- y|2,ε > 0
+Any function can be cost function. It can be negative.
+David Gu Applications of OMT
+===== page 28 =====
+Optimal Transportation Map
+Problem
+Is there an optimal mapping T : U→ V such that the total cost
+C is minimized,
+C (T ) = inf{C (s) : s∈ S}
+where S is the set of all measure preserving mappings,
+namely s : U→ V satisfies
+∫
+s-1(E)
+µ(x)dx =
+∫
+E
+ν (y)dy,∀ Borel set E⊂ V
+David Gu Applications of OMT
+===== page 29 =====
+Solutions
+Three categories:
+1 Discrete category: both (µ,U) and (ν ,V ) are discrete,
+2 Semi-continuous category: (µ,U) is continuous, (ν ,V ) is
+discrete,
+3 Continuous category: both (µ,U) and (ν ,V ) are
+continuous.
+David Gu Applications of OMT
+===== page 30 =====
+Kantorovich's Approach
+Both (µ,U) and (ν ,V ) are discrete. µ and ν are Dirac
+measures. (µ,U) is represented as
+{(µ1,p1),(µ2,p2),···,(µm,pm)},
+(ν ,V ) is
+{(ν1,q1),(ν2,q2),···,(νn,qn)}.
+A transportation plan f :{pi}→{ qj}, f ={fij}, fij means how
+much mass is moved from (µi ,pi ) to (νj ,qj ), i≤ m,j≤ n. The
+optimal mass transportation plan is:
+min
+f
+fijc(pi ,qj )
+with constraints:
+n
+∑
+j=1
+fij = µi ,
+m
+∑
+i=1
+fij = νj .
+Optimizing a linear energy on a convex set, solvable by linear
+programming method.
+David Gu Applications of OMT
+===== page 31 =====
+Kantorovich's Approach
+Kantorovich won Nobel's prize in economics.
+min
+f ∑
+ij
+fijc(pi ,pj ),
+such that
+∑
+j
+fij = µi ,∑
+i
+fij = νj .
+mn unknowns in total. The
+complexity is quite high.
+(/u1D707 1, /u1D45D1)
+(/u1D707 2, /u1D45D2)
+(/u1D707 /u1D45A , /u1D45D/u1D45A )
+(/u1D7081, /u1D45E1)
+(/u1D7082, /u1D45E2)
+(/u1D708/u1D45B, /u1D45E/u1D45B)
+/u1D453/u1D456/u1D457
+David Gu Applications of OMT
+===== page 32 =====
+Brenier's Approach
+Theorem (Brenier)
+If µ,ν > 0 and U is convex, and the cost function is quadratic
+distance,
+c(x,y) =|x- y|2
+then there exists a convex function f : U→ R unique upto a
+constant, such that the unique optimal transportation map is
+given by the gradient map
+T : x→ ∇ f (x).
+David Gu Applications of OMT
+===== page 33 =====
+Brenier's Approach
+Continuous Category: In smooth case, the Brenier potential
+f : U→ R statisfies the Monge-Ampere equation
+det
+(
+∂ 2f
+∂xi∂xj
+)
+= µ(x)
+ν (∇ f (x)) ,
+and ∇ f : U→ V minimizes the quadratic cost
+min
+f
+∫
+U
+|x- ∇ f (x)|2dx.
+David Gu Applications of OMT
+===== page 34 =====
+Semi-Continuous Category
+Discrete Optimal Mass Transportation Problem
+Wi
+Ω
+T
+(pi, Ai)
+Given a compact convex domain U in Rn and p1,···,pk in Rn
+and A1,···,Ak > 0, find a transport map T : U→{ p1,···,pk}
+with vol(T-1(pi )) = Ai, so that T minimizes the transport cost
+∫
+U
+|x- T (x)|2dx.
+David Gu Applications of OMT
+===== page 35 =====
+Power Diagram vs Optimal Transport Map
+Theorem (Aurenhammer-Hoffmann-Aronov 1998)
+Given a compact convex domain U in Rn and p1,···,pk in Rn
+and A1,···,Ak > 0, ∑ i Ai = vol(U), there exists a unique power
+diagram
+U =
+k⋃
+i=1
+Wi ,
+vol(Wi ) = Ai, the map T : Wi↦→pi minimizes the transport cost
+∫
+U
+|x- T (x)|2dx.
+David Gu Applications of OMT
+===== page 36 =====
+Power Diagram vs Optimal Transport Map
+/u1D462 /u1D462∗
+∇/u1D462
+/u1D44A /u1D456 /u1D45D/u1D456
+/u1D70B/u1D456
+/u1D70B∗
+/u1D456
+Ω, /u1D4AF Ω∗, /u1D4AF ∗
+/u1D45D/u1D45F/u1D45C/u1D457 /u1D45D/u1D45F/u1D45C/u1D457∗
+David Gu Applications of OMT
+===== page 37 =====
+Power Diagram vs Optimal Transport Map
+1 F . Aurenhammer, F . Hoffmann and B. Aronov,
+Minkowski-type theorems and least squares partitioning, in
+Symposium on Computational Geometry, 1992, pp.
+350-357.
+2 F . Aurenhammer, F . Hoffmann and B. Aronov,
+Minkowski-type Theorems and Least-Squares Clustering,
+vol 20, 61-76, Algorithmica, 1998.
+3 Bruno L´evy, "A numerical algorithm forL2 semi-discrete
+optimal transport in 3D", arXiv:1409.1279, Y ear 2014.
+4 X. Gu, F . Luo, J. Sun and S.-T. Y au, "Variational Principles
+for Minkowski Type Problems, Discrete Optimal Transport,
+and Discrete Monge-Ampere Equations", arXiv:1302.5472,
+Y ear 2013.
+David Gu Applications of OMT
+===== page 38 =====
+Power Diagram vs Optimal Transport Map
+In Aurenhammer et al.'s and Levy's works, the main theorems
+are:
+Theorem
+Given a set of points P and a set of weights W = (wi ), the
+assignment TP,W defined by the power diagram is an optimal
+transport map.
+Theorem
+Given a measure µ with density, a set of points (pi ) and
+prescribed mass νi such that ∑ νi = µ(Ω) , there exists a
+weights vector W such that µ(PowW (pi )) = νi.
+David Gu Applications of OMT
+===== page 39 =====
+Power Diagram vs Optimal Transport Map
+In Levy's proof, the following energy is examined: LetT : Ω→ P
+be an arbitrary assignment,
+fT (W ) :=
+∫
+Ω
+∥x- T (x)∥2- wT (x)dµ,
+using envelope theorem,
+∂fTW (W )
+∂wi
+=-µ(PowW (pi )),
+the convex energy is defined as
+g(W ) = fTW (W ) +∑
+i
+νiwi ,
+the gradient is
+∂g(W )
+∂wi
+=-µ(PowW (pi )) +νi ,
+David Gu Applications of OMT
+===== page 40 =====
+Comparison
+The key differences between Aurenhammer 1998, L´evy 2014
+works and Gu-Luo-Sun-Y au 2013 are:
+1 What is the geometric meaning of the convex energy ?
+2 What is the explicit formula for Hessian matrix ? What is
+the geometric meaning of the Hessian matrix ?
+3 The convexity of the admissible weight space (height
+space). The argument that the critical point is an interior
+point in the admissible weight space.
+4 Gradient descend, Quasi-Newton vs Newton's method.
+David Gu Applications of OMT
+===== page 41 =====
+Comparison
+The same theorem has been proved several times in different
+fields, from different perspectives.
+1 Alexandrov 1950, proved the existence using the
+non-constructive topological method, and the uniqueness
+using Brunn-Minkowski inequality.
+2 Aurenhammer 1998, L´evy 2014 used the variational
+method to prove the existence and the uniqueness by a
+convex energy, formulated fromL2 transportation cost. The
+gradient formula is given.
+3 Gu-Luo-Sun-Y au 2013 used the variational approach,
+proved the existence and the uniqueness by a convex
+energy, started from the volume of a convex polytope,
+furthermore the convexity of the space of admissible power
+weights (heights), and the interior critical point arguments
+are emphasized, which are based on Brunn-Minkowski
+inequality. Both the gradient and the Hessian are given.
+David Gu Applications of OMT
+===== page 42 =====
+Remarks
+Only the convexity of the energy is insufficient to guarantee
+the existence of the solution, it is further required that the
+domain is convex and the critical point is interior;
+The Brunn-Minkowski inequality is fundamentally essential;
+The L2 cost and the volume are Legendre dual to each
+other.
+David Gu Applications of OMT
+===== page 43 =====
+Convex Geometry
+David Gu Applications of OMT
+===== page 44 =====
+Minkowski problem - 2D Case
+Example
+A convex polygon P in R2 is determined by its edge lengths Ai
+and the unit normal vectors ni.
+Take anyu∈ R2 and project P
+to u, then⟨∑ i Aini ,u⟩ = 0,
+therefore
+∑
+i
+Aini = 0.
+Ai
+ni
+David Gu Applications of OMT
+===== page 45 =====
+Minkowski problem - General Case
+Minkowski Problem
+Given k unit vectors n1,···,nk not
+contained in a half-space in Rn
+and A1,···,Ak > 0, such that
+∑
+i
+Aini = 0,
+find a compact convex polytope P
+with exactly k codimension-1 faces
+F1,···,Fk, such that
+1 area(Fi ) = Ai,
+2 ni⊥ Fi.
+n/u1D456
+/u1D439/u1D456/u1D434/u1D456
+David Gu Applications of OMT
+===== page 46 =====
+Minkowski problem - General Case
+Theorem (Minkowski)
+P exists and is unique up to
+translations.
+n/u1D456
+/u1D439/u1D456/u1D434/u1D456
+David Gu Applications of OMT
+===== page 47 =====
+Minkowski's Proof
+Given h = (h1,···,hk ), hi > 0, define a
+compact convex polytope
+P(h) ={x|⟨x,ni⟩≤ hi ,∀i}
+Let Vol : Rk
++→ R+ be the volume
+Vol(h) = vol(P(h)), then
+∂Vol(h)
+∂hi
+= area(Fi)
+n/u1D456
+/u1D439/u1D456/u1D434/u1D456
+David Gu Applications of OMT
+===== page 48 =====
+Minkowski's Proof
+Define the admissible height space
+H :={h|hi > 0,area(Fi )≥ 0,i = 1,2,···,k}∩{∑ hiAi = 1},
+By using Brunn-Minkowski inequality,
+one can show that H is convex and
+compact. The smooth function Vol(h)
+reaches its maximum. Furthermore, on
+∂ H , the gradient of Vol(h) points inside,
+therefore, the maximum is an interior
+point. Using Lagrangian multiplier, the
+solution (up to scaling) to MP is the
+critical point of Vol.
+n/u1D456
+/u1D439/u1D456/u1D434/u1D456
+David Gu Applications of OMT
+===== page 49 =====
+Minkowski's Proof
+Uniqueness part is proved using
+Brunn-Minkowski inequality, which
+implies (Vol(h))
+1
+n is concave in h.
+n/u1D456
+/u1D439/u1D456/u1D434/u1D456
+David Gu Applications of OMT
+===== page 50 =====
+Minkowski Sum
+⊕
+Definition (Minkowski Sum)
+Given two point sets P,Q⊂ Rn, their Minkowski sum is given by
+P⊕ Q ={p + q|p∈ P,q∈ Q}
+Let
+P(h) ={x|⟨x,ni⟩≤ hi ,∀i}
+then
+P(h1)⊕ P(h2) = P(h1 + h2).
+David Gu Applications of OMT
+===== page 51 =====
+Brunn-Minkowski inequality
+Theorem (Brunn-Minkowski)
+For every pair of nonempty compact subsets A and B of Rn and
+every 0≤ t≤ 1,
+[Vol(tA⊕ (1- t)B)]
+1
+n≥ t[vol(A)]
+1
+n + (1- t)[vol(B)]
+1
+n .
+For convex sets A and B, the inequality is strick for 0 < t < 1
+unless A and B are homothetic i.e. are equal up to translation
+and dilation.
+David Gu Applications of OMT
+===== page 52 =====
+Piecewise Linear Convex Function
+A Piecewise Linear convex function
+f (x) := max{⟨x,pi⟩+ hi|i = 1,···,k}
+produces a convex cell decomposition
+Wi of Rn:
+Wi ={x|⟨x,pi⟩+ hi≥⟨x,pj⟩+ hj ,∀j}
+Namely, Wi ={x|∇ f (x) = pi}.
+Ω
+/u1D44A /u1D456
+/u1D439 /u1D456
+/u1D70B/u1D457
+/u1D462ℎ(/u1D465)
+David Gu Applications of OMT
+===== page 53 =====
+Alexandrov Theorem
+Theorem (Alexandrov 1950)
+Given Ω compact convex domain in
+Rn, p1,···,pk distinct in Rn,
+A1,···,Ak > 0, such that
+∑ Ai = Vol(Ω) , there exists PL convex
+function
+f (x) := max{⟨x,pi⟩+ hi|i = 1,···,k}
+unique up to translation such that
+Vol(Wi) = Vol({x|∇ f (x) = pi}) = Ai .
+Alexandrov's proof is topological, not
+variational. It has been open for years
+to find a constructive proof.
+Ω
+/u1D44A /u1D456
+/u1D439 /u1D456
+/u1D70B/u1D457
+/u1D462ℎ(/u1D465)
+David Gu Applications of OMT
+===== page 54 =====
+Voronoi Decomposition
+David Gu Applications of OMT
+===== page 55 =====
+Voronoi Diagram
+Voronoi Diagram
+Given p1,···,pk in Rn, the Voronoi cell
+Wi at pi is
+Wi ={x||x- pi|2≤| x- pj|2,∀j}.
+David Gu Applications of OMT
+===== page 56 =====
+Power Distance
+Power Distance
+Given pi associated with
+a sphere (pi ,ri ) the
+power distance from
+q∈ Rn to pi is
+pow (pi,q) =|pi-q|2-r 2
+i .
+/u1D45D/u1D456
+/u1D45E
+/u1D45D/u1D45C/u1D464(/u1D45D/u1D456, /u1D45E) /u1D45F/u1D456
+David Gu Applications of OMT
+===== page 57 =====
+Power Diagram
+Given p1,···,pk in Rn and power weights h1,···,hk, the power
+Voronoi cell Wi at pi is
+Wi ={x||x- pi|2 + hi≤| x- pj|2 + hj ,∀j}.
+David Gu Applications of OMT
+===== page 58 =====
+PL convex function vs. Power diagram
+Lemma
+Suppose f (x) = max{⟨x,pi⟩+ hi} is a
+piecewise linear convex function, then its
+gradient map induces a power diagram,
+Wi ={x|∇ f = pi}.
+Proof.
+⟨x,pi⟩+ hi≥⟨x,pj⟩+ hj is equivalent to
+|x-pi|2-2hi-|pi|2≤| x-pj|2-2hj-|pj|2.
+Ω
+/u1D44A /u1D456
+/u1D439 /u1D456
+/u1D70B/u1D457
+/u1D462ℎ(/u1D465)
+David Gu Applications of OMT
+===== page 59 =====
+Variational Proof
+Theorem (Gu-Luo-Sun-Y au 2013)
+Ω is a compact convex domain in Rn, p1,···,pk distinct in Rn,
+s : Ω→ R is a positive continuous function. For any
+A1,···,Ak > 0 with ∑ Ai =
+∫
+Ω s(x)dx, there exists a vector
+(h1,···,hk ) so that
+f (x) = max{⟨x,pi⟩+ hi}
+satisfies
+∫
+Wi∩Ω s(x)dx = Ai, where Wi ={x|∇ f (x) = pi}.
+Furthermore, h is the maximum point of the convex function
+E (h) =
+k
+∑
+i=1
+Aihi-
+∫ h
+0
+k
+∑
+i=1
+wi (η )dη i ,
+where wi (η ) =
+∫
+Wi (η )∩Ω s(x)dx is the volume of the cell.
+David Gu Applications of OMT
+===== page 60 =====
+Variational Proof
+X. Gu, F . Luo, J. Sun and S.-T.
+Y au, "Variational Principles for
+Minkowski Type Problems,
+Discrete Optimal Transport,
+and Discrete Monge-Ampere
+Equations", arXiv:1302.5472
+Accepted by Asian Journal of
+Mathematics (AJM)
+David Gu Applications of OMT
+===== page 61 =====
+Variational Proof
+Proof.
+For h = (h1,···,hk ) in Rk, define the PL convex function f as
+above and let Wi (h) ={x|∇ f (x) = pi} and wi (h) = vol(Wi (h)).
+First, we show the admissible height space
+H ={h∈ Rk|wi (h) > 0,∀i}
+is non-empty open convex set in Rk by using the
+Brunn-Minkowski inequality.
+David Gu Applications of OMT
+===== page 62 =====
+Variational Proof
+Proof.
+Second, we can show the symmetry
+∂wi
+∂hj
+= ∂wj
+∂hi
+≤ 0
+for i̸= j. Thus the differential 1-form ∑ wi (h)dhi is closed in H .
+Therefore∃ a smooth F : H → R so that
+∂F
+∂hi
+= wi (h),
+hence
+F (h) :=
+∫ h k
+∑
+i=1
+wi (η )dη i.
+David Gu Applications of OMT
+===== page 63 =====
+Variational Proof
+Proof.
+Third, because
+∂wi (h)
+∂hi
+= 0
+due to
+∑ wi (h) = vol(Ω) .
+Therefore the Hessian of F is diagonally dominated, F (h) is
+convex in H .
+David Gu Applications of OMT
+===== page 64 =====
+Variational Proof
+Proof.
+Fourth, F is strictly convex in
+H0 ={h∈ H|
+k
+∑
+i=1
+hi = 0}
+and that
+∇ F (h) = (w1(h),w2(h),···,wk (h)).
+If F is strictly convex on an open convex set Ω in Rk, then
+∇ F : Ω→ Rk is one-one. This shows the uniqueness part of the
+Alexandrov's theorem.
+David Gu Applications of OMT
+===== page 65 =====
+Variational Proof
+Proof.
+Fifth, it can be shown that the convex function
+G(h) = ∑ Aihi- F (h)
+has a maximum point in H0. The gradient ∇ G on the boundary
+of H0 points to the interior. Therefore, the maximum point is an
+interior point, which is the solution to Alexandrov's theorem.
+This gives the existence proof.
+David Gu Applications of OMT
+===== page 66 =====
+Geometric Interpretation
+One can define a cylinder through ∂ Ω , the cylinder is truncated
+by the xy-plane and the convex polyhedron. The energy term
+∫ h ∑ wi (
+η )dη i equals to the volume of the truncated cylinder.
+David Gu Applications of OMT
+===== page 67 =====
+Computational Algorithm
+Ω
+/u1D44A /u1D456
+/u1D439 /u1D456
+/u1D70B/u1D457
+/u1D462ℎ(/u1D465)
+The concave energy is
+E (h1,h2,···,hk ) =
+k
+∑
+i=1
+Aihi-
+∫ h
+0
+k
+∑
+j=1
+wj (η )dη j ,
+Geometrically, the energy is the volume beneath the parabola.
+David Gu Applications of OMT
+===== page 68 =====
+Computational Algorithm
+Ω
+/u1D44A /u1D456
+/u1D439 /u1D456
+/u1D70B/u1D457
+/u1D462ℎ(/u1D465)
+The gradient of the energy is the areas of the cells
+∇ E (h1,h2,···,hk ) = (A1- w1,A2- w2,···,Ak- wk )
+David Gu Applications of OMT
+===== page 69 =====
+Computational Algorithm
+The Hessian of the energy is the length ratios of edge and dual
+edges,
+∂wi
+∂hj
+=|eij|
+|¯eij|
+David Gu Applications of OMT
+===== page 70 =====
+Computational Algorithm
+1 Initialize h = 0
+2 Compute the Power Voronoi diagram, and the dual Power
+Delaunay Triangulation
+3 Compute the cell areas, which gives the gradient ∇ E
+4 Compute the edge lengths and the dual edge lengths,
+which gives the Hessian matrix of E, Hess(E )
+5 Solve linear system
+∇ E = Hess(E )dh
+6 Update the height vector
+(h)← h- λ dh,
+where λ is a constant to ensure that no cell disappears
+7 Repeat step 2 through 6, until∥dh∥ < ε.
+David Gu Applications of OMT
+===== page 71 =====
+Summary
+1 Minkowski problem and the optimal mass transportation
+problem are closely related by the Monge-Ampere
+equation
+2 Discrete variational framework for sovling Monge-Ampere
+equation with explicit geometric meaning
+3 General framework for shape comparison/classification
+based on Wasserstein distance
+David Gu Applications of OMT
+===== page 72 =====
+Thanks
+Code and Data
+The code and the data sets can be downloaded from the
+following link:
+http://www3.cs.stonybrook.edu/˜ gu/software/omt/
+David Gu Applications of OMT
+===== page 73 =====
+Thanks
+For more information, please email to gu@cs.stonybrook.edu.
+Thank you!
+David Gu Applications of OMT

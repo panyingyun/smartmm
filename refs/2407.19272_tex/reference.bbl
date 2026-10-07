@@ -1,0 +1,201 @@
+\begin{thebibliography}{10}
+
+\bibitem{AbSG23}
+S.~M. Abulnaga, O.~Stein, P.~Golland, and J.~Solomon.
+\newblock Symmetric volume maps: Order-invariant volumetric mesh correspondence with free boundary.
+\newblock {ACM Trans. Graph.}, 42(3), Apr. 2023.
+
+\bibitem{ALBA85}
+M.~Al-Baali.
+\newblock Descent property and global convergence of the Fletcher--Reeves method with inexact line search.
+\newblock {IMA Journal of Numerical Analysis}, 5(1):121--124, 01 1985.
+
+\bibitem{BaGB21}
+U.~Baid, S.~Ghodasara, M.~Bilello, S.~Mohan, E.~Calabrese, E.~Colak, K.~Farahani, J.~Kalpathy-Cramer, F.~C. Kitamura, S.~Pati, L.~M. Prevedello, J.~D. Rudie, C.~Sako, R.~T. Shinohara, T.~Bergquist, R.~Chai, J.~Eddy, J.~Elliott, W.~Reade, T.~Schaffter, T.~Yu, J.~Zheng, B.~Annotators, C.~Davatzikos, J.~Mongan, C.~Hess, S.~Cha, J.~Villanueva-Meyer, J.~B. Freymann, J.~S. Kirby, B.~Wiestler, P.~Crivellaro, R.~R. Colen, A.~Kotrotsou, D.~Marcus, M.~Milchenko, A.~Nazeri, H.~Fathallah-Shaykh, R.~Wiest, A.~Jakab, M.-A. Weber, A.~Mahajan, B.~Menze, A.~E. Flanders, and S.~Bakas.
+\newblock The {RSNA-ASNR-MICCAI} {B}ra{TS} 2021 benchmark on brain tumor segmentation and radiogenomic classification, 2021.
+
+\bibitem{BaAS17}
+S.~Bakas, H.~Akbari, A.~Sotiras, M.~Bilello, M.~Rozycki, J.~S. Kirby, J.~B. Freymann, K.~Farahani, and C.~Davatzikos.
+\newblock Advancing The Cancer Genome {A}tlas glioma {MRI} collections with expert segmentation labels and radiomic features.
+\newblock {Sci. Data}, 4(170117), 2017.
+
+\bibitem{CaSZ16}
+M.~Campen, C.~T. Silva, and D.~Zorin.
+\newblock Bijective maps from simplicial foliations.
+\newblock {ACM Trans. Graph.}, 35(4), 2016.
+
+\bibitem{ChPS15}
+A.~Chern, U.~Pinkall, and P.~Schr\"{o}der.
+\newblock Close-to-conformal deformations of volumes.
+\newblock {ACM Trans. Graph.}, 34(4), July 2015.
+
+\bibitem{ChCh21}
+G.~P.~T. Choi and C.~H. Rycroft.
+\newblock Volumetric density-equalizing reference map with applications.
+\newblock {Journal of Scientific Computing}, 86(3), Feb. 2021.
+
+\bibitem{DaHL00}
+Y.~Dai, J.~Han, G.~Liu, D.~Sun, H.~Yin, and Y.-X. Yuan.
+\newblock Convergence properties of nonlinear conjugate gradient methods.
+\newblock {SIAM J. Optim.}, 10(2):345--358, 2000.
+
+\bibitem{DaYu96}
+Y.~H. Dai and Y.~Yuan.
+\newblock Convergence properties of the Fletcher-Reeves method.
+\newblock {IMA J. Numer. Anal.}, 16(2):155--164, 04 1996.
+
+\bibitem{DaYu99}
+Y.~H. Dai and Y.~Yuan.
+\newblock A nonlinear conjugate gradient method with a strong global convergence property.
+\newblock {SIAM J. on Optim.}, 10(1):177--182, 1999.
+
+\bibitem{DuAZ20}
+X.~Du, N.~Aigerman, Q.~Zhou, S.~Z. Kovalsky, Y.~Yan, D.~M. Kaufman, and T.~Ju.
+\newblock Lifting simplices to find injectivity.
+\newblock {ACM Trans. Graph.}, 39(4), 2020.
+
+\bibitem{Engw14}
+D.~Engwirda.
+\newblock Locally optimal delaunay-refinement and optimisation-based mesh generation.
+\newblock PhD Thesis, 2014.
+
+\bibitem{Engw15}
+D.~Engwirda.
+\newblock Voronoi-based point-placement for three-dimensional delaunay-refinement.
+\newblock {Procedia Eng.}, 124:330--342, 2015.
+
+\bibitem{Engw16}
+D.~Engwirda.
+\newblock Conforming restricted delaunay mesh generation for piecewise smooth complexes.
+\newblock {Procedia Eng.}, 163:84--96, 2016.
+
+\bibitem{EnIv14}
+D.~Engwirda and D.~Ivers.
+\newblock Face-centred voronoi refinement for surface mesh generation.
+\newblock {Procedia Eng.}, 82:8--20, 2014.
+
+\bibitem{EnIv16}
+D.~Engwirda and D.~Ivers.
+\newblock Off-centre steiner points for delaunay-refinement on curved surfaces.
+\newblock {Comput.-Aided Des.}, 72:157--171, 2016.
+
+\bibitem{FaBo09}
+Q.~Fang and D.~A. Boas.
+\newblock Tetrahedral mesh generation from volumetric binary and grayscale images.
+\newblock In {2009 IEEE International Symposium on Biomedical Imaging: From Nano to Macro}, pages 1142--1145, 2009.
+
+\bibitem{Flet00}
+R.~Fletcher.
+\newblock {Conjugate Direction Methods}, chapter~4, pages 80--94.
+\newblock John Wiley $\&$ Sons, Ltd, 2000.
+
+\bibitem{FlRe64}
+R.~Fletcher and C.~M. Reeves.
+\newblock Function minimization by conjugate gradients.
+\newblock {Comput. J.}, 7(2):149--154, 1964.
+
+\bibitem{GaKK21}
+V.~Garanzha, I.~Kaporin, L.~Kudryavtseva, F.~Protais, N.~Ray, and D.~Sokolov.
+\newblock Foldover-free maps in 50 lines of code.
+\newblock {ACM Trans. Graph.}, 40(4), 2021.
+
+\bibitem{GuOMT}
+X.~Gu.
+\newblock {Optimal Mass Transportation Map}.
+\newblock \url{https://www3.cs.stonybrook.edu/~gu/software/omt/index.html}, 2022.
+
+\bibitem{GuLS16}
+X.~Gu, F.~Luo, J.~Sun, and S.-T. Yau.
+\newblock Variational principles for {M}inkowski type problems, discrete optimal transport, and discrete {M}onge-{A}mp\`ere equations.
+\newblock {Asian J. Math.}, 20(2):383--398, 2016.
+
+\bibitem{LiHY95}
+L.~Guanghui, H.~Jiye, and Y.~Hongxia.
+\newblock Global convergence of the Fletcher--Reeves algorithm with inexact linesearch.
+\newblock {Appl. Math. J. Chinese Univ.}, 10(1):75--82, Mar. 1995.
+
+\bibitem{Hage06}
+W.~Hager.
+\newblock A survey of nonlinear conjugate gradient method.
+\newblock {Pacific Journal of Optimization}, 2, 01 2006.
+
+\bibitem{HaZh05}
+W.~W. Hager and H.~Zhang.
+\newblock A new conjugate gradient method with guaranteed descent and an efficient line search.
+\newblock {SIAM J. Optim.}, 16(1):170--192, 2005.
+
+\bibitem{HeSt52}
+M.~R. Hestenes, E.~Stiefel, et~al.
+\newblock {Methods of conjugate gradients for solving linear systems}, volume~49.
+\newblock NBS Washington, DC, 1952.
+
+\bibitem{HuLL23}
+T.-H. Huang, W.-H. Liao, W.-W. Lin, M.-H. Yueh, and S.-T. Yau.
+\newblock Convergence analysis of volumetric stretch energy minimization and its associated optimal mass transport.
+\newblock {SIAM J. Imaging Sci.}, 16(3):1825--1855, 2023.
+
+\bibitem{Jacobson}
+A.~Jacobson.
+\newblock {GitHub Repository for Common 3D Test Models}.
+\newblock \url{https://github.com/alecjacobson/common-3d-test-models}, 2021.
+
+\bibitem{LiJY21}
+W.-W. Lin, C.~Juang, M.-H. Yueh, T.-M. Huang, T.~Li, S.~Wang, and S.-T. Yau.
+\newblock {3D} brain tumor segmentation using a two-stage optimal mass transport algorithm.
+\newblock {Sci. Rep.}, 11:14686, 2021.
+
+\bibitem{LiLH22}
+W.-W. Lin, J.-W. Lin, T.-M. Huang, T.~Li, M.-H. Yueh, and S.-T. Yau.
+\newblock A novel 2-phase residual {U-net} algorithm combined with optimal mass transportation for {3D} brain tumor detection and segmentation.
+\newblock {Sci. Rep.}, 12:6452, 2022.
+
+\bibitem{LiYu24}
+S.-Y. Liu and M.-H. Yueh.
+\newblock Convergent authalic energy minimization for disk area-preserving parameterizations.
+\newblock {J. Sci. Comput.}, 100(2):43, 2024.
+
+\bibitem{LyCC25}
+Z.~Lyu, Q.~Chen, G.~P.~T. Choi, and L.~M. Lui.
+\newblock Volumetric parameterization for 3-dimensional simply-connected manifolds, arXiv:2506.17025, 2025.
+
+\bibitem{NoWr06}
+J.~Nocedal and S.~J. Wright.
+\newblock {Numerical Optimization}.
+\newblock Springer, New York, NY, USA, 2nd edition, 2006.
+
+\bibitem{PoRi69}
+E.~Polak and G.~Ribiere.
+\newblock Note sur la convergence de methodes de directions conjuguees.
+\newblock {Revue francaise d'informatique et de recherche operationnelle. Serie rouge}, 3(R1):35--43, 1969.
+
+\bibitem{RaPP17}
+M.~Rabinovich, R.~Poranne, D.~Panozzo, and O.~Sorkine-Hornung.
+\newblock Scalable locally injective mappings.
+\newblock {ACM Trans. Graph.}, 36(2), 2017.
+
+\bibitem{SuCL17}
+K.~Su, W.~Chen, N.~Lei, J.~Zhang, K.~Qian, and X.~Gu.
+\newblock Volume preserving mesh parameterization based on optimal mass transportation.
+\newblock {Comput. Aided Design}, 82:42--56, 2017.
+
+\bibitem{TaLL25}
+Z.-H. Tan, T.~Li, W.-W. Lin, and S.-T. Yau.
+\newblock \(\boldsymbol {n}\)-dimensional volumetric stretch energy minimization for volume-/mass-preserving parameterizations with applications.
+\newblock {SIAM J. Imaging Sci.}, 18(2):1141--1175, 2025.
+
+\bibitem{TrYF20}
+A.~P. Tran, S.~Yan, and Q.~Fang.
+\newblock {Improving model-based functional near-infrared spectroscopy analysis using mesh-based anatomical and light-transport models}.
+\newblock {Neurophotonics}, 7(1):015008, 2020.
+
+\bibitem{YuLL19}
+M.-H. Yueh, T.~Li, W.-W. Lin, and S.-T. Yau.
+\newblock A novel algorithm for volume-preserving parameterizations of 3-manifolds.
+\newblock {SIAM J. Imaging Sci.}, 12(2):1071--1098, 2019.
+
+\bibitem{YuLL20}
+M.-H. Yueh, T.~Li, W.-W. Lin, and S.-T. Yau.
+\newblock A new efficient algorithm for volume-preserving parameterizations of genus-one 3-manifolds.
+\newblock {SIAM J. Imaging Sci.}, 13(3):1536--1564, 2020.
+
+\end{thebibliography}

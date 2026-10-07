@@ -1,0 +1,517 @@
+  
+===== page 1 =====  
+Geometric Algorithm for Optimal Transportation Map  
+David Gu  
+Yau Mathematics Science Center  
+Tsinghua University  
+Computer Science Department  
+Stony Brook University  
+gu@cs.stonybrook.edu  
+November 5, 2020  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 1 / 48  
+===== page 2 =====  
+Convex Geometric View  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 2 / 48  
+===== page 3 =====  
+Monge Problem  
+Monge Problem  
+Given planar domains with probability measures (Ω ,µ ) and (Ω∗,ν ), Ω is  
+convex, total measures are equal µ(Ω) =ν(Ω∗), the density functions are  
+bounded dµ = f (x)dx and dν = g(y)dy, the transportation cost function  
+is c(x, y) = 1  
+2|x- y|, the Monge problem aims at finding the optimal  
+transportation map,  
+min  
+T#µ=ν  
+∫  
+Ω  
+c(x, y)dµ(x).  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 3 / 48  
+===== page 4 =====  
+Brenier Theorem  
+Theorem (Brenier)  
+Given the above conditions, assume the density functions satisfy  
+appropriate regularity conditions, f, g∈ L1(Rd, Ω, Ω∗ are compact, then  
+the optimal transportation map exists and is unique, it is the gradient of a  
+convex function u : Ω→ R, T =∇u, where u is the Brenier potential  
+function.  
+The Brenier potential satisfies the Monge-Ampere equation,  
+det(D2u) = f (x)  
+g◦∇ u(x)  
+with boundary condition ∇u(Ω) = Ω∗.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 4 / 48  
+===== page 5 =====  
+Semi-Discrete Optimal Transportation Problem  
+Wi  
+Ω  
+T  
+(pi, Ai)  
+Problem (Semi-discrete OT)  
+Given a compact convex domain Ω in Rd, and y1, y2,··· , yk and weights  
+ν1,ν 2,··· ,ν k > 0, find a transport map T : Ω→{ y1,..., yk}, such that  
+vol(T-1(pi)) =νi, so that T minimizes the transportation cost:  
+C(T ) := 1  
+2  
+∫  
+Ω  
+|x- T (x)|2dx  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 5 / 48  
+===== page 6 =====  
+Semi-Discrete Optimal Transportation Map  
+uh u∗h  
+∇uh  
+Wi(h) yi  
+πi(h)  
+π∗  
+i  
+Ω,V Ω,T  
+proj proj ∗  
+(Ω∗,ν ) is discretized as {(yi,ν i)}k  
+i=1. Each sample yi corresponds to a  
+plane πi(x) =⟨x, yi⟩- hi, the Brenier potential is  
+uh(x) :=  
+k  
+max  
+i=1  
+{⟨x, yi⟩- hi},  
+where the height vector h = (h1, h2,··· , hk). u∗  
+h is the Legendre dual of  
+uh.David Gu (Stony Brook University) Optimal Transportation November 5, 2020 6 / 48  
+===== page 7 =====  
+Semi-Discrete Optimal Transportation Map  
+uh u∗h  
+∇uh  
+Wi(h) yi  
+πi(h)  
+π∗  
+i  
+Ω,V Ω,T  
+proj proj ∗  
+uh is the upper envelope of plane πi's; u∗  
+h is the convex hull of points  
+{(yi, hi)}k  
+i=1; the projection of u∗  
+h is a power Delaunay triangulation of  
+{yi}k  
+i=1; the projection of uh is the dual power diagram of Ω.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 7 / 48  
+===== page 8 =====  
+Variational Proof  
+Theorem (Gu-Luo-Sun-Yau 2013)  
+Ω is a compact convex domain in Rn, y1,··· , yk distinct in Rn, µ a  
+positive continuous measure on Ω. For any ν1,··· ,ν k > 0 with∑νi =µ(Ω), there exists a vector (h1,··· , hk) so that  
+u(x) = max{⟨x, pi⟩ + hi}  
+satisfies µ(Wi∩ Ω) =νi, where Wi ={x|∇f (x) = pi}. Furthermore, h is  
+the maximum point of the concave function  
+E (h) =  
+k∑  
+i=1  
+νi hi-  
+∫ h  
+0  
+k∑  
+i=1  
+wi(η)dηi,  
+where wi(η) =µ(Wi(η)∩ Ω) is the µ-volume of the cell.  
+The energy E (h) is called the Alexandrov's energy.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 8 / 48  
+===== page 9 =====  
+Admissible Height Space  
+Definition (Admissible Height Space)  
+The admissible height space is defined as  
+H(Y ) :=  
+{  
+h∈ Rk : wi(h)> 0, i = 1, 2,..., k  
+} ⋂ { k∑  
+i=1  
+hi = 1  
+}  
+.  
+The admissible height space is a non-empty convex space. The  
+optimization is to maximize the energy E (h) in the admissible height space  
+H, using Newton's method.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 9 / 48  
+===== page 10 =====  
+Geometric Interpretation  
+One can define a cylinder through ∂Ω, the cylinder is truncated by the  
+xy-plane and the convex polyhedron. The energy term  
+∫ h ∑ wi(η)dηi  
+equals to the volume of the truncated cylinder.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 10 / 48  
+===== page 11 =====  
+Computational Algorithm  
+Ω  
+Wi  
+Fi  
+πj  
+uh(x)  
+Definition (Alexandrov Potential)  
+The concave energy is  
+E (h1, h2,··· , hk) =  
+k∑  
+i=1  
+νi hi-  
+∫ h  
+0  
+k∑  
+j=1  
+wj(η)dηj,  
+Geometrically, the energy is the volume beneath the parabola.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 11 / 48  
+===== page 12 =====  
+Semi-Discrete Optimal Transportation Map  
+The gradient is ∇uh = (νi- wi(h)); the element of the Hessian matrix is  
+the ratio between the power voronoi edge length and the power Delaunay  
+edge length,  
+aij =- 1  
+|yi- yj|  
+∫  
+Wi∩Wj  
+f (x)dx  
+and the diagonal element equals aii =- ∑  
+j̸=i aij.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 12 / 48  
+===== page 13 =====  
+Computational Algorithm  
+The Hessian of the energy is the length ratios of edge and dual edges,  
+∂wi  
+∂hj  
+=-|eij|  
+|¯eij|  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 13 / 48  
+===== page 14 =====  
+Optimal Transport Map  
+Input: A set of distinct points Y ={y1, y2,··· , yk}, and the weights  
+{ν1,ν 2,··· ,ν k};A convex domain Ω, ∑νj = Vol(Ω);  
+Output: The optimal transport map T : Ω→ Y  
+1 Scale and translate Y , such that Y⊂ Ω;  
+2 Initialize h0← 1  
+2(|y1|2,|y2|2,··· ,|yk|2)T ;  
+3 Compute the Brenier potential u(hk) (envelope of πi's ) and its  
+Legendre dual u∗(hk) (convex hull of π∗  
+i 's);  
+4 Project the Brenier potential and Legendre dual to obtain weighted  
+Delaunay triangulationT (hk) and power diagram D(hk);  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 14 / 48  
+===== page 15 =====  
+Optimal Transport Map  
+5 Compute the gradient of the energy  
+∇E (h) = (ν1- w1(h),ν 2- w2(h),··· ,ν k- wk(h))T.  
+6 If∥∇E (hk)∥ is less than ε, then return T =∇u(hk);  
+7 Compute the Hessian matrix of the energy  
+∂wi(h)  
+∂hj  
+=-|eij|  
+|¯eij|, ∂wi  
+∂hi  
+=-  
+∑  
+j  
+∂wi(h)  
+∂hj  
+.  
+8 Solve linear system  
+∇E (h) = Hess(hk)d;  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 15 / 48  
+===== page 16 =====  
+Optimal Transport Map  
+Damping Algorithm  
+9 Set the step length λ← 1;  
+10 Construct the convex hull Conv( hk +λd);  
+11 if there is any empty power cell, λ← 1  
+2λ, repeat step 3 and 4, until  
+all power cells are non-empty;  
+12 set hk+1← hk +λd;  
+13 Repeat step 9 through 12.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 16 / 48  
+===== page 17 =====  
+Optimal Transportation Map  
+Figure: Optimal transportation map.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 17 / 48  
+===== page 18 =====  
+Optimal Transportation Map  
+Figure: Optimal transportation map.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 18 / 48  
+===== page 19 =====  
+Computational Geometric Algorithms  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 19 / 48  
+===== page 20 =====  
+File Format  
+(Ω∗,ν ) is represented as a triangle mesh (obj format), each vertex has  
+both ( x, y, z) coordinates and ( u, v) parameters. Each vertex vi  
+represents a sample yi = (ui, vi), (ui, vi) specify the planar position in  
+Ω∗. The summation of the areas of all triangular faces adjacent to vi  
+is treated as νi, (after normalization).  
+(Ω,µ ) is represented as another triangle mesh (obj format), its  
+boundary gives the boundary of Ω. For current version, µ is the  
+uniform distribution.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 20 / 48  
+===== page 21 =====  
+File IO  
+(a) Y and ν (b) planar positions {yi} (c) convex Ω  
+Figure: Input files.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 21 / 48  
+===== page 22 =====  
+Data Structure & Algorithms  
+1 The combinatorial data structure to represent the Delaunay  
+triangulation and the dual voronoi diagram is either half-edge or Dart  
+data structure;  
+2 The linear numerical solver is Eigen library;  
+3 The geometric computation is based on adaptive arithmetic method.  
+4 The power Delaunay is based on Lawson's edge flip algorithm.  
+5 The polygon clipping is based on Sutherland-Hodgman algorithm.  
+6 The optimization of Alexandrov energy is based on damping  
+algorithm.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 22 / 48  
+===== page 23 =====  
+Edge Local Power Delaunay  
+Given an edge e in a planar triangulation T , find the two neighboring  
+faces, lift the four vertices to the convex hull ϕ, suppose vertex vi is  
+represented as pi(ui, vi,ϕ (ui, vi)), compute the volume of the tetrahedron  
+[p0, p1, p2, p3]. If the volume is positive, then e is locally powerd Delaunay,  
+if the volume is negative, then e is non-locally-power-Delaunay.  
+v0 v1  
+v2  
+v3  
+p0  
+p1p2  
+p3  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 23 / 48  
+===== page 24 =====  
+Edge Flippable  
+Given an edge e = [v0, v1] in a planar triangulation T , if [ v0, v3, v2] or  
+[v1, v2, v3] is clockwise, then the edge is not flippable.  
+v0 v1  
+v2  
+v3  
+v0 v1  
+v2  
+v3  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 24 / 48  
+===== page 25 =====  
+Lawson Edge Flip Algorithm  
+Input is a set of points S on the plane with the powers, the output is the  
+power Delaunay triangulation.  
+1 Construct an arbitrary triangulation of the point set S;  
+2 Push all non-locally intrior edges of T on stack and mark them;  
+3 While the stack is non-empty do  
+1 e← pop();  
+2 unmark e;  
+3 if e is locally power Delaunay then continue;  
+4 if e can't be flipped then continue;  
+5 flip edge e;  
+6 push other four edges of the two triangles adjacent to e into the stack  
+if unmarked;  
+4 If there is an edge e, which is not local power Delaunay, then there is  
+some point pi that is not on the convex hull of all pk's.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 25 / 48  
+===== page 26 =====  
+Lawson Edge Flip for Convex Hull  
+Figure: Construct convex hull of the graph of ϕ, using Lawson Edge Flip  
+algorithm.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 26 / 48  
+===== page 27 =====  
+Legendre Dual  
+Given a convex hull, which is the graph of a convex function ϕ, we  
+compute its Legendre dual ϕ∗. Each point pi = (ai, bi, ci) on the convex  
+hull represents a plane πi,  
+π(x, y) = ai x + bi y- ci.  
+Each face [ pi, pj, pk] is dual to a point ( x, y, z) satisfying the linear  
+equation group,  
+  
+  
+ci  
+cj  
+ck  
+  
+ =  
+  
+  
+ai bi -1  
+aj bj -1  
+ak bk -1  
+  
+  
+  
+  
+x  
+y  
+z  
+  
+  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 27 / 48  
+===== page 28 =====  
+Upper Envelope-Brenier Potential  
+Given the convex hull {p1, p2,··· , pk}, where pi(ui, vi,ϕ (ui, vi)), add one  
+more point as infinity point (0 , 0,-h), h is big enough to be above all  
+other points. Each face fα is dual to a point f∗  
+α ; each vertex vi is dual to a  
+supporting plane v∗  
+i .  
+Figure: Legendre dual of the convex hull is the upper envelope.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 28 / 48  
+===== page 29 =====  
+Sutherland-Hodgman algorithm  
+Given a subject polygon S and a convex clipping polygon C , we use C to  
+clip S. Each time, we use one edge e of C to cut off a corner of S.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 29 / 48  
+===== page 30 =====  
+Sutherland-Hodgman algorithm  
+foreach Edge clipEdge in clipPolygon do  
+List inputList← outputList;  
+outputList.clear();  
+foreach Edge [pk-1, pk] in inputList do  
+Point q← ComputeIntersection(pk-1, pk, clipEdge);  
+if pk inside clipEdge then  
+if pk-1 not inside clipEdge then  
+outputList.add(q);  
+end  
+outputList.add(pk);  
+end  
+else if pk-1 inside clipEdge then  
+outputList.add(q)  
+end  
+end  
+endDavid Gu (Stony Brook University) Optimal Transportation November 5, 2020 30 / 48  
+===== page 31 =====  
+Upper Envelope - Brenier Potential  
+Figure: Brenier potential obtained by clipping the Legendre dual.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 31 / 48  
+===== page 32 =====  
+Cell Clipping  
+Figure: Boundary cell clipping.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 32 / 48  
+===== page 33 =====  
+Power Diagram Algorithm  
+1 Compute the convex hull using Lawson edge flipping, add the infinity  
+vertex (0, 0,-h); project the convex hull to power Delaunay  
+triangulationT ;  
+2 Compute the upper envelope using Legendre dualalgorithm and the,  
+project to the power diagram D ;  
+3 Clip the power cells using Sutherland-Hodgman algorithm;  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 33 / 48  
+===== page 34 =====  
+Damping Algorithm  
+1 Initialize the step length λ;  
+2 ϕ←ϕ +λd;  
+3 Compute the convex hull using Lawson edge flipping, add the infinity  
+vertex (0, 0,-h); project the convex hull to power Delaunay  
+triangulationT ;  
+4 If the convex hull misses any vertex, then λ← 1  
+2λ, repeat step 2 and  
+step 3;  
+5 Compute the upper envelope using Legendre dual algorithm, project  
+to the power diagram D ;  
+6 Clip the power cells using Sutherland-Hodgman algorithm;  
+7 If any power cell is empty, then λ← 1  
+2λ, repeat step 5 and step 6;  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 34 / 48  
+===== page 35 =====  
+Newton's Method  
+1 Initialize φ as φ(u, v) = 1  
+2(u2 + v 2);  
+2 Call the power diagram algorithm;  
+3 Compute the gradient ∇E , the target area minus the current power  
+cell area;  
+4 Compute the Hessian matrix H, using the power diagram edge length;  
+5 Compute the update direction Hd =∇E ;  
+6 Call the damping algorithm, set φ←φ +λd, such that φ is  
+admissible;  
+7 Repeat step 2 through step 6, until the gradient is close to 0.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 35 / 48  
+===== page 36 =====  
+Transportation Map  
+Figure: Transportation map.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 36 / 48  
+===== page 37 =====  
+Optimal Transportation Map  
+Figure: Optimal transportation map.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 37 / 48  
+===== page 38 =====  
+Optimal Transportation Map  
+Figure: Optimal transportation map.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 38 / 48  
+===== page 39 =====  
+Optimal Transportation Map  
+Figure: Optimal transportation map.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 39 / 48  
+===== page 40 =====  
+Optimal Transportation Map  
+Figure: Optimal transportation map.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 40 / 48  
+===== page 41 =====  
+Instruction  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 41 / 48  
+===== page 42 =====  
+Dependencies  
+1 'DartLib' or 'MeshLib', a general purpose mesh library based on Dart  
+data structure.  
+2 'Eigen', numerical solver.  
+3 'freeglut', a free-software/open-source alternative to the OpenGL  
+Utility Toolkit (GLUT) library.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 42 / 48  
+===== page 43 =====  
+Commands and Hot keys  
+Command: -target target mesh -source source mesh  
+'!': Newton's method  
+'m': Compute the mass center of power cells  
+'W': output the Legendre dual mesh and the optimal transportation  
+map mesh  
+'L': Edit the lighting  
+'d': Show convex hull or upper envelope; power Delaunay or diagram  
+'g': Show 3D view or 2D view  
+'e': Show edges  
+'c': Show cell centers  
+'o': Take a snapshot  
+'?': Help information  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 43 / 48  
+===== page 44 =====  
+PowerDynamicMesh class  
+Compute the Power Delaunay and Power Diagram.  
+1 CPDMesh :: Lawson edge swap Lawson edge swap algorithm to  
+compute convex hull u∗  
+h, Power Delaunay triangulation;  
+2 CPDMesh :: Legendre transform Legendre dual transformation  
+compute upper envelope uh, Power voronoi diagram;  
+3 CPDMesh :: power cell clip Clip power cells, based on  
+Sutherland-Hodgman algorithm;  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 44 / 48  
+===== page 45 =====  
+COMTDynamicMesh class  
+Compute the Optimal Mass Transportation Map.  
+1 COMTMesh :: update direction compute the update direction, based  
+on Newton's method;  
+2 COMTMesh :: calculate gradient calculate the gradient of the  
+Alexandrov energy;  
+3 COMTMesh :: calculate hessian calculate the Hessian matrix of the  
+Alexandrov energy;  
+4 COMTMesh :: edge weight calculate the edge weight  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 45 / 48  
+===== page 46 =====  
+Directory Structure  
+3rdparty/DartLib or 3rdparty/MeshLib, header files for mesh;  
+MeshLib/algorithms/OMT, the header files for Power Diagram Mesh  
+and Optimal Mass Transportation Map Mesh;  
+OT/src, the source files for optimal transportation map;  
+CMakeLists.txt, CMake configuration file;  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 46 / 48  
+===== page 47 =====  
+Configuration  
+Before you start, read README.md carefully, then go three the following  
+procedures, step by step.  
+1 Install [CMake](https://cmake.org/download/).  
+2 Download the source code of the C++ framework.  
+3 Configure and generate the project for Visual Studio.  
+4 Open the .sln using Visual Studio, and complie the solution.  
+5 Finish your code in your IDE.  
+6 Run the executable program.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 47 / 48  
+===== page 48 =====  
+Configure and generate the project  
+1 open a command window  
+2 cd ot-homework3 skeleton  
+3 mkdir build  
+4 cd build  
+5 cmake ..  
+6 open OTHomework.sln inside the build directory.  
+David Gu (Stony Brook University) Optimal Transportation November 5, 2020 48 / 48

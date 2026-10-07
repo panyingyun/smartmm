@@ -1,0 +1,1325 @@
+  
+===== page 1 =====  
+HIGHER-DIMENSIONAL POWER DIAGRAMS FOR  
+SEMI-DISCRETE OPTIMAL TRANSPORT  
+Philip Claude Caplan  
+Middlebury College Department of Computer Science, Middlebury, VT, U.S.A.,  
+pcaplan@middlebury .edu  
+ABSTRACT  
+E cient algorithms for solving optimal transport problems are important for measuring and optimizing distances  
+between functions. In the L2 semi-discrete context, this problem consists of finding a map from a continuous density  
+function to a discrete set of points so as to minimize the transport cost, using the squared Euclidean distance as the  
+cost function. This has important applications in image stippling, clustering, resource allocation and in generating  
+blue noise point distributions for rendering. Recent algorithms have been developed for solving the semi-discrete  
+problem in 2 d and 3 d, however, algorithms in higher dimensions have yet to be demonstrated, which rely on the  
+e cient calculation of the power diagram (Laguerre diagram) in higher dimensions. Here, we introduce an algorithm  
+for computing power diagrams, which extends to any topological dimension. We first evaluate the performance  
+of the algorithm in 2 d   6d. We then restrict our attention to four-dimensional settings, demonstrating that our  
+power diagrams can be used to solve optimal quantization and semi-discrete optimal transport problems, whereby a  
+prescribed mass of each power cell is achieved by computing an optimized power diagram.  
+Keywords: V oronoi diagram, power diagram, Laguerre diagram, semi-discrete optimal transport, high  
+dimensions, quantization.  
+1. INTRODUCTION  
+The problem of transporting mass from one location  
+to another so as to minimize total cost was studied  
+by Gaspard Monge in 1781 [1]. More generally, this  
+problem consists of finding a map between two mea-  
+sures, and can be applied to problems in image pro-  
+cessing [2, 3, 4, 5, 6, 7], machine learning [8] geomet-  
+ric processing [9], rendering [10, 11], resource alloca-  
+tion [12] and particle-based simulations [13, 14]. This  
+problem also appears in the solution to partial di↵er-  
+ential equations, specifically when the two measures  
+are continuous - see for example, the seminal work of  
+Benamou and Brenier [15].  
+Another (possibly more important) application is Vil-  
+lani's example of transporting bread from bakeries to  
+caf´ es [16]. There are a discrete number of bakeries,  
+each with a specific baking capacity, and there are a  
+discrete number of caf´ es - see Fig. 1. One may wish to  
+distribute bread from bakeries to caf´ es so as to mini-  
+mize the transport cost (Fig. 1a). This is a fully dis-  
+crete optimal transport problem, since both the input  
+and output measures are discrete. This type of prob-  
+lem is important in shape- and image-matching prob-  
+lems, supply chain management and clustering [17].  
+The revived interest in solving these types of optimal  
+transport problems is due to the introduction of e -  
+cient algorithms that enable the computation of an op-  
+timal transport map for large data sets. These meth-  
+ods are mostly based on the idea of entropic regu-  
+larization, a relaxation of the dual Kantorovich prob-  
+lem [18]. A noteworthy algorithm for solving this dis-  
+crete problem is known as the Sinkhorn-Knopp algo-  
+rithm [19].  
+If, instead, we can construct a model for a continu-  
+ous population density across the city, we may wish to  
+partition the city so as to equidistribute the bread de-  
+44  
+===== page 2 =====  
+(a) Discrete optimal transport problem. Some caf´ es may  
+be a in a busy part of town and require a lot of bread  
+to be delivered.  
+(b) Semi-discrete optimal transport problem. The city  
+is divided such that each caf´ e serves an equal population  
+(integral of the population density over region).  
+Figure 1 : Motivation for studying optimal transport: (a) transporting bread from bakeries to caf´ es and (b) assigning  
+ap o p u l a t i o n( w i t ha na s s u m e dc o n t i n u o u sd e n s i t ym o d e l )t oc a f ´ e sb a s e do nd i s t a n c e .  
+mand using the distance from the population to each  
+caf´ e (Fig. 1b). This would be a semi-discrete optimal  
+transport problem. If the cost function is the squared  
+Euclidean distance, then we have an L2 semi-discrete  
+optimal transport problem. The optimal transport  
+problem then consists of finding this partition such  
+that every caf´ e has the same bread demand.  
+The solution to the latter problem can be obtained  
+with a power diagram (or Laguerre diagram). The  
+power diagram is a generalization of the Voronoi dia-  
+gram in which sites are equipped with weights that  
+control the power distance from a point to a par-  
+ticular site. The weights on these Voronoi sites can  
+be tuned such that each region (a power cell) has  
+an equal mass under the input density measure. In  
+1987, Aurenhammer observed that a power diagram  
+can be computed via the restriction of a Voronoi di-  
+agram in a higher dimensional space [20, 21]. That  
+is, the power diagram is the intersection of a higher-  
+dimensional Voronoi diagram with our domain (in the  
+bakery example, the city) embedded to a higher di-  
+mensional space. This concept of embedding has also  
+been studied to achieve anisotropic Voronoi diagrams  
+and meshes [22, 23, 24, 25, 26, 27]. In particular, L´ evy  
+and Bonneel introduced the security radius theorem  
+which enabled the fast computation of the restricted  
+Voronoi diagram [23]. In 2015, this technique was  
+used for semi-discrete optimal transport in three di-  
+mensions, and has since been used in fluid simulations  
+[13, 14] and astrophysics applications [28]. Power di-  
+agrams have also proven useful for computer graph-  
+ics applications such as image stippling [2, 3, 4, 5], in  
+which a blue noise sampling distribution is desirable  
+to reduce aliasing e↵ects that are produced by a regu-  
+lar sampling distribution, but produces better results  
+than a white noise distribution. Optimal transport has  
+also recently been used to obtain blue noise sampling  
+distributions for rendering applications [10, 11].  
+Software implementations for computing power dia-  
+grams are available in geogram [29], Voro++ [30] and  
+CGAL [31, 32] in two and three dimensions. These im-  
+plementations often rely on clipping Voronoi polygons  
+or polyhedra using algorithms such as Sutherland-  
+Hodgman re-entrant clipping [33], which are di cult  
+to extend to a higher-dimensional setting. A demon-  
+stration of the power diagram calculation in four or  
+higher dimensions has yet to be demonstrated. We  
+make use of a simple result from polytope theory to  
+convert between a facet-based and vertex-based rep-  
+resentation of the power cells [34, 35]. It is well  
+known that the number of vertices in a power cell  
+grows exponentially with dimension, but the compu-  
+tation of the power diagram for semi-discrete optimal  
+transport is nonetheless useful for higher-dimensional  
+applications, particularly spatio-temporal simulations  
+of partial di↵erential equations, which would require  
+four-dimensional power diagrams. Furthermore, L´ evy  
+and Bonneel's security radius theorem enables an ef-  
+ficient, emabarassingly parallel computation of the  
+power cells, which makes the computation tractable  
+in four dimensions.  
+The goal of this paper is to develop the theory and de-  
+scribe an algorithm for computing higher-dimensional  
+power diagrams for semi-discrete optimal transport.  
+To our knowledge, this is the first demonstration of an  
+45  
+===== page 3 =====  
+algorithm for higher-dimensional power diagrams (in  
+terms of topological dimension) in the literature. We  
+begin by reviewing the necessary background on semi-  
+discrete optimal transport and power diagrams (Sec-  
+tion 2) and then present our algorithm for computing  
+power diagrams in a dimension-independent manner  
+(Section 3). We evaluate the performance of the al-  
+gorithm in 2 d   6d (Section 4) and then apply the  
+algorithm to quantization and L2 semi-discrete opti-  
+mal transport in four dimensions (Section 5), success-  
+fully demonstrating how a uniform target mass can be  
+achieved under a prescribed density function.  
+2. BACKGROUND  
+Let us briefly review the optimal transport problem.  
+For a more complete review, we encourage the in-  
+terested reader to see the works of L´ evy, [13, 36],  
+Peyr´ e [8], Santambrogio [37] and Villani [16, 38]. The  
+optimal transport problem consists of finding a map  
+that transports a probability measure µ supported  
+on a d-dimensional domain X⇢ Rd onto another  
+probability measure ⌫ supported on another domain  
+Y⇢ Rd. The Monge formulation seeks the transport  
+map T : X! Y from the following minimization state-  
+ment:  
+T = arg min  
+T  
+Z  
+X  
+c(x, T (x)) dµ(x),  
+subject to :  
+8B ⇢Y ,µ (T  1(B)) = ⌫(B),  
+(1)  
+where c(· , · ): X⇥ Y! R is the cost of transporting  
+mass from X to Y. The constraint on T is a statement  
+about conservation of mass for any Borel set B ⇢Y .  
+Kantorovich introduced a relaxation of the original  
+Monge problem of Eq. 1, in which the transport map is  
+replaced by a transport plan [39], thereby reformulat-  
+ing Monge's problem as a linear programming problem  
+with convex constraints.  
+2.1 Semi-discrete optimal transport  
+In the semi-discrete setting, the source µ is a contin-  
+uous measure, and the target measure ⌫ is discrete,  
+i.e. it is a sum of N Dirac masses: ⌫ = PN  
+i=1 ⌫i yi .  
+These Dirac masses are each located at a site yi 2 Y  
+where Y 2 Rd⇥N can be interpreted as a matrix in  
+which each column contains the coordinates of a site  
+yi.T h e p o w e r c e l lPi(Y, w) for the Dirac mass at yi  
+is defined as  
+Pi(Y, w)= {x 2X |8 j, c(x, yi)   wi  c(x, yj )   wj } .  
+(2)  
+The Power Diagram (or Laguerre Diagram) is then  
+the union of all power cells, which is a partition of X .  
+We now restrict our attention to the case in which the  
+transport cost is the squared Euclidean distance, so  
+c(x, yi)= ||x   yi||2. The dual Kantorovich formula-  
+tion can be stated as a maximization of the following  
+energy functional:  
+E(Y, w)=  
+NX  
+i=1  
+Z  
+Pi (Y,w)  
+⇢(x)(||x   yi||2   wi)d x +  
+NX  
+i=1  
+⌫iwi.  
+(3)  
+where we have replaced the mass d µ(x)= ⇢(x)dx in  
+terms of the prescribed density ⇢(x).  
+2.2 Optimizing the transport map  
+In this paper, we will consider two settings: (1) we  
+want to optimize the sites Y to minimize E and (2)  
+we want to optimize the weights w so as to maximize  
+E. The former problem is known as quantization;a  
+notable algorithm is Lloyd relaxation [40, 41] in which  
+sites are iteratively moved to the centroids of their  
+associated cells. That is, at each iteration of Lloyd  
+relaxation, each site yi is updated to it's centroid ci:  
+ci =  
+R  
+Vi (Y)  
+⇢(x)x dx  
+R  
+Vi (Y)  
+⇢(x)d x . (4)  
+Note that we have replaced Pi(Y, w)= Vi(Y)=  
+Pi(Y, 0) - i.e. we recover the Voronoi diagram when  
+the weights are all zero. Lloyd relaxation is slow to  
+converge, thus a gradient-based method is often em-  
+ployed, which requires the gradient of E with respect  
+to the sites yi:  
+dE  
+dyi  
+=2 mi(yi   ci), (5)  
+where mi is the mass of the cell (the denomina-  
+tor in Eq. 4). Some Newton-based methods have  
+been proposed, which requires the computation of  
+the Hessian d 2E/dyidyj [13]. For simplicity, we use  
+a quasi-Newton approach, specifically the L-BFGS  
+method [42, 43].  
+In the second setting, we wish to maximize Eq. 3 by  
+optimizing the N weights w. We can treat this as a  
+minimization of  E(Y, w), and use the derivatives:  
+dE  
+dwi  
+= ⌫i    
+Z  
+Pi (Y,w)  
+⇢(x)d x = ⌫i   mi, (6)  
+where ⌫i is the target (prescribed) mass of the power  
+cell Pi(Y, w). Since the energy is concave, it admits  
+a unique maximizer [13]. Previous works have ana-  
+lyzed Newton-based approaches [44] for optimizing the  
+weights, as well as multi-scale methods for large scale  
+transport problems [45]. These approaches have been  
+46  
+===== page 4 =====  
+restricted to two- and three-dimensions due to exist-  
+ing software implementations for computing power di-  
+agrams [29, 30, 31, 32]. Here we strive to compute  
+power diagrams in any dimension to support the solu-  
+tion of higher-dimensional semi-discrete optimal trans-  
+port problems.  
+3. POWER DIAGRAMS IN HIGHER  
+DIMENSIONS  
+Given N input sites Y = {yi | yi 2 Rd}N  
+i=1 and some  
+weights w 2 RN (a scalar weight is associated with  
+each site), our goal is to compute the power diagram  
+(with cells defined by Eq. 2) restricted to the domain  
+X✓ Rd.T h i s d o m a i n c a n e i t h e r b e s p e c i fi e d a s a  
+mesh of d-polytopes or d-simplices, therefore, the term  
+"restricted" means that we intersect X with Pi(Y, w)  
+for each power cell.  
+Existing software implementations have been re-  
+stricted to two- and three-dimensions and use geomet-  
+ric algorithms such as Sutherland-Hodgman re-entrant  
+clipping [33] to compute the intersection of a polygon  
+or polyhedron with a Voronoi bisector. The latter is  
+needed in order to compute the vertex coordinates of  
+a clipped polyhedron so as to apply the security ra-  
+dius theorem [23] and determine if clipping should be  
+terminated. Here, we introduce an alternative view of  
+the clipping procedure, which extends to any dimen-  
+sional domain X . Before describing our algorithm, we  
+need a "simple" result from polytope theory.  
+3.1 Voronoi polytopes are simple  
+Our algorithm relies on the fact that Voronoi poly-  
+topes are simple, since they are the duals of Delaunay  
+simplices. This enables the conversion between a facet-  
+based and vertex-based representation of a Voronoi  
+polytope. A convex d-dimensional polytope P can be  
+described as the intersection of m halfspaces. Thus  
+each point in the polytope can be described as the  
+bounded solution set of m linear inequalities [34]  
+H(P )= {x 2 Rd | AT (x   x0)  0}, (7)  
+where each column of A 2 Rd⇥m represents the nor-  
+mal to a facet. This is known as the H-Representation  
+or HRep for short, denoted by H.T h e vertex enumer-  
+ation problem consists of converting the HRep to the  
+V-Representation (VRep,d e n o t e db yV), which is a  
+description of the polytope as the convex hull of its n  
+vertices:  
+V(P )=c o n v (V), (8)  
+where V 2 Rd⇥n is a matrix with each vertex vi 2 Rd  
+stacked columnwise.  
+In the following, assume we have information regard-  
+ing which facets are incident to every vertex, which  
+is stored in the vertex-facet-incidence matrix,a n dw i l l  
+be denoted as F(· ): N ! Zk , for some k   0. Ob-  
+serve that a vertex v is identified using a nonnega-  
+tive integer, whereas a facet b is labeled as an integer.  
+This enables the distinction between a Voronoi bisec-  
+tor (b   0) between two sites, and a mesh facet ( b< 0),  
+which is a ( d   1)-dimensional facet of the input mesh.  
+In order to compute the intersection of a d-polytope  
+with a halfspace, we need the following definition from  
+Henk [34].  
+Definition 1 (simple polytope ). A d-polytope P is  
+said to be simple if every vertex is incident to exactly  
+d facets. A property of simple polytopes is that their  
+dual polytopes are simplices.  
+Thus, for Voronoi polytopes, F(· ): N ! Zd (i.e. k =  
+d). We then have the following result, which is critical  
+for our intersection algorithm.  
+Corollary 1. The edges E(P ) can be identified from  
+the following relation on V(P ):  
+E(P )=  
+   
+e =( v0,v 1)  
+   |F(v0) \ F(v1)| = d   1  
+   
+.  
+(9)  
+The result is certainly true for d  4[ 3 4 ] ,b u ti si m -  
+portant to consider for higher-dimensions. For simple  
+polytopes, the dual of P is a simplex (the Delaunay  
+simplex) from which the entire set of facets is triv-  
+ially constructed. Furthermore, the hierarchy of the  
+facets of a polytope can be obtained from the corre-  
+sponding facet hierarchy of its dual [34], which con-  
+tains the edges. Therefore, the edges E(P )o fas i m p l e  
+d-polytope P can be derived purely from the vertex-  
+facet-incidence matrix of P by traversing the facet-  
+hierarchy of the dual simplex in reverse order. Thus  
+we can determine if there is an edge between two ver-  
+tices in the VRep of P if they share d   1c o m m o n  
+facets.  
+For example, in Fig. 2, F(vi,1)= {b1,b 2} and F(vi,2)=  
+{b2,b 3}. Since vertices vi,1 and vi,2 share a single com-  
+mon facet ( b2), then they also share an edge. However,  
+vertices vj,3 and vj,1 do not share an edge because  
+F(vj,3) \ F(vj,1)= ;. Furthermore, we can identify  
+that vertices vi,2, vj,5 and vk,0 are all symbolically  
+equivalent because they share a common bisector, thus  
+enabling these vertices to be merged as a single ver-  
+tex if necessary. In fact, these vertices represent the  
+Delaunay simplex between sites yi, yj and yk .  
+Each Voronoi cell will be computed from the intersec-  
+tion of a finite number of halfspaces, thus it is impor-  
+tant to ensure that each cell remains a simple polytope  
+after intersecting it with a halfspace, so that we can  
+iteratively apply Eq. 9 for each bisector.  
+47  
+===== page 5 =====  
+b1  
+b2  
+b3  
+b4  
+b5  
+vi,0  
+vi,1  
+vi,2  
+vi,3  
+vi,4•  
+P(yi)  
+b6b7  
+b8  
+b9 b10  
+b2  
+vj,0  
+vj,1  
+vj,2  
+vj,3  
+vj,4  
+vj,5  
+•  
+P(yj)  
+b10  
+b11  
+b12 b13  
+b14  
+b3  
+vk,0  
+vk,1  
+vk,2  
+vk,3  
+vk,4  
+vk,5  
+•  
+P(yk)  
+Figure 2: Computing the edges of a polytope from  
+the vertex-facet-incidence relations. Three Voronoi  
+cells are shown in the di↵erent colors and bisectors  
+(possibly shared) are labeled in the squares.  
+Proposition 1.As i m p l ed-polytopeP⇢Rdinter-  
+sected with a halfspaceH+produces a simple polytope.  
+Proof.Assuming the intersection of PwithH+is  
+non-empty, it su ces to show that every vertex of  
+the new polytope will be incident to exactly dfacets.  
+One way of describing the halfspace H+is by using  
+au n i q u ep o i n tx0and normal to the dividing hyper-  
+planen2Rd.S i n c ePis simple, we can determine  
+its edgesE(P). Every vertex of the original polytope  
+v2V(P)c a nt h e nb ec l a s s i fi e da st ow h e t h e ri ti si n  
+the halfspace as  
+V+(P)=  
+   
+v2V(P)  
+  (x(v) x0)·n>0  
+   
+, (10)  
+wherex(v)2Rdare the coordinates of vertexv.T h e  
+vertices created from the intersection are then com-  
+puted by intersecting each edge with the dividing hy-  
+perplane (note we can filter which edges are intersected  
+by finding edges with one vertex in V+(P)a n do n e  
+that is not). Denote the set of intersection vertices  
+asS, therefore, the new vertices of the polytope Q  
+areV(Q)=V+(P)[S. There are two cases to con-  
+sider. First, the vertices V+(P) are clearly adjacent  
+todfacets since they were not a↵ected by the inter-  
+section. Second, the vertices in Swere each created  
+from the intersection of an edge with the hyperplane.  
+Since edges are adjacent tod 1 facets (Eq. 9) and the  
+dividing hyperplane, itself, defines a facet of Q,t h e n  
+each intersection vertex is adjacent todfacets.  
+We are now ready to describe our algorithm for com-  
+puting power cells.  
+3.2 Computing the power cells  
+In fact, we simply compute the Voronoi cells! As  
+noted earlier, Aurenhammer observed that the power  
+diagram is the intersection of a higher-dimensional  
+Voronoi diagram with ourd-dimensional space lifted  
+to the same ambient dimension of this Voronoi dia-  
+gram [20, 21]. We use the result of L´ evy [36] to lift  
+the Voronoi sites (equipped with weights) to a (d+1 ) -  
+dimensional space, thereby obtainingZ2R(d+1)⇥Nin  
+which  
+zi=  
+⇣  
+yT  
+i,  
+p  
+max(w) wi  
+⌘T  
+,8i=1,2,...,N .  
+(11)  
+We additionally need to lift our domain of interest  
+toRd+1, which is done by simply appending a zero  
+to the coordinates of the domain (the vertices of the  
+mesh). As a result, we only need to compute the  
+Voronoi diagram inRd+1.T h a t i s , t h e p o w e r c e l l s  
+arePi(Y,w)=Vi(Z).  
+Although the domains we study in this paper can be  
+entirely described with a single polytope (a d-cube),  
+we will consider the general case in which the domain  
+to be clipped against is represented as a simplicial  
+mesh. The mechanics of the algorithm are the same,  
+but this description lends well to future work for the  
+interested reader.  
+We begin with a single element, here represented by  
+ad-simplex. The vertex-facet incidence relations  
+for each vertex ofare themesh facets(the (d 1)-  
+simplices) incident to a particular vertex. As men-  
+tioned earlier, these mesh facets are labeled with neg-  
+ative integers so as to distinguish them from Voronoi  
+bisectors. Our goal is to compute the Voronoi cell asso-  
+ciated with sitezi,c l i p p e dw i t ht h ee l e m e n t. In the  
+following description, please follow along with Fig. 3.  
+We b egin by clippingwith the Voronoi bisectorH1  
+defined byziand it's nearest neighbor,zj1. In order to  
+determine the clipped polytope (in red), we first iden-  
+tify the edges ofusing Eq. 9. Next, we determine  
+which edges have vertices on either side of the Voronoi  
+bisectorH1. Those with vertices on either side of H1  
+are then intersected withH1, creating new verticesq0  
+andq1.W e t h e n s e tF(q0)=F(v1)\F(v2)[{bi,j1},  
+wherebi,j1is the unique integer label assigned to the  
+Voronoi bisector between sitesiandj1. Furthermore,  
+F(q1)=F(v0)\F(v2)[{bi,j1}. The geometric coor-  
+dinates ofq0andq1are computed and used to check  
+if clipping should be terminated, using the radius of  
+security theorem [23].  
+If clipping should continue, we then proceed to the  
+next nearest neighbor of site zi,w h i c hi szj2.A  
+similar procedure ensues, this time, starting with the  
+polytope defined by vertices{v1,q0,q1,v2}. Extract-  
+ing the edges (Eq. 9) and intersecting those with ver-  
+48  
+===== page 6 =====  
+v0  
+v1  
+v2  
+zi  
+zj1  
+zj2  
+zj3  
+(a) Initial simplex .  
+H1  
+q0  
+q1  
+v0  
+v1  
+v2  
+zi  
+zj1  
+zj2  
+zj3  
+(b) Clipping with H1.  
+H1 H2  
+q2q1  
+q3  
+v0  
+v1  
+v2  
+zi  
+zj1  
+zj2  
+zj3  
+(c) Clipping with H2.  
+H1 H2  
+H3  
+v0  
+v1  
+v2  
+zi  
+zj1  
+zj2  
+zj3  
+q2q1 q4q5  
+(d) Clipping with H3.  
+Figure 3 : Computing the intersection of a mesh element (here, a simplex) with a Voronoi cell defined by the site  
+zi. Clipping starts with the Voronoi bisector H1 defined by the nearest neighbor to site zi (zj1 ) and proceeds to the  
+next neighbors, thus clipping by H2 and then H3 from left to right.  
+tices on either side of H2 reveals that q0 is no longer  
+in the Voronoi cell. New vertices q2 and q3 are in-  
+troduced from the intersection of the edges with H2.  
+Then F(q2)= F(v0) \ F(v1) [{ bi,j2 } and F(q3)=  
+F(q0) \ F(q1) [{ bi,j2 }.  
+Proceeding in a similar fashion to the next nearest  
+neighbor zj3 clips the current polytope defined by ver-  
+tices {v0,q 2,q 3,q 1} (no need for them to be ordered  
+counterclockwise). We then end up with the polytope  
+{v0,q 2,q 4,q 5,q 1} where F(q4)= F(q2) \ F(q3) [{ bi,j3 }  
+and F(q5)= F(q1) \ F(q3) [{ bi,j3 }. We suppose the  
+clipping terminates after checking the coordinates of  
+this polytope with the radius of security theorem.  
+This procedure is described in Algorithm 1. The in-  
+puts to the algorithm are a Voronoi site zi,am e s h  
+element  and a nearest neighbor structure N that  
+computes the nearest sites upon request. This struc-  
+ture is initialized to 50 nearest neighbors at the start  
+of clipping - we expect well distributed mesh vertices  
+to have a simplex valency of 6 in 2 d,1 5   20 in 3 d  
+and about 120 in 4 d [46]. Whenever the bounds of the  
+nearest neighbors are reached, an additional 10 neigh-  
+bors are appended to the current neighbors. As we  
+will examine in the results section, the cost of comput-  
+ing the nearest neighbors is overshadowed by clipping,  
+simplex decomposition and numerical integration.  
+Clipping continues until the security radius is reached,  
+which is equal to twice the maximum distance from  
+any vertex in P to zi (we absorb the factor of 2 into  
+the definition of the radius of security - a slight modi-  
+fication of L´ evy's definition). Each edge is then inter-  
+sected with the bisector defined by sites zi and zj -t h e  
+jth nearest neighbor to zi. When an intersection oc-  
+curs, only one of e0 or e1 (the edge vertices) is in the  
+halfspace defined by H which includes zi (i.e. H+).  
+This vertex, along with the intersection vertex is then  
+appended to the set of vertices defining the clipped  
+polytope Q, and the vertex-facet incidence relations  
+are updated.  
+In the current work, we parallelize the clipping proce-  
+dure over the Voronoi sites in contrast to a paralleliza-  
+tion over the mesh elements. The reason is because we  
+keep our domains are defined by a single d-cube but we  
+seek power diagrams defined by sometimes millions of  
+Voronoi sites. Furthermore, we parallelize the compu-  
+tation on the CPU, specifically with OpenMP,h o w e v e r  
+the computation is well suited for parallelization on  
+the GPU, which will be explored as future work.  
+Eq. 9 suggests that extracting the polytope edges is  
+quadratic in the number of vertices in the current  
+clipped polytope. Since the number of vertices in a  
+Voronoi polytope is exponential in the dimension of  
+the polytope, this could incur a significant computa-  
+tional cost - especially since this extraction is repeat-  
+edly performed until the radius of security is reached.  
+Therefore, we reduce the computational cost by (1) re-  
+taining any edges that lie entirely within H+ (the side  
+of the hyperplane containing the site zi), (2) updating  
+the endpoints of any intersected edges with indices of  
+the new intersection vertices and (3) computing new  
+edges that lie exactly on H using Eq. 9. Step (3) is still  
+quadratic in the number of vertices that lie on H,b u t  
+since these define a ( d   1)-dimensional polytope, the  
+cost remains reasonable for our applications ( d  6).  
+An o t er e g a r d i n ge x a c t n e s sIn this paper, we  
+are purely interested in the geometry of the power cells  
+and do not extract any topological information corre-  
+sponding to the dual Delaunay mesh. Although this  
+topological information could be extracted by merging  
+vertices that have identical symbolic information (e.g.  
+vertices vi,2, vj,5 and vk,0 in Fig. 2), this computation  
+is susceptible to numerical precision issues. Exact geo-  
+metric predicates, such as an orientnd function, sim-  
+ilar to Shewchuk's orient2d and orient3d functions  
+could be used to detect cosphericities [47]. In the con-  
+49  
+===== page 7 =====  
+computeVoronoiCell  
+input: site zi,e l e m e n t, neighbors N  
+output: Voronoi cell as a d-polytope P  
+1 P   // initialize to domain element  
+2 j =1 // start with nearest neighbor  
+3z j = N (zi,j )  
+4 while ||zi   zj || < securityRadius(zi,P )  
+5 H H (zi, zj ) // define bisector  
+6 Q  ; // initial clipped polytope  
+7 E E (P ) // from Eq. 9  
+8 for e =( e0,e 1) 2E  
+9 s0 = side(e0, H)  
+10 s1 = side(e1, H)  
+11 if s0 ⌘ s1 // no intersection  
+12 continue  
+13 p  e0 or e1 (whichever has s> 0)  
+14 q  e \H and set q  | Q|  
+15 F (q)  F(e0) \ F(e1) [ b(H)  
+16 Q  Q [{ p, q}  
+end  
+17 P  Q // update current polytope  
+18 j = j +1 // proceed to next neighbor  
+19 z j = N (zi,j )  
+end  
+Algorithm 1: Computing the intersection of a mesh  
+element  with a Voronoi cell defined by a site zi.  
+text of our algorithm, the calls to the side function  
+on Lines 9 and 10 should be replaced with a side rd  
+function [48] which computes the intersection of a r-  
+dimensional simplex with the bisector H. In order to  
+determine which r-simplex should be used, we sim-  
+ply need to track which simplex facets of the original  
+mesh are incident to each vertex. This can be done by  
+tracking the "simplex vertices" of every clipped ver-  
+tex: S(v). Any time an intersection point is intro-  
+duced, the new vertex inherits all the simplex vertices  
+of the endpoint edge vertices. For example, in the  
+rightmost diagram of Fig. 3, S(q5)= S(q3) [ S(q1)=  
+S(q0) [ S(q1)= {v0,v 1,v 2},m e a n i n gq5 is the intersec-  
+tion of the d-dimensional simplex  =( v0,v 1,v 2)w i t h  
+the bisectors H1 \H 2 \H 3.  
+3.3 Numerical integration  
+Computing the objective function and gradients of  
+Eqs. 3, 5 and 6 requires the calculation of integrals  
+over the resulting Voronoi polytopes. To perform the  
+integration, we decompose the d-polytopes into a set  
+of d-simplices by introducing a vertex at the centroid  
+of the polytope and then recurse through the ( d   1)-  
+facets, continuously introducing vertices at these facet  
+centroids until the edges are reached (at which point  
+the triangulation is trivial). The simplicial decomposi-  
+tion of the d-polytope is obtained by reconnecting the  
+simplicial facets with the centroids. This mesh of d-  
+simplices is then used to perform the integration with  
+numerical quadrature rules of Stroud [49]. Although  
+this evaluation is also performed in parallel over the  
+integration simplices, the integral evaluation is a bot-  
+tleneck in our algorithm, which will be discussed in  
+the results section.  
+3.4 Visualizing the power diagram  
+In the results section, we will present visualizations of  
+four-dimensional power diagrams, thus it is necessary  
+to briefly describe our procedure for doing so. Some  
+previous work in 4 d mesh visualization includes the  
+work of Caplan [46] and Belda-Ferr ´ ın [50].  
+Our method for visualizing a d-dimensional mesh first  
+consists of identifying which polytopes of this mesh  
+are cut by some input viewing volume, represented as  
+a( d   1)-dimensional hyperplane with point x0 and  
+normal n.N e x t , e a c h p o l y t o p eP must be intersected  
+with the hyperplane. We cull polytopes that are not  
+clipped if all their vertices lie on the same side of the  
+hyperplane, using the predicate in Eq. 10. Otherwise,  
+the polytope is clipped by the hyperplane. We then  
+identify which edges have vertices on either side of the  
+hyperplane, and then compute the intersection point  
+of the hyperplane with the edge. Each intersection  
+point is then appended to a list of vertices that lie  
+exactly on the hyperplane, which defines a ( d   1)-  
+dimensional polytope that can be directly visualized if  
+as u i t a b l ev i s u a l i z a t i o nd i m e n s i o n( s u c ha s2d or 3 d)  
+is reached.  
+For high-dimensional ( d> 4) applications, a recursive  
+procedure can be applied to this ( d   1)-dimensional  
+mesh along with a ( d   2)-dimensional hyperplane.  
+In the results section, we only visualize 4 d meshes  
+through (1) the intersection of a 3 d viewing volume  
+or (2) a second intersection with a 2 d clipping plane.  
+In order to view the polyhedra resulting from the inter-  
+section, we tetrahedralize the convex polyhedra using  
+a Delaunay triangulator [51] and visualize the mesh  
+edges by applying Eq. 9 to extract the edges of each  
+polyhedron clipped to the 3 d viewing volume.  
+4. PERFORMANCE  
+In this section we evaluate the performance of our al-  
+gorithm for computing d-dimensional power diagrams  
+(of d-polytopes) for d =2t o d = 6. All tests are per-  
+formed with an Intel Xeon W-2145 CPU at 3.70GHz  
+with 8 cores (16 threads).  
+50  
+===== page 8 =====  
+Our first performance test consists of distributing N  
+points within a unit d-cube and measuring the time to  
+compute the power diagram. We consider two point  
+distributions: (1) a completely random white noise  
+distribution and (2) a blue noise distribution. The  
+reason we consider the former is because the nearest  
+neighbor calculation is more costly for a white noise  
+distribution of points, whereas the number of near-  
+est neighbors is more uniform in the case of a blue  
+noise distribution. The blue noise sampling distri-  
+butions were obtained with the SpokeDarts software  
+of Mitchell et al. [52]. An example of the resulting  
+Voronoi diagrams for four-dimensional white and blue  
+noise point distributions, sliced along the fourth di-  
+mension, are shown in Fig. 4.  
+Performing the calculation in 2- through 6-dimensional  
+domains (where the ambient dimension is equal to the  
+topological dimension of the domain) reveals a good  
+scaling of the algorithm in low dimensions, particular  
+in 2 d through 4 d. Fig. 5 reveals that our calculation  
+is more costly for random point distributions than for  
+blue noise distributions. Also observe that the cost of  
+computing the Voronoi diagram in 5 d and 6 d is signif-  
+icantly higher than in low dimensions, which is due to  
+the fact that the number of vertices in a Voronoi poly-  
+tope grows exponentially with the dimension. Fig. 6  
+shows how the number of vertices and facets grows  
+with the input number of points (Voronoi sites) for a  
+white noise distribution.  
+In our second performance study, we focus on dimen-  
+sions 2-4 and compute (1) the time to clip the Voronoi  
+cells (as in the previous study), (2) the total time de-  
+voted to compute nearest neighbors, (3) the time de-  
+voted to decomposing the polytopes into integration  
+simplices and (4) the time to perform the numerical  
+integration for various quadrature orders q. The re-  
+sults are shown in Table 1. In 2 d (polygons) and 3 d  
+(polyhedra), the cost of the Voronoi diagram calcula-  
+tion outweighs any other calculation, but is still rel-  
+atively fast for one million points in 2 d (25 seconds).  
+The cost of decomposing the Voronoi cells into sim-  
+plices is roughly one fifth the cost of computing the  
+Voronoi diagram in 3 d and 4 d.I n h i g h e r d i m e n s i o n s ,  
+the cost of integration is limiting and begins to exceed  
+the cost of computing the Voronoi diagram, even for  
+low quadrature orders ( q> 2). In general, the cost of  
+computing the Voronoi diagram is even lower than the  
+results shown in Table 1 (which is for white noise dis-  
+tributions) once the point distributions exhibit more  
+structure.  
+5. APPLICATIONS  
+We now use our power diagrams to solve quantiza-  
+tion and semi-discrete optimal transport problems in  
+four-dimensional domains. The di↵erence between the  
+Ta b l e 1: Performance statistics for white noise in  
+2d 4d for a varying number of Voronoi sites ( N ). The  
+timing results (in seconds) are broken into (1) the time  
+to compute the Voronoi diagram ( tvor), (2) the time  
+devoted to computing nearest neighbors ( tknn), (3) the  
+time to decompose the d-polytopes into d-simplices  
+(ttri) and (4) the time to perform the numerical in-  
+tegration a particular quadrature order q (tq ).  
+d N tvor tknn ttri tq=2 tq=3 tq=4  
+21 0 k 0 .037 0 .085 0 .065 0 .029 0 .039 0 .049  
+21 0 0 k2 .70 .71 0 .46 0 .17 0 .26 0 .40  
+21 M 2 5 1 2 4 .21 .32 .23 .5  
+31 0 k 2 .80 .10 0 .41 0 .35 1 .02 .2  
+31 0 0 k2 9 1 .54 .43 .41 0 2 3  
+32 5 0 k7 1 5 .21 1 8 .62 5 5 9  
+41 k 4 .00 .027 0 .82 1 .67 .32 3  
+41 0 k 5 0 0 .40 9 .81 8 8 7 2 7 0  
+41 5 k 7 8 0 .68 15 28 130 420  
+two problems is that (1) in quantization, we optimize  
+Voronoi site coordinates and (2) in optimal transport,  
+we optimize the weights on Voronoi sites.  
+5.1 Quantization  
+Here, our goal is to compute an optimal point distri-  
+bution for some prescribed density function. As we  
+observed in the performance study, the cost of evalu-  
+ating the integrals is prohibitive for a large number of  
+points. As a result, we design the densities to be inte-  
+grated more accurately with lower quadrature orders.  
+optimizePoints(N, ⇢(x))  
+input: number of sites N ,d e n s i t y⇢(x)  
+output: optimized point distribution Y  
+1Y  randomly sample N points in domain ⌦  
+2 iter  0  
+3 while iter < nb iter  
+4 compute R VD: Vor(Y) \ ⌦( S e c t i o n3 . 2 )  
+5 compute mass and centroids in Eq. 4  
+6 if lloyd // use Lloyd relaxation  
+7 update x to current centroids  
+8 else // use L-BFGS update  
+9 compute gradients d E/dyi using Eq. 5  
+10 perform L-BFGS update on x  
+end  
+end  
+Algorithm 2: Optimizing a point distribution ac-  
+cording to an input density measure, using either  
+Lloyd relaxation or an L-BFGS update. In our ap-  
+plications, the input domain ⌦ is the unit d-cube rep-  
+resented as a polytopal mesh with a single element.  
+51  
+===== page 9 =====  
+(a) White noise.  
+ (b) Blue noise.  
+Figure 4 : Four-dimensional Voronoi diagrams for white and blue noise point distributions for 16 , 332 sites embedded  
+in 4 d. The images represent the slices of the Voronoi diagram along a hyperplane at t = 0 where t is the fourth  
+dimension.  
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5number of points104  
+0  
+50  
+100  
+150  
+200  
+250  
+300  
+350time (s)  
+2d (white)2d (blue)3d (white)3d (blue)4d (white)4d (blue)5d (white)5d (blue)6d (white)6d (blue)  
+0 2000 4000 6000 8000 10000number of points0246810time (s)2d (white)2d (blue)3d (white)3d (blue)4d (white)4d (blue)5d (white)5d (blue)6d (white)6d (blue)  
+Figure 5 : Time to compute the Voronoi diagram in  
+2d-6d for white and blue noise distributions with a  
+varying number of points (Voronoi sites).  
+We consider three density measures. The first is a  
+uniform distribution ⇢u(x) = 1 (the optimized Voronoi  
+cells should appear uniform). The second density mea-  
+sure is a Gaussian  
+⇢g (x)= 1p  
+(2⇡)4 det ⌃  
+exp  
+✓  
+  1  
+2 (x   µ)T ⌃ 1(x   µ)  
+◆  
+(12)  
+where µ =( 0 .5, 0.5, 0.5, 0.5)T and ⌃ =  
+diag(0.02, 0.02, 0.02, 0.02). In this case, we ex-  
+pect smaller Voronoi polytopes near µ,w h i c ht h e n  
+increase in distance around this mean point. The  
+third density measure we consider is that which  
+describes an expanding sphere, which traces the  
+101 102 103 104 105  
+log(number of points)  
+101  
+102  
+103  
+2d: # vert2d  # face3d: # vert3d  # face4d: # vert4d  # face5d: # vert5d  # face6d: # vert6d  # face  
+Figure 6: Total number of vertices (circles) and facets  
+(squares) for Voronoi diagrams computed from a ran-  
+dom point distribution in 2 d 6d for a varying number  
+of input points (Voronoi sites).  
+geometry of a hypercone in 4 d. In particular, this  
+density measure is  
+⇢c(x)=1 0 0 /(h2 +0 .001) (13)  
+where h is the distance to the cone defined by r(t)=  
+r0 + t · tan(↵) where t represents the fourth coordinate  
+in the domain (to be interpreted as time). Please re-  
+fer to Fig. 7 for the geometry of the cone - note that  
+r0 =0 .4a n d r1 =0 .7. Note that this density mea-  
+sure is e↵ectively two-dimensional in an r   t coordi-  
+nate system. Rotational symmetry about the t axis  
+leads to the cone geometry. In fact, when slicing the  
+52  
+===== page 10 =====  
+r  
+t  
+t=0  
+t=1  
+r=r0  
+r=rf  
+↵  
+|  
+Figure 7 : Definition of the hypercone in a radial-  
+temporal coordinate system. The sphere starts with a  
+radius of r0 =0 .4a t t = 0 and expands to a radius of  
+r1 =0 .7a t t =1 .  
+resulting Voronoi diagram (with points uniformly dis-  
+tributed according to ⇢c(x)), we should expect to see  
+smaller cells clustering around the geometry of a 3 d  
+cone when slicing along a non-constant t hyperplane,  
+but should expect to see smaller cells clustering around  
+a3 d sphere at constant t hyperplanes.  
+Figure 8 : Optimized four-dimensional Voronoi dia-  
+gram sliced at t = 0 (where t is the fourth dimension)  
+for the case of a uniform density, ⇢u(x).  
+We optimize four-dimensional point distributions with  
+N =1 0 , 000 points using Lloyd relaxation [40] the  
+gradient-based L-BFGS optimizer [43] - this procedure  
+is outlined in Algorithm 2. After 100 iterations (func-  
+tion calls in the nlopt optimizer), the point distribu-  
+tions indeed exhibit a uniform distribution under the  
+prescribed density measure. Fig. 8 shows uniformly  
+distributed polytopes sliced along the t = 0 hyper-  
+plane. Fig. 10 shows the interior of a slice along the  
+t =0 .5 hyperplane for the Gaussian density. The clus-  
+tering of Voronoi cells around the mean is clear and  
+the cell sizes increases with distance from the mean.  
+Furthermore, the expected clustering around the hy-  
+percone is visible in Fig. 11. Specifically, when the  
+four-dimensional Voronoi diagram is sliced along a hy-  
+perplane with non-constant t (x =0 ) ,w ec a ns e ec l u s -  
+tering near a 3 d cone. We can also see smaller poly-  
+topes clustered around a sphere when the optimized  
+Voronoi diagram is sliced at t = 0 (smaller sphere  
+with radius r0)a n d t = 1 (larger sphere with radius  
+r1). Fig. 9 demonstrates the convergence of the en-  
+0 20 40 60 80 100iteration  
+-1.2  
+-1  
+-0.8  
+-0.6  
+-0.4  
+-0.2  
+0log(energy)  
+cone-lloydcone-lbfgsgaussian-lloydgaussian-lbfgsuniform-lloyduniform-lbfgs  
+(a) Energy (Eq. 3 versus iteration.  
+0 20 40 60 80 100iteration  
+-6  
+-5  
+-4  
+-3  
+-2  
+-1  
+0log(gradient)  
+cone-lloydcone-lbfgsgaussian-lloydgaussian-lbfgsuniform-lloyduniform-lbfgs  
+(b) Gradient norm (of Eq. 5) versus iteration.  
+Figure 9 : Convergence of the energy and its gradi-  
+ent for Lloyd relaxation and LBFGS optimizer for all  
+three density functions (uniform, Gaussian, cone) con-  
+sidered in the quantization application.  
+ergy functional and gradient norm during the opti-  
+mization for both Lloyd relaxation (even though it is  
+not driven by the gradient) and the L-BFGS optimizer.  
+The data in each curve is normalized by the initial en-  
+ergy and gradient norm at the onset of the optimiza-  
+tion. The L-BFGS optimizer achieves a lower energy  
+and gradient norm for the uniform and cone density  
+53  
+===== page 11 =====  
+measures, but performs slightly worse than Lloyd re-  
+laxation for the Gaussian density. Nonetheless, the  
+results demonstrate the ability to obtain point distri-  
+butions that are uniform with respect to a prescribed  
+density function in 4 d for a relatively large number of  
+points ( N =1 0, 000).  
+(a) Optimized Voronoi diagram sliced  
+at t =0 .5w i t hc l i p p i n gp l a n es h o w n .  
+(b) Optimized Voronoi diagram sliced  
+at t =0 .5, clipped at x =0 .5 (trans-  
+parent clipping plane shown in pink  
+above).  
+Figure 10 : Optimized four-dimensional Voronoi dia-  
+gram sliced at t =0 .5 (where t is the fourth dimension)  
+for the case of a Gaussian density, ⇢g (x). The bottom  
+figure shows a slice (at x =0 .5) of the top figure, where  
+the clipping plane is defined by the transparent plane  
+shaded in pink.  
+5.2 Semi-discrete optimal transport  
+We now turn our attention to the problem of assigning  
+an equal mass (measured under some input density  
+function) to each Voronoi cell. We will study smaller  
+problem sizes because we do not currently implement  
+(a) Voronoi diagram slice at x =0 .  
+(b) Voronoi diagram slice at t =0 .  
+(c) Voronoi diagram slice at t =1 .  
+Figure 11 : Optimized four-dimensional Voronoi dia-  
+gram sliced at t =0 , t = 1 (where t is the fourth di-  
+mension) and x = 0 for the case of a cone-like density,  
+⇢c(x). A three-dimensional cone is visible at x =0  
+(where the smaller cells cluster), whereas the sphere  
+with initial radius r0 and final radius r1 is shown at  
+t =0a n d t = 1, respectively. Only one quarter of the  
+cone and spheres are visible within this domain.  
+a multiscale algorithm to initialize the weights for the  
+next "level," although this would certainly accelerate  
+the convergence of the optimization as pointed out by  
+54  
+===== page 12 =====  
+optimizeWeights(N, ⇢(x))  
+input: number of sites N , density ⇢(x)  
+output: power cells with uniform mass  
+1Y  optimizePoints(N, ⇢)  
+2w  0  
+3 ⌫t  mt/N // mt is the total mass  
+4 for iter =1: nb iter  
+5Z  lift Y to Rd+1 (Eq. 11)  
+6 compute Vor(Z) \ ⌦( S e c t i o n3 . 2 )  
+7 compute energy and mass in Eq. 4  
+8 compute gradients d E/dwi using Eq. 6  
+9 perform L-BFGS update on w  
+with  E and  dE/dw  
+end  
+Algorithm 3: Optimizing the weights to achieve a  
+target mass according to an input density measure.  
+In our applications, the input domain ⌦ is the unit  
+d-cube represented as a polytopal mesh with a single  
+element.  
+M´ erigot [45, 18] and L´ evy [36]. We thus use N =1 0 0 0  
+points distributed within a four-dimensional domain.  
+The two density measures we consider here are (1)  
+a uniform density ⇢u(x) = 1 and (2) a spheri-  
+cal density ⇢s(x)=1 + 1 0 0 ||x   µ||2 where µ =  
+(0.5, 0.5, 0.5, 0.5)T . In contrast to the previous sec-  
+tion which employed a Gaussian as the density mea-  
+sure, this spherical density is more accurately inte-  
+grated with lower quadrature orders, thus keeping the  
+computational cost reasonable for this demonstration.  
+Before optimizing the weights, we first optimize the  
+point distributions with the L-BFGS method (of the  
+previous section) to achieve a uniform distribution  
+with respect to the input density measure - see Al-  
+gorithm 3. We then obtain the total mass mt by inte-  
+grating the input density over the entire domain and  
+set the target mass ⌫t = mt/N for every site. Finally,  
+we optimize the weights by iteratively computing the  
+power diagram and integrating the quantities in Eq. 6  
+which are then passed to the L-BFGS optimizer to  
+determine the next set of weights.  
+The convergence of the energy functional and gradi-  
+ent norm (Eq. 6) is shown in Fig. 12a. Observe that  
+the optimization procedure exhibits a very fast conver-  
+gence near the 75th iteration. Furthermore, Fig. 12b  
+shows the distribution of mass at each iteration of the  
+optimization, normalized by the target mass ⌫t -t h u s  
+we strive for a normalized mass of 1 for each cell. Ini-  
+tially, the cell masses are distributed across a wide  
+range and converge to the target mass at about the  
+75th iteration. This demonstrates the ability of our  
+algorithm to achieve a target mass for each Voronoi  
+cell.  
+0 20 40 60 80 100iteration-14  
+-12  
+-10  
+-8  
+-6  
+-4  
+-2  
+0log(gradient)  
+sphereuniform  
+(a) Gradient norm (of Eq. 6) versus iteration.  
+(b) Distribution of power cell mass versus iter-  
+ation.  
+Figure 12 : Convergence of the energy gradient and  
+normalized mass for all the uniform and sphere-like  
+density functions considered in the semi-discrete opti-  
+mal transport application. The dashed line in Fig. 12b  
+represents the target mass.  
+6. CONCLUSIONS & FUTURE WORK  
+In this paper, we have presented the theory and imple-  
+mentation details for computing higher-dimensional  
+power diagrams, and demonstrated the first implemen-  
+tation for solving four-dimensional quantization and  
+L2 semi-discrete optimal transport problems which  
+seeks a uniform target mass of each Voronoi cell, mea-  
+sured under some input density function.  
+The performance of the algorithm was also evaluated  
+in up to six dimensions (the topological dimension  
+of the polytopes), which demonstrated a reasonable  
+scaling with the number of input points in dimen-  
+55  
+===== page 13 =====  
+sions 2   4. The cost of computing the Voronoi dia-  
+gram with a randomly distributed point set was higher  
+than that to compute the Voronoi diagram with a  
+point distribution that exhibited blue noise proper-  
+ties. Also, the cost of performing the numerical inte-  
+gration to compute gradients significantly outweighed  
+the cost of computing the power diagram, especially  
+for four-dimensional polytopes. Future work may con-  
+sist of deriving less expensive quadrature schemes in  
+higher dimensions, which is under way in the works of  
+Williams [53] and Frontin [54].  
+Furthermore, the cost of computing the power dia-  
+gram is higher than to compute the Voronoi diagram  
+because the introduction of weights lifts the points  
+to a unit codimensional Euclidean space, thereby in-  
+creasing the distance between sites and requiring sev-  
+eral more (possibly non-contributing) bisectors to be  
+clipped against. This is a failure case of the security  
+radius theorem, as pointed out by Sainlot et al. [55],  
+therefore, future work could consist of extending their  
+corner validation algorithm to the higher-dimensional  
+setting.  
+Our algorithm is also very well-suited for an imple-  
+mentation on the GPU, similar to the work of Ray et  
+al. [56] which demonstrated an e cient 3 d restricted  
+Voronoi diagram calculation on the GPU. Our algo-  
+rithm could also be made more e cient by employing  
+a multiscale approach [45, 18] in the optimization of  
+the weights. It would also be useful to implement a  
+more robust optimization which avoids weights that  
+cause power cells to vanish.  
+Finally, our four-dimensional power diagrams could be  
+used to compute the transport distance between a data  
+set and a continuous density measure in both space  
+and time - Janati et al. recently consider a fully dis-  
+crete version of this problem [57]. Other applications  
+could include performing coupled space-time numeri-  
+cal simulations of physical phenomena.  
+References  
+[1] Monge G. "M´ emoire sur la th´ eorie des d´ eblais et  
+des remblais."  
+[2] Balzer M., Schl¨ omer T., Deussen O. "Capacity-  
+constrained point distributions: a variant of  
+Lloyd's method." ACM Transasctions on Graph-  
+ics,v o l .2 8 ,n o .3 ,2 0 0 9  
+[3] de Goes F., Breeden K., Ostromoukhov V., Des-  
+brun M. "Blue noise through optimal transport."  
+ACM Transactions on Graphics ,v o l .3 1 ,n o .6 ,  
+1-11, 2012  
+[4] Ma L., Chen Y., Qian Y., Sun H. "Incremental  
+Voronoi sets for instant stippling." The Visual  
+Computer,v o l .3 4 ,8 6 3 - 8 7 3 ,2 0 1 8  
+[5] Ma L., Guo J., Yan D.M., Sun H., Chen Y. "In-  
+stant stippling on 3 d scenes." Pacific Graphics ,  
+vol. 37. 2018  
+[6] Meyron J. Semi-discrete optimal transport and  
+applications in non-imaging optics . Ph.D. thesis,  
+2018  
+[7] Meyron J. "Initialization procedures for discrete  
+and semi-discrete optimal transport." Computer-  
+Aided Design,v o l .1 1 5 ,1 3 - 2 2 ,2 0 1 9  
+[8] Peyr´ e G., Cuturi M. "Computational Optimal  
+Transport: With Applications to Data Science."  
+Foundations and Trends R  in Machine Learning ,  
+vol. 11, no. 5-6, 355-607, 2019  
+[9] de Goes F., Cohen-Steiner D., Allez P., Desbrun  
+M. "An optimal transport approach to robust  
+reconstruction and simplification of 2 d shapes."  
+Computer Graphics Forum ,v o l .3 0 ,n o .5 ,1 5 9 3 -  
+1602, 2011  
+[10] Bonneel N., Coeurjolly D. "SPOT: sliced par-  
+tial optimal transport." ACM Transactions on  
+Graphics,v o l .3 8 ,n o .4 ,1 - 1 3 ,2 0 1 9  
+[11] Paulin L., Bonneel N., Coeurjolly D., Iehl J.C.,  
+Webanck A., Desbrun M., Ostromoukhov V.  
+"Sliced optimal transport sampling." ACM  
+Transactions on Graphics ,v o l .3 9 ,n o .4 ,2 0 1 9  
+[12] Hartmann V., Schuhmacher D. "Semi-discrete  
+optimal transport: a solution procedure for the  
+unsquared Euclidean distance." Mathematical  
+Methods of Operations Research,v o l .9 2 ,1 3 3 - 1 6 3 ,  
+2020  
+[13] L´ evy B., Schmidt E.L. "Notions of optimal trans-  
+port and how to implement them on a computer."  
+Computers and Graphics ,v o l .7 2 ,1 3 5 - 1 4 8 ,2 0 1 8  
+[14] de Goes F., Wallez C., Huang J., Pavlov D., Des-  
+brun M. "Power particles: an incompressible fluid  
+solver based on power diagrams." ACM Transac-  
+tions on Graphics ,v o l .3 4 ,n o .4 ,1 - 1 1 ,2 0 1 5  
+[15] Benamou J.D., Brenier Y. "A computational fluid  
+mechanics solution to the Monge-Kantorovich  
+mass transfer problem." Numerische Mathematik,  
+vol. 84, no. 3, 375-393, 2000  
+[16] Villani C. Optimal transport: old and new .  
+Springer, 2009  
+[17] Solomon J. "Computational optimal transport."  
+Snapshots of Modern Mathematics ,v o l .8 ,2 0 1 7  
+[18] M´ erigot Q., Meyron J., Thibert B. "An algorithm  
+for optimal transport between a simplex soup and  
+ap o i n tc l o u d . "SIAM Journal on Imaging Sci-  
+ences,v o l .1 1 ,2 0 1 7  
+56  
+===== page 14 =====  
+[19] Cuturi M. "Sinkhorn Distances: Lightspeed  
+Computation of Optimal Transport." C.J.C.  
+Burges, L. Bottou, M. Welling, Z. Ghahramani,  
+K.Q. Weinberger, editors, Advances in Neural In-  
+formation Processing Systems ,v o l .2 6 ,p p .2 2 9 2 -  
+2300. Curran Associates, Inc., 2013  
+[20] Aurenhammer F. "Power diagrams: properties,  
+algorithms and applications." SIAM Journal on  
+Computing,v o l .1 6 ,n o .1 ,7 8 - 9 6 ,1 9 8 7  
+[21] Aurenhammer F. "Voronoi diagrams: a survey  
+of a fundaental geometric data structure." ACM  
+Computing Surveys ,v o l .2 3 ,n o .3 ,1 9 9 1  
+[22] Ca˜ nas G.D., Gortler S.J. "Surface Remeshing in  
+Arbitrary Codimensions." The Visual Computer ,  
+vol. 22, no. 9, 885-895, Sep. 2006  
+[23] L´ evy B., Bonneel N. "Variational Anisotropic  
+Surface Meshing with Voronoi Parallel Linear  
+Enumeration." Proceedings of the 21st Interna-  
+tional Meshing Roundtable .2 0 1 2  
+[24] Dassi F., Si H., Perotto S., Streckenbach T.  
+"Anisotropic Finite Element Mesh Adaptation  
+via Higher Dimensional Embedding." Procedia  
+Engineering,v o l .1 2 4 ,2 6 5-2 7 7 ,2 0 1 5 . 2 4 t hI n -  
+ternational Meshing Roundtable  
+[25] Dassi F., Farrell P., Si H. "An Anisoptropic Sur-  
+face Remeshing Strategy Combining Higher Di-  
+mensional Embedding with Radial Basis Func-  
+tions." Procedia Engineering,v o l .1 6 3 ,7 2-8 3 ,  
+2016. 25th International Meshing Roundtable  
+[26] Dassi F., Perotto S., Si H., Streckenbach T. "A  
+Priori Anisotropic Mesh Adaptation Driven by  
+a Higher Dimensional Embedding." Computer-  
+Aided Design,v o l .8 5 ,1 1 1-1 2 2 ,2 0 1 7  
+[27] Nivoliers V., L´ evy B., Geuzaine C. "Anisotropic  
+and Feature Sensitive Triangular Remeshing Us-  
+ing Normal Lifting." Journal of Computational  
+and Applied Mathematics , vol. 289, 225-240, Dec.  
+2015  
+[28] L´ evy B., Mohayaee R., von Hausegger S. "A  
+fast semi-discrete optimal transport algorithm for  
+a unique reconstruction of the early Universe."  
+2020  
+[29] L´ evy B. "Geogram: A Programming Library of  
+Geometric Algorithms.", 2016  
+[30] Rycroft C.H. "Voro++: A three-dimensional  
+Voronoi cell library in C++." Chaos,v o l .1 9 ,  
+no. 4, 2009  
+[31] The CGAL Project. CGAL User  
+and Reference Manual .C G A L E d i -  
+torial Board, 5.2 edn., 2020. URL  
+https://doc.cgal.org/5.2/Manual/packages.html  
+[32] Karavelas M. "2D Voronoi Diagram Adaptor."  
+CGAL User and Reference Manual .C G A LE d i -  
+torial Board, 5.2 edn., 2020  
+[33] Sutherland I.E., Hodgman G.W. "Reentrant  
+polygon clipping." Communications of the ACM ,  
+vol. 17, no. 1, 1974  
+[34] Henk M., Richter-Gebert J., Ziegler G.M. "Basic  
+Properties of Convex Polytopes." Handbook of  
+Discrete and Computational Geometry, 2nd Ed.  
+2004  
+[35] Ziegler G.M. Lectures on Polytopes ,v o l .1 5 2o f  
+Graduate Texts in Mathematics . Springer, 1995  
+[36] L´ evy B. "A numerical algorithm for L2 semi-  
+discrete optimal transport." ESAIM: Mathemat-  
+ical Modelling and Numerical Analysis ,v o l .4 9 ,  
+1693-1715, 2015  
+[37] Santambrogio F. Optimal transport for applied  
+mathematicians. Birkhauser Basel, 2015  
+[38] Villani C. Topics in optimal transportation ,  
+vol. 58. American Mathematical Society, 2003  
+[39] Kantorovitch L. "On the translocation of  
+masses." Management Science ,v o l .5 ,n o .1 ,1 - 4 ,  
+1958  
+[40] Lloyd S.P. "Least Squares Quantization in  
+PCM." IEEE Transaction on Information The-  
+ory,v o l .2 8 ,n o .2 ,1 2 9 - 1 3 7 ,1 9 8 2  
+[41] Du Q., Faber V., Gunzburger M. "Centroidal  
+Voronoi Tessellations: Applications and Algo-  
+rithms." SIAM Review ,v o l .4 1 ,6 3 7 - 6 7 6 ,1 9 9 9  
+[42] Liu D.C., Nocedal J. "On the limited memory  
+BFGS method for large scale optimiation." Math-  
+ematical Programming,v o l .4 5 ,5 0 3 - 5 2 8 ,1 9 8 9  
+[43] Johnson S.G. "The NLopt nonlinear-  
+optimization package, available at:  
+http://ab-initio.mit.edu/nlopt."  
+[44] Kitagawa J., M´ erigot Q., Thibert B. "Conver-  
+gence of a Newton algorithm for semi-discrete op-  
+timal transport." 2016  
+[45] M´ erigot Q. "A multiscale approach to optimal  
+transport." Computer Graphics Forum ,v o l .3 0 ,  
+1583-1592, 2011  
+57  
+===== page 15 =====  
+[46] Caplan P.C. Four-dimensional Anisotropic Mesh  
+Adaptation for Spacetime Numerical Simulations .  
+PhD thesis, Massachusetts Institute of Technol-  
+ogy, 2019  
+[47] Shewchuk J.R. "Adaptive Precision Floating-  
+Point Arithmetic and Fast Robust Geometric  
+Predicates." Discrete & Computational Geome-  
+try,v o l .1 8 ,n o .3 ,3 0 5 - 3 6 3 ,1 9 9 6  
+[48] L´ evy B. "Robustness and E ciency of Geomet-  
+ric Programs: The Predicate Construction Kit."  
+Computer-Aided Design,v o l .7 2 ,3 - 1 2 ,2 0 1 6  
+[49] Stroud A. Approximate Calculation of Multiple  
+Integrals. Prentice-Hall Inc., 1971  
+[50] Ferr ´ ın G.B., Ruiz-Giron´ es E., Roca X. "Visual-  
+ization of pentatopic meshes." Tech. rep., 2020  
+[51] Si H. "TetGen: A Quality Tetrahedral  
+Mesh Generator and Three-Dimensional De-  
+launay Triangulator." Weierstrass Institute  
+for Applied Analysis and Stochastics, 2005.  
+http://tetgen.berlios.de  
+[52] Mitchell S.A. "Spoke-Darts for high-dimensional  
+blue-noise sampling." ACM Transactions on  
+Graphics,v o l .3 7 ,n o .2 ,2 0 1 8  
+[53] Williams D.M., Frontin C.V., Miller E.A., Dar-  
+mofal D.L. "A family of symmetric, optimized  
+quadrature rule for pentatopes." Computers &  
+Mathematics with Applications ,v o l .8 0 ,n o .5 ,  
+1405-1420, 2020  
+[54] Frontin C.V., Walters G.S., Witherden F.D., Lee  
+C.W., Williams D.M., Darmofal D.L. "Founda-  
+tions of space-time finite element methods: poly-  
+topes, interpolation and integration." arXiV  
+preprint,2 0 2 0  
+[55] Sainlot M., Nivoliers V., Attali D. "Restricting  
+Voronoi diagrams to meshes using corner vali-  
+dation." Eurographics Symposium on Geometry  
+Processing,v o l .3 6 ,n o .5 ,2 0 1 7  
+[56] Ray N., Sokolov D., Lefebvre S., L´ evy B. "Mesh-  
+less Voronoi on the GPU." ACM Transactions on  
+Graphics,v o l .3 7 ,n o .6 ,2 0 1 8  
+[57] Janati H., Cuturi M., Gramfort A. "Spatio-  
+temporal alignments: optimal transport through  
+space and time." S. Chiappa, R. Calandra, ed-  
+itors, Proceedings of the Twenty Third Interna-  
+tional Conference on Artificial Intelligence and  
+Statistics,v o l .1 0 8 ,p p .1 6 9 5 - 1 7 0 4 .2 6 - 2 8A u g  
+2020  
+58

@@ -1,0 +1,16 @@
+{
+   "stamp" : true,
+   "sources" : [
+      {
+         "usage" : "toplevel",
+         "filename" : "3DDEQ_arxiv.tex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "3DDEQbib.bib"
+      }
+   ],
+   "process" : {
+      "compiler" : "pdflatex"
+   }
+}

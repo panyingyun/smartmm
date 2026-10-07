@@ -1,0 +1,189 @@
+\begin{thebibliography}{10}
+
+\bibitem{BaGB21}
+U.~Baid, S.~Ghodasara, M.~Bilello, S.~Mohan, E.~Calabrese, E.~Colak,
+  K.~Farahani, J.~Kalpathy-Cramer, F.~C. Kitamura, S.~Pati, L.~M. Prevedello,
+  J.~D. Rudie, C.~Sako, R.~T. Shinohara, T.~Bergquist, R.~Chai, J.~Eddy,
+  J.~Elliott, W.~Reade, T.~Schaffter, T.~Yu, J.~Zheng, B.~Annotators,
+  C.~Davatzikos, J.~Mongan, C.~Hess, S.~Cha, J.~Villanueva-Meyer, J.~B.
+  Freymann, J.~S. Kirby, B.~Wiestler, P.~Crivellaro, R.~R. Colen, A.~Kotrotsou,
+  D.~Marcus, M.~Milchenko, A.~Nazeri, H.~Fathallah-Shaykh, R.~Wiest, A.~Jakab,
+  M.-A. Weber, A.~Mahajan, B.~Menze, A.~E. Flanders, and S.~Bakas.
+\newblock The {RSNA-ASNR-MICCAI} {B}ra{TS} 2021 benchmark on brain tumor
+  segmentation and radiogenomic classification, 2021.
+
+\bibitem{BaAS17}
+S.~Bakas, H.~Akbari, A.~Sotiras, M.~Bilello, M.~Rozycki, J.~S. Kirby, J.~B.
+  Freymann, K.~Farahani, and C.~Davatzikos.
+\newblock Advancing the cancer genome atlas glioma {MRI} collections with
+  expert segmentation labels and radiomic features.
+\newblock {\em Sci. Data}, 4(170117), 2017.
+
+\bibitem{BeTe09}
+A.~Beck and M.~Teboulle.
+\newblock A fast iterative shrinkage-thresholding algorithm for linear inverse
+  problems.
+\newblock {\em SIAM J. Imaging Sci.}, 2(1):183--202, 2009.
+
+\bibitem{bonnotte2013}
+N.~Bonnotte.
+\newblock From {K}nothe's rearrangement to {B}renier's optimal transport map.
+\newblock {\em SIAM J. Math. Anal.}, 45(1):64--87, 2013.
+
+\bibitem{Engw14}
+D.~Engwirda.
+\newblock {\em Locally optimal {D}elaunay-refinement and optimisation-based
+  mesh generation}.
+\newblock PhD thesis, University of Sydney, 2014.
+
+\bibitem{Engw15}
+D.~Engwirda.
+\newblock {V}oronoi-based point-placement for three-dimensional
+  {D}elaunay-refinement.
+\newblock {\em Procedia Eng.}, 124:330--342, 2015.
+
+\bibitem{Engw16}
+D.~Engwirda.
+\newblock Conforming restricted {D}elaunay mesh generation for piecewise smooth
+  complexes.
+\newblock {\em Procedia Eng.}, 163:84--96, 2016.
+
+\bibitem{EnIv14}
+D.~Engwirda and D.~Ivers.
+\newblock Face-centred {V}oronoi refinement for surface mesh generation.
+\newblock {\em Procedia Engineering}, 82:8--20, 2014.
+
+\bibitem{EnIv16}
+D.~Engwirda and D.~Ivers.
+\newblock Off-centre steiner points for {D}elaunay-refinement on curved
+  surfaces.
+\newblock {\em Comput.-Aided Des.}, 72:157--171, 2016.
+
+\bibitem{FaBo09}
+Q.~Fang and D.~A. Boas.
+\newblock Tetrahedral mesh generation from volumetric binary and grayscale
+  images.
+\newblock In {\em 2009 IEEE International Symposium on Biomedical Imaging: From
+  Nano to Macro}, pages 1142--1145, 2009.
+
+\bibitem{FlHo05}
+M.~S. Floater and K.~Hormann.
+\newblock Surface parameterization: a tutorial and survey.
+\newblock In {\em Advances in Multiresolution for Geometric Modelling}, pages
+  157--186. Springer Berlin Heidelberg, 2005.
+
+\bibitem{GuOMT}
+X.~Gu.
+\newblock {\it Optimal Mass Transportation Map}.
+\newblock \url{https://www3.cs.stonybrook.edu/~gu/software/omt/index.html},
+  2022.
+
+\bibitem{GuLS16}
+X.~Gu, F.~Luo, J.~Sun, and S.-T. Yau.
+\newblock Variational principles for {M}inkowski type problems, discrete
+  optimal transport, and discrete {M}onge-{A}mp\`ere equations.
+\newblock {\em Asian J. Math.}, 20(2):383--398, 2016.
+
+\bibitem{HaZT04}
+S.~Haker, L.~Zhu, A.~Tannenbaum, and S.~Angenent.
+\newblock Optimal mass transport for registration and warping.
+\newblock {\em Int. J. Comput. Vision}, 60(3):225--240, 2004.
+
+\bibitem{HoLe07}
+K.~Hormann, B.~L{\'e}vy, and A.~Sheffer.
+\newblock Mesh parameterization: Theory and practice.
+\newblock In {\em ACM SIGGRAPH Course Notes}, 2007.
+
+\bibitem{HuLL22}
+T.-M. Huang, W.-H. Liao, and W.-W. Lin.
+\newblock Fundamental theory and {R}-linear convergence of stretch energy
+  minimization for equiareal parameterizations.
+\newblock \href{https://arxiv.org/abs/2207.13943}{arxiv:2207.13943}, 2022.
+
+\bibitem{Jacobson}
+A.~Jacobson.
+\newblock {\it GitHub Repository for Common 3D Test Models}.
+\newblock \url{https://github.com/alecjacobson/common-3d-test-models}, 2021.
+
+\bibitem{kolouri2017}
+S.~Kolouri, S.~R. Park, M.~Thorpe, D.~Slepcev, and G.~K. Rohde.
+\newblock Optimal mass transport: Signal processing and machine-learning
+  applications.
+\newblock {\em IEEE Signal Process. Mag.}, 34(4):43--59, 2017.
+
+\bibitem{kolouri2016}
+S.~Kolouri, A.~B. Tosun, J.~A. Ozolek, and G.~K. Rohde.
+\newblock A continuous linear optimal transport approach for pattern analysis
+  in image datasets.
+\newblock {\em Pattern Recognit.}, 51:453--462, 2016.
+
+\bibitem{LargeScaleBD}
+S.~Kovalsky.
+\newblock {\it GitHub Repository for Large-Scale Bounded Distortion Mappings}.
+\newblock \url{https://github.com/shaharkov/LargeScaleBD}, 2015.
+
+\bibitem{KoAB15}
+S.~Z. Kovalsky, N.~Aigerman, R.~Basri, and Y.~Lipman.
+\newblock Large-scale bounded distortion mappings.
+\newblock {\em ACM Trans. Graph.}, 34(6):191:1--191:10, 2015.
+
+\bibitem{LeSC19}
+N.~Lei, K.~Su, L.~Cui, S.-T. Yau, and X.~D. Gu.
+\newblock A geometric view of optimal transportation and generative model.
+\newblock {\em Comput. Aided Geom. Des.}, 68:1--21, 2019.
+
+\bibitem{li2013}
+P.~H. Li, Q.~L. Wang, and L.~Zhang.
+\newblock A novel earth mover's distance methodology for image matching with
+  gaussian mixture models.
+\newblock In {\em Proceedings of the IEEE International Conference on Computer
+  Vision}, pages 1689--1696, 2013.
+
+\bibitem{LiJY21}
+W.-W. Lin, C.~Juang, M.-H. Yueh, T.-M. Huang, T.~Li, S.~Wang, and S.-T. Yau.
+\newblock {3D} brain tumor segmentation using a two-stage optimal mass
+  transport algorithm.
+\newblock {\em Sci. Rep.}, 11(1):14686, 2021.
+
+\bibitem{LiLH22}
+W.-W. Lin, J.-W. Lin, T.-M. Huang, T.~Li, M.-H. Yueh, and S.-T. Yau.
+\newblock A novel 2-phase residual {U}-net algorithm combined with optimal mass
+  transportation for {3D} brain tumor detection and segmentation.
+\newblock {\em Sci. Rep.}, 12(1):6452, 2022.
+
+\bibitem{nesterov1983}
+Y.~Nesterov.
+\newblock A method for solving a convex programming problem with convergence
+  rate {$O(1/k^2)$}.
+\newblock In {\em Dokl. Akad. Nauk SSSR}, volume 269, pages 543--547, 1983.
+
+\bibitem{rubner2000}
+Y.~Rubner, C.~Tomasi, and L.~Guibas.
+\newblock The earth mover's distance as a metric for image retrieval.
+\newblock {\em Int. J. Comput. Vis.}, 40(2):99--121, 2000.
+
+\bibitem{TrYF20}
+A.~P. Tran, S.~Yan, and Q.~Fang.
+\newblock Improving model-based fnirs analysis using mesh-based anatomical and
+  light-transport models.
+\newblock {\em Neurophotonics}, 7(1):015008, 2020.
+
+\bibitem{wang2013}
+W.~Wang, D.~Slep{\v{c}}ev, S.~Basu, J.~A. Ozolek, and G.~K. Rohde.
+\newblock A linear optimal transportation framework for quantifying and
+  visualizing variations in sets of images.
+\newblock {\em Int. J. Comput. Vis.}, 101(2):254--269, 2013.
+
+\bibitem{YuHL21}
+M.-H. Yueh, T.-M. Huang, T.~Li, W.-W. Lin, and S.-T. Yau.
+\newblock Projected gradient method combined with homotopy techniques for
+  volume-measure-preserving optimal mass transportation problems.
+\newblock {\em J. Sci. Comput.}, 88(3), 2021.
+
+\bibitem{YuLL19}
+M.-H. Yueh, T.~Li, W.-W. Lin, and S.-T. Yau.
+\newblock A novel algorithm for volume-preserving parameterizations of
+  3-manifolds.
+\newblock {\em SIAM J. Imaging Sci.}, 12(2):1071--1098, 2019.
+
+\end{thebibliography}

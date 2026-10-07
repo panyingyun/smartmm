@@ -1,0 +1,2249 @@
+
+===== page 1 =====
+Convergence Analysis of Volumetric Stretch Energy Minimization and its
+Associated Optimal Mass Transport ∗
+Tsung-Ming Huang† , Wei-Hung Liao ‡ , Wen-Wei Lin § , Mei-Heng Yueh ¶, and Shing-Tung
+Yau∥
+Abstract. The volumetric stretch energy has been widely applied to the computation of volume-/mass-
+preserving parameterizations of simply connected tetrahedral mesh models. However, this approach
+still lacks theoretical support. In this paper, we provide the theoretical foundation for volumetric
+stretch energy minimization (VSEM) to compute volume-/mass-preserving parameterizations. In
+addition, we develop an associated efficient VSEM algorithm with guaranteed asymptotic R-linear
+convergence. Furthermore, based on the VSEM algorithm, we propose a projected gradient method
+for the computation of the volume/mass-preserving optimal mass transport map with a guaranteed
+convergence rate of O(1/m), and combined with Nesterov-based acceleration, the guaranteed con-
+vergence rate becomes O(1/m2). Numerical experiments are presented to justify the theoretical
+convergence behavior for various examples drawn from known benchmark models. Moreover, these
+numerical experiments show the effectiveness and accuracy of the proposed algorithm, particularly
+in the processing of 3D medical MRI brain images.
+Key word. volume-/mass-preserving parameterization, optimal mass transport, R-linear convergence, projected
+gradient method, Nesterov-based acceleration, O(1/m) convergence
+MSC codes. 68U05, 65D18, 52C35, 33F05, 65E10
+1. Introduction. Volume-/mass-preserving parameterization of a 3-manifold M with a
+single closed genus-zero boundary by a unit ball B3, as well as its associated optimal mass
+transport (OMT), has been widely applied to computer graphics [11], digital geometry [15],
+medical image segmentation [24, 25], image retrieval [23, 27], image representation and reg-
+istration [14, 18, 19, 29] and generative adversarial networks [22]. In calculus, we learn that
+a 2-manifold or 3-manifold can be represented by a given 2D or 3D coordinate system, and
+then the related curvatures, singularities, maxima, minima, local areas or volume can be com-
+puted. In contrast, in practical applications, irregular manifold domains are usually obtained
+by scanning or sampling data from physical objects. For instance, CT, MRI and PET images
+are the most common in medical diagnosis, real-time scanning images by satellite for space
+engineering and weather forecasting, photomicrography in physical and biological engineering,
+∗Submitted to the editors October 19, 2022.
+Funding: The work of the authors was partially supported by the National Science and Technology Council, the
+National Center for Theoretical Sciences, and the ST Yau Center in Taiwan. T.-M. Huang, W.-W. Lin, and M.-H.
+Yueh was partially supported by NSTC 110-2115-M-003-012-MY3, 110-2115-M-A49-004- and 111-2115-M-003-016-,
+respectively.
+†Department of Mathematics, National Taiwan Normal University, Taipei, 116, Taiwan (min@ntnu.edu.tw).
+‡Department of Applied Mathematics, National Yang Ming Chiao Tung University, Hsinchu, 300, Taiwan
+(roger2300245@gmail.com).
+§Department of Applied Mathematics, National Yang Ming Chiao Tung University, Hsinchu, 300, Taiwan
+(wwlin@math.nctu.edu.tw).
+¶Department of Mathematics, National Taiwan Normal University, Taipei, 116, Taiwan (yue@ntnu.edu.tw).
+∥Yau Mathematical Sciences Center, Tsinghua University, Beijing, 100084, China (styau@tsinghua.edu.cn).
+1
+arXiv:2210.09654v1  [math.NA]  18 Oct 2022
+===== page 2 =====
+2 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+target or obstacle detection for autonomous driving systems and missile navigation, etc. One
+intuitive idea is to directly calculate numerical solutions for complex problems on irregular
+manifolds. If the irregular manifold domain is too technically challenging to produce solutions
+for a complex problem, we should consider the inverse problem of the above problem; that
+is, the irregular manifold should be parameterized by a regular domain. The most common
+3D parametric shapes are a cube or a ball B3. To this end, efficient algorithms, namely, the
+volumetric stretch energy minimization (VSEM) method [31] and OMT methods [13] for the
+computation of volume-preserving parameterizations, have recently been highly developed and
+utilized in applications. In practice, in terms of the effectiveness and accuracy, the VSEM
+algorithm is much improved compared to the other state-of-the-art algorithms (see [31] for
+details). However, VSEM still lacks rigorously mathematical and theoretical support.
+In this paper, we first introduce the volumetric stretch energy functional onM and propose
+the VSEM algorithm for the computation of the spherical volume-/mass-preserving parame-
+terization betweenM and B3. We show that a minimal solution for the volumetric stretch
+energy functional must be a volume-/mass-preserving map, and vice versa, which successfully
+supports the setting for our modified volume stretch energy functional. Then, we prove that
+the VSEM algorithm converges R-linearly under some mild conditions. Next, we consider an
+early but important OMT problem proposed by Monge in 1781 (see, e.g., [4]) in which a pile
+of soil is moved from one place to another while preserving the local volume and minimizing
+the transport cost. Although the set of volume-/mass-preserving maps between M and B3
+may not be convex, for the discrete OMT problem we still prefer to adopt the projected gra-
+dient method to minimize the transport cost for preserving the minimal deformation between
+M and B3. Then, we accelerate the convergence by the Nesterov method [26]. Under mild
+assumptions of nonexpensiveness and projection properties, the convergence of the projected
+gradient method can be proven to be a rate of O(1/m), and with the acceleration, it has a
+convergence rate ofO(1/m2). This numerical algorithm is called the volume-/mass-preserving
+OMT (VOMT) algorithm. It is effective, reliable and robust.
+The main contributions of this paper are threefold.
+1. We prove a fundamental theorem that f∗ is the minimal solution of the discrete volu-
+metric stretch energy functional if and only if f∗ is volume-/mass-preserving between
+M and B3. Based on this mathematical foundation, we develop a VSEM for the
+computation of the minimal solution f∗ and show the R-linear convergence of VSEM.
+2. For the discrete OMT problem, we use the gradient method combined with VSEM as a
+projector to develop an efficient numerical algorithm, VOMT, for solving the spherical
+VOMT problem from M to B3 with a convergence rate of O(1/m) and, accelerated
+by the Nesterov method, with a convergence rate of O(1/m2).
+3. In practical applications on various benchmarks, numerical experiments confirm that
+the assumption for R-linear convergence is satisfied, and the related means and stan-
+dard deviation of the ratios of local volume distortions show the effectiveness and
+exactness of the proposed VOMT algorithm.
+The remaining part of this paper is organized as follows: In Section 2, we introduce the
+discrete 3-manifold and the volumetric stretch energy. In Section 3, we propose a rigorous
+derivation for the equivalence relationship between the volume-/mass-preserving map and the
+minimizer of the volumetric stretch energy. In Section 4, we prove the convergence of the
+===== page 3 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 3
+VSEM algorithm in [31] for the computation of volume-/mass-preserving parameterizations,
+which provides theoretical support for the VSEM. Then, we introduce the associated VOMT
+algorithm as well as its convergence analysis in Section 5. Numerical experiments for the
+VSEM and VOMT are demonstrated in Section 6 to validate the consistency between the
+theoretical and numerical results. Concluding remarks are given in Section 7.
+In this paper, we use the following notations:
+• Bold letters, e.g., f, denote real-valued vectors or matrices.
+• Capital letters, e.g., L, denote real-valued matrices.
+• Typewriter letters, e.g., I and B, denote ordered sets of indices.
+• fi denotes the ith row of the matrix f.
+• fs denotes the sth column of the matrix f.
+• fI denotes the submatrix of f composed of fi, for i∈ I.
+• Li,j denotes the (i,j )th entry of the matrix L.
+• LI,J denotes the submatrix of L composed of Li,j for i∈ I and j∈ J.
+• R denotes the set of real numbers.
+• B3 :={x∈ R3|∥ x∥≤ 1} denotes the solid ball in R3.
+• [v0,..., vk] denotes the k-simplex with vertices v0,..., vk.
+• |[v0,..., vk]| denotes the volume of the k-simplex [v0,..., vk].
+• 0 and 1 denote the zero and one vectors or matrices of appropriate sizes, respectively.
+• Given two vectors x and y, x· y denotes the inner product x⊤y.
+• Hashtag # of a set, e.g., #( T(M)), denotes the number of elements in T(M).
+2. Discrete 3-manifold and volumetric stretch energy. LetM⊂ R3 be a simply con-
+nected 3-manifold with a single genus-zero boundary. A discrete 3-manifold model for M is
+a simplicial 3-complex with n vertices
+V(M) ={vt = (v1
+t,v 2
+t,v 3
+t )∈ R3}n
+t=1,
+and tetrahedra
+T(M) ={[vi, vj, vk, vℓ]⊂ R3 for some vr∈ V(M), r =i,j,k,ℓ },
+where the bracket [ vi, vj, vk, vℓ] is the 3-simplex (convex hull) of the affinely independent
+points{vr|r =i,j,k,ℓ }. Additionally, the triangular faces and edges of M are denoted by
+F(M) ={[vi, vj, vk]| [vi, vj, vk, vℓ]∈ T(M) with some vℓ∈ V(M)}
+and
+E(M) ={[vi, vj]| [vi, vj, vk]∈ F(M) with some vk∈ V(M)}.
+Because an affine map in R3 is determined by four independent point correspondences, a
+piecewise affine map f :M→ R3 on a tetrahedral mesh M can be expressed as an n× 3
+matrix defined by the images f(vt) of vertices vt∈ V(M) as
+f := [f⊤
+1 ,··· , f⊤
+n ]⊤∈ Rn×3,(2.1)
+===== page 4 =====
+4 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+where ft :=f(vt) = (f 1
+t,f 2
+t,f 3
+t )∈ R3, for t = 1,...,n . We also denote
+f =
+[
+f 1 f 2 f 3]
+, fs =
+[
+fs
+1 ··· fs
+n
+]⊤, s= 1, 2, 3.
+For a point v∈M , v must belong to a tetrahedron τ; without loss of generality, let τ =
+[v1, v2, v3, v4]. Then, the piecewise affine map f(v) : T(M)→ R3 can be expressed as a linear
+combination of{fi}4
+i=1 with barycentric coordinates, i.e.,
+f|τ(v) =
+4∑
+i=1
+λif(vi), λ i = 1
+|τ||[v1,··· ,ˆvi,··· , v4]|
+whereˆvi is replaced by v fori = 1,..., 4, and|τ| denotes the volume of the 3-simplex τ. The
+piecewise affine map f :M→ B3 is said to be induced by f and is volume-/mass-preserving
+if the Jacobian Jf-1 = [∂f-1
+∂u1 , ∂f-1
+∂u2 , ∂f-1
+∂u3 ] satisfies
+(2.2) det( Jf-1|f (τ )) = 1
+with f(τ) = [ fi, fj, fk, fℓ] for every τ = [ vi, vj, vk, vℓ]∈ T(M). Like the derivation in [31,
+Appendix A], f :M→ R3 is volume-/mass-preserving with respect to the tetrahedral volume
+measureµ : T(M)→ R+ if and only if (2.2) holds for every τ∈ T(M). We denote the stretch
+factor with respect to µ as
+σµ,f-1(τ) =µ(τ)/|f(τ)|.(2.3)
+The original VSEM [31] computes a spherical volume-preserving parameterization between
+M and B3 with µ(τ) =|τ| by minimizing the volumetric stretch energy functional,
+EV (f) = 1
+2trace(f⊤LV (f)f) (2.4)
+where LV (f) is a volumetric stretch Laplacian matrix with
+[LV (f)]ij = [LV (f)]⊤
+ij =
+
+
+
+wij(f), if [vi, vj]∈ E(M),
+-∑
+ℓ̸=iwiℓ(f), if j =i,
+0, otherwise,
+(2.5a)
+in which, like [30], the modified weight wij(f) is defined by
+wij(f) =- 1
+9
+∑
+τ∈T(M)
+[vi,vj ]∪[vk,vℓ]⊂τ
+[vi,vj ]∩[vk,vℓ]=∅
+|f([vi, vk, vℓ])||f([vj, vℓ, vk])| cosθk,ℓ
+i,j (f)
+σµ,f-1(τ)|f(τ)|
+=- 1
+36
+∑
+τ∈T(M)
+[vi,vj ]∪[vk,vℓ]⊂τ
+[vi,vj ]∩[vk,vℓ]=∅
+(2|f([vi, vk, vℓ])|) (2|f([vj, vk, vℓ])|) cosθk,ℓ
+i,j (f)
+µ(τ)
+=- 1
+36
+∑
+τ∈T(M)
+[vi,vj ]∪[vk,vℓ]⊂τ
+[vi,vj ]∩[vk,vℓ]=∅
+[(fk- fi)× (fℓ- fi)]⊤[(fℓ- fj)× (fk- fj)]
+µ(τ) .(2.5b)
+===== page 5 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 5
+Here,θk,ℓ
+i,j (f) is the dihedral angle between the triangular facesf([vi, vk, vℓ]) andf([vj, vℓ, vk])
+in tetrahedron f(τ). In Sections 3 and 4 we will provide the theoretical foundation of SVEM.
+Remark 2.1. In practice, the dihedral angle θk,ℓ
+i,j (f) is computed by using the identity
+cos(π-θk,ℓ
+i,j (f)) = ni,k,ℓ(f)⊤nj,k,ℓ(f),
+where ni,j,k(f) denotes the unit normal vector of face f([vi,vj,vk]).
+3. Volume-/mass-preserving parameterization vs. volumetric stretch energy mini-
+mizer. LetM be a simply connected 3-manifold with a genus-zero boundary. We consider
+the volumetric stretch energy functional on M as in (2.4),
+EV (f) = 1
+2trace
+(
+f⊤LV (f)f
+)
+= 1
+2
+3∑
+s=1
+fs⊤LV (f)fs,(3.1)
+where LV (f) is the volumetric stretch Laplacian matrix as in (2.5).
+In Subsection 3.1, we first show the equivalence of volumetric stretch energy minimizers
+and volume-/mass-preserving parameterizations. In Subsection 3.2, we provide a neat gradient
+formula of EV so that the minimizers of EV with a fixed spherical boundary constraint can
+be conveniently derived in Subsection 3.3.
+To simplify the derivations in Subsections 3.1 and 3.2, we denote the volumetric stretch
+energy restricted to a tetrahedron τ ∈ T(M) as Eτ(f(τ)) with Laplacian matrix Lτ(f)≡
+LV (f)|τ. Then, the volumetric stretch energy functional EV (f) in (3.1) is equal to the sum-
+mation of all Eτ(f(τ)). According to (2.5), we give a new representation of Lτ(f) as follows.
+Without loss of generality, let τ = [v1, v2, v3, v4] be a tetrahedron in T(M). Then, the
+image of f(τ) is [ f1, f2, f3, f4]. By substituting (2.5b) into LV (f)|τ of (2.5a), we obtain
+Lτ(f) =- 1
+36µ(τ) [aij]∈ R4×4,(3.2a)
+where, for [ vi, vj]∩ [vk, vℓ] =∅ and i,j,k,ℓ ∈{ 1, 2, 3, 4},
+aij = [(fk- fi)× (fℓ- fi)]⊤[(fℓ- fj)× (fk- fj)], a ij =aji(3.2b)
+and
+aii =-
+∑
+j̸=i
+aij.(3.2c)
+Applying the fundamental identity
+(a× b)⊤(x× y) = (a⊤x)(b⊤y)- (a⊤y)(b⊤x),
+aij of (3.2b) can be expanded into the form
+aij =- [(fk- fi)⊤(fk- fj)][(fℓ- fi)⊤(fℓ- fj)] (3.3)
++ [(fk- fi)⊤(fℓ- fj)][(fℓ- fi)⊤(fk- fj)].
+===== page 6 =====
+6 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+3.1. Equivalence of volumetric stretch energy minimizers and volume-/mass-
+preserving parameterizations. First, we provide a geometric interpretation of EV in the
+following theorem, which is the crucial step for the proof of minimizers of EV being volume-
+/mass-preserving, and vice versa.
+Theorem 3.1. The volumetric stretch energy functional (3.1) can be reformulated as
+EV (f) =
+∑
+τ∈T(M)
+3|f(τ)|2
+2µ(τ) .(3.4)
+Proof. Note that the image volume |f(τ)| can be written as
+|f(τ)| = 1
+6
+(
+((f2- f1)× (f3- f1))⊤(f4- f1)
+)
+.(3.5)
+Together with the formula of Lτ(f) in (3.2a), (3.3) and (3.5), we can show that the following
+equation holds
+1
+2
+3∑
+s=1
+fs
+τ
+⊤Lτ(f)fs
+τ = 3|f(τ)|2
+2µ(τ)(3.6)
+by a direct expansion of both sides of (3.6) with the symbolic toolbox of MATLAB.
+Summing over all tetrahedra in T(M), we obtain
+EV (f) = 1
+2
+3∑
+s=1
+∑
+τ∈T(M)
+fs
+τ
+⊤Lτ(f)fs
+τ =
+∑
+τ∈T(M)
+3|f(τ)|2
+2µ(τ) .
+Theorem 3.1 indicates that the volumetric stretch energy EV can be represented solely by
+µ(τ) and the image volume |f(τ)|, where τ ∈ T(M). In the following theorem, we further
+prove that the minimizer of the volumetric stretch energy is volume-/mass- parameterization,
+and vice versa.
+Theorem 3.2. LetM⊂ R3 be a simply connected 3-manifold with a genus-zero boundary.
+Under the constraint that the image volume is the same as the volume/mass of M, the map f∗
+is a minimizer of the volumetric stretch energy functional if and only if f∗ is volume-/mass-
+preserving, i.e.,
+f∗ = argmin
+|f (M)|=µ(M)
+EV (f) ⇐⇒ µ(τ) =|f∗(τ)|, for every τ∈ T(M).(3.7)
+Proof. Letq := # (T(M)). Without loss of generality, we normalize the total volume/mass
+to one, i.e.,
+1 =µ(M) =
+q∑
+r=1
+µ(τr), 1 =|f(M)| =
+q∑
+r=1
+|f(τr)|.(3.8)
+===== page 7 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 7
+We denote wr =|f(τr)|∈ (0, 1) and ur = µ(τr)∈ (0, 1), for 1 ≤ r≤ q. Then, by (3.4), the
+optimal problem
+min
+|f (M)|=µ(M)=1
+EV (f)
+can be rewritten as
+min EV (w1,w 2,··· ,wq) = 3
+2
+q∑
+r=1
+w2
+r
+ur
+(3.9a)
+subject to
+q∑
+r=1
+wr = 1.(3.9b)
+The Karush-Kuhn-Tucker (KKT) conditions of (3.9) imply that
+3wr
+ur
++λ = 0, r = 1,...,q,(3.10a)
+q∑
+r=1
+wr- 1 = 0,(3.10b)
+where λ is a Lagrange multiplier. Using the results in (3.8) and (3.10a), we have λ =-3.
+Substituting λ =-3 into (3.10a), we obtain wr = ur, 1 ≤ r≤ q. Furthermore, the energy
+function EV (w1,w 2,··· ,wq) in (3.9a) is convex and the associated constraint in (3.9b) is a
+convex set, which implies that the solution of KKT conditions in (3.10) is the minimizer of
+the energy functional.
+Remark 3.3. According to Theorems 3.1 and 3.2, if f∗∈ B3 is the minimizer in Theo-
+rem 3.2 with|f∗(M)| =µ(M) = 4
+3π, then
+EV (f∗) = 3
+2
+∑
+τ∈T(M)
+|f∗(τ)|2
+µ(τ) = 3
+2
+∑
+τ∈T(M)
+|f∗(τ)| = 3
+2|f∗(M)| = 2π.
+In Table 6.1, we will check the volumetric stretch energyEV (f∗), computed by Algorithm 4.1,
+for various benchmark examples is close to 2 π.
+With the conclusion of Theorem 3.2, volume-/mass-preserving parameterizations can be
+computed by minimizing EV in (3.7). In the following subsection, we provide a neat gradient
+formula of EV so that the computation of minimizers in Theorem 3.2 can be conveniently
+carried out.
+3.2. Gradient of the volumetric stretch energy. For the computation of the gradient
+∇fEV (f) :=
+
+
+∇f 1EV (f)
+∇f 2EV (f)
+∇f 3EV (f)
+
+,(3.11)
+===== page 8 =====
+8 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+of (3.1), from (2.5a), we write EV (f) as
+EV (f) = 1
+2trace
+
+ ∑
+τ∈T(M)
+fτ⊤Lτ(f)fτ
+
+,
+where Lτ(f) is defined in (3.2). For the t-th vertex, 1 ≤ t≤ n, in (3.11), the gradient of
+EV (f) on fs, s = 1, 2, 3, is computed by
+[∇f sEV (f)]t = [LV (f)]t,1:nfs + 1
+2trace
+
+ ∑
+τ∈T(M)
+f⊤
+τ
+∂Lτ(f)
+∂fs
+t
+fτ
+
+.(3.12)
+To determine the gradient ∇f sEV (f), we first expand and simplify the second term in
+(3.12). For s∈{ 1, 2, 3} and t∈{ 1, 2, 3, 4}, the partial derivative of the volumetric stretch
+Laplacian Lτ(f) in (3.2a) is given by
+∂
+∂fs
+t
+Lτ(f) =- 1
+36µ(τ)
+
+
+∂a11
+∂f s
+t
+∂a12
+∂f s
+t
+∂a13
+∂f s
+t
+∂a14
+∂f s
+t
+∂a21
+∂f s
+t
+∂a22
+∂f s
+t
+∂a23
+∂f s
+t
+∂a24
+∂f s
+t
+∂a31
+∂f s
+t
+∂a32
+∂f s
+t
+∂a33
+∂f s
+t
+∂a34
+∂f s
+t
+∂a41
+∂f s
+t
+∂a42
+∂f s
+t
+∂a43
+∂f s
+t
+∂a44
+∂f s
+t
+
+
+.(3.13)
+From (3.3), for [vi, vj]∩ [vk, vℓ] =∅ and i,j,k,ℓ ∈{ 1, 2, 3, 4}, we have
+∂aij
+∂fi
+= (fk- fj)[(fk- fℓ)⊤(fj- fℓ)] + (fℓ- fj)[(fℓ- fk)⊤(fj- fk)],(3.14a)
+∂aij
+∂fk
+= (fi + fj- 2fk)[(fi- fℓ)⊤(fj- fℓ)] (3.14b)
+- (fj- fℓ)[(fi- fℓ)⊤(fj- fk)]- (fi- fℓ)[(fi- fk)⊤(fj- fℓ)].
+By using aij = aji, (3.5), (3.13) and (3.14), a direct computation with the symbolic toolbox
+of MATLAB yields
+fr
+τ
+⊤ ∂
+∂fs
+t
+Lτ(f)fr
+τ =
+{
+0, if r =s,
+l(s,t ), if r̸=s,(3.15)
+where
+l(s,i ) = 12
+(
+fs-1
+j (fs+1
+k -fs+1
+ℓ ) +fs-1
+k fs+1
+ℓ -fs+1
+k fs-1
+ℓ -fs+1
+j (fs-1
+k -fs-1
+ℓ )
+)
+|f(τ)|,
+l(s,j ) =-12
+(
+fs-1
+i (fs+1
+k -fs+1
+ℓ ) +fs-1
+k fs+1
+ℓ -fs+1
+k fs-1
+ℓ -fs+1
+i (fs-1
+k -fs-1
+ℓ )
+)
+|f(τ)|.
+The following theorem gives a simple formula for the gradient of EV , which provides a
+foundation for the VSEM to compute critical points of EV .
+Theorem 3.4. The gradient of EV in (3.1) can be formulated as
+∇fEV (f)≡
+
+
+∇f 1EV (f)
+∇f 2EV (f)
+∇f 3EV (f)
+
+ = 3
+
+
+LV (f)f 1
+LV (f)f 2
+LV (f)f 3
+
+.
+===== page 9 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 9
+Proof. It can be verified by the symbolic toolbox of MATLAB that
+[Lτ(f)fs
+τ ]t = 1
+2l(s,t ), for t∈{ 1, 2, 3, 4},
+where Lτ(f) is given in (3.2a). As a result, (3.15) indicates that
+1
+2
+3∑
+r=1
+fr
+τ
+⊤ ∂
+∂fs
+t
+[Lτ(f)]fr
+τ =l(s,t ) = 2[Lτ(f)fs
+τ ]t.
+By the summation over all the tetrahedra τ∈ T(M), we have
+(3.16) 1
+2trace
+
+ ∑
+τ∈T(M)
+f⊤
+τ
+∂Lτ(f)
+∂fs
+t
+fτ
+
+ = 2[LV (f)fs]t.
+Thus, by substituting (3.16) into (3.12), we obtain
+[∇f sEV (f)]t = 3[LV (f)fs]t.
+3.3. Minimizer of the volumetric stretch energy with fixed boundary points. From
+Theorem 3.4, the Euler-Lagrange equations corresponding to EV (f) in (3.1) are
+LV (f)fs = 0, s = 1, 2, 3,
+which has only a trivial solution [ f 1, f 2, f 3] = [ 1, 1, 1] because of LV (f) being a singular M-
+matrix. Such trivial solution does not satisfy the condition |f(M)| =µ(M) in Theorem 3.2.
+To get the minimizer f∗ in Theorem 3.2, we consider the optimal problem for the minimal
+volumetric stretch energy with fixed spherical boundary points so that|f(M)| = 4
+3π as stated
+in Remark 3.3.
+Let
+B ={t| vt∈∂M} and I ={1,...,n }\B.
+Under a given spherical boundary constraint f∗s
+B , we consider the optimal problem:
+min{EV (f)| fs
+B = f∗s
+B ,s = 1, 2, 3}.(3.17)
+The associated Lagrange function of (3.17) is
+g(fI, fB,λB) =EV (f) +
+3∑
+s=1
+λs⊤
+B (fs
+B- f∗s
+B ),
+whereλB = [λ1
+B,λ2
+B,λ3
+B]. By the KKT conditions of (3.17) and Theorem 3.4, we have
+0 =∇f s
+Ig(fI, fB,λB) =LI,I(f)fs
+I +LI,B(f)fs
+B,(3.18a)
+0 =∇f s
+Bg(fI, fB,λB) = 3LB,I(f)fs
+I + 3LB,B(f)fs
+B +λs
+B,(3.18b)
+0 =∇λs
+Bg(fI, fB,λB) = fs
+B- f∗s
+B .(3.18c)
+If f∗s
+I solves the equation (3.18a) with fs
+B = f∗s
+B , for s = 1, 2, 3, then by Theorem 3.2, f∗
+induced by f∗≡ [f∗⊤
+I , f∗⊤
+B ]⊤ is a volume-/mass-preserving map.
+===== page 10 =====
+10 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+Algorithm 4.1 VSEM for the volume-preserving parameterization
+Input: A simply connected tetrahedral mesh M and a tolerance ε.
+Output: A volume-preserving parameterization f :M→ B3 induced by f.
+1: Let n be the number of vertices of M.
+2: Let B ={t|vt∈∂M} and I ={1,...,n }\B.
+3: Compute a spherical area-preserving parameterization fB by the SEM algorithm in [31].
+4: Compute f =
+[
+f 1 f 2 f 3]
+by solving the linear systems
+[LV ]I,Ifs
+I =-[LV ]I,Bfs
+B, s = 1, 2, 3,
+where LV is defined by LV (id) and fs =
+[fs
+I
+fs
+B
+]
+, s = 1, 2, 3.
+5: Let δ←∞ andˆf← f (ˆf←f, where ˆf is induced byˆf).
+6: while δ >ε do
+7: Update LV (ˆf), where LV (ˆf) is defined as (2.5a) with wi,j(f) in (2.5b).
+8: Update f =
+[
+f 1 f 2 f 3]
+by solving the linear systems
+[LV ]I,Ifs
+I =-[LV ]I,Bfs
+B, s = 1, 2, 3.
+9: Update δ←EV (ˆf)-EV (f) andˆf← f (ˆf←f).
+10: end while
+11: return f .
+4. Convergence of the volumetric stretch energy minimization. The VSEM for
+the volume-/mass-preserving parameterization with a fixed spherical area-/mass-preserving
+boundary constraint as stated in Algorithm 4.1 was proposed in [31]. It is a novel and effi-
+cient algorithm. However, there is a lack of rigorous theoretical support. In this section, we
+fill the gaps in theory.
+Given Theorem 3.2, the minimizer f∗∈ B3 with the constraint |f∗(M)| = µ(M) of the
+volumetric stretch energy functional in (2.4) is the volume-/mass-preserving map from M to
+B3. Under a given spherical boundary constraint f∗
+B , the equation (3.18a) indicates that f∗
+would satisfy
+(4.1) [ LV (f∗)]I,If∗
+I =-[LV (f∗)]I,Bf∗
+B.
+This result tell us that the map f∗ :M→ B3, produced by Algorithm 4.1, is volume-/mass-
+preserving if the algorithm is convergent.
+Next, we give a mathematical analysis of the convergence for Algorithm 4.1. At the
+(m + 1)th step of Algorithm 4.1, we denote
+L(m)
+I = [LV (f (m))]I,I, L (m)
+B = [LV (f (m))]I,B.
+From (4.1) or Step 8 of Algorithm 4.1, we have
+fs(m+1)
+I =-(L(m)
+I )-1L(m)
+B f∗s
+B ,(4.2)
+===== page 11 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 11
+which implies that
+εs(m+1)≡ fs(m+1)
+I - fs(m)
+I =
+(
+(L(m-1)
+I )-1L(m-1)
+B - (L(m)
+I )-1L(m)
+B
+)
+f∗s
+B
+=
+(
+(L(m-1)
+I )-1- (L(m)
+I )-1
+)
+L(m-1)
+B f∗s
+B - (L(m)
+I )-1
+(
+L(m)
+B -L(m-1)
+B
+)
+f∗s
+B
+= (L(m)
+I )-1
+(
+L(m)
+I -L(m-1)
+I
+)
+(L(m-1)
+I )-1L(m-1)
+B f∗s
+B - (L(m)
+I )-1
+(
+L(m)
+B -L(m-1)
+B
+)
+f∗s
+B
+= (L(m)
+I )-1
+[
+L(m)
+I -L(m-1)
+I L(m)
+B -L(m-1)
+B
+]
+g(m)
+s
+=
+(
+L(m)
+I
+)-1([
+L(m)
+I L(m)
+B
+]
+-
+[
+L(m-1)
+I L(m-1)
+B
+])
+g(m)
+s(4.3a)
+for s = 1, 2, 3, where
+g(m)
+s =
+[
+(L(m-1)
+I )-1L(m-1)
+B f∗s
+B
+-f∗s
+B
+]
+.(4.3b)
+Equation (4.3a) indicates that the components ofεs(m+1) depend on the elements wij(f (m))-
+wij(f (m-1)) for i,j = 1,...,n . Based on the result in (2.5b), we derive a new representation
+of wij(f (m))-wij(f (m-1)) in the following lemma.
+Lemma 4.1. Let f (m-1) ≡ f (m-1)
+I and f (m) ≡ f (m)
+I be computed by (4.2). wij(f (m-1))
+and wij(f (m)) are the (i,j )th element of the Laplacian matrices LV (f (m-1)) and LV (f (m)),
+respectively, in (2.5a). Define
+ε(m)
+t = (f (m)
+t - f (m-1)
+t )⊤, t = 1,...,n.(4.4)
+For [vi, vj]∈ E(M),τ≡ [vi, vj, vk, vℓ]∈ T(M), the vectors h(·)
+pq are defined by h(·)
+pq≡ f (·)
+p -f (·)
+q
+for p,q∈{i,j,k,ℓ }. Then,
+ˆw(m)
+ij ≡wij(f (m))-wij(f (m-1))
+=
+∑
+τ∈T(M)
+[vi,vj ]∪[vk,vℓ]⊂τ
+[vi,vj ]∩[vk,vℓ]=∅
+(
+-c(m)
+i ·ε(m)
+i - c(m)
+j ·ε(m)
+j + c(m)
+k ·ε(m)
+k + c(m)
+ℓ ·ε(m)
+ℓ
+)
+,
+===== page 12 =====
+12 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+where
+c(m)
+i =- 1
+36µ(τ)
+(
+(h(m)
+ℓi · h(m)
+kj )h(m)
+ℓj + (h(m-1)
+ki · h(m-1)
+ℓj )h(m)
+kj
++(h(m)
+ℓi · h(m)
+ℓj )h(m)
+kj + (h(m-1)
+ki · h(m-1)
+kj )h(m)
+ℓj
+)
+,(4.5a)
+c(m)
+j =- 1
+36µ(τ)
+(
+(h(m)
+ℓi · h(m)
+kj )h(m-1)
+ki + (h(m-1)
+ki · h(m-1)
+ℓj )h(m-1)
+ℓi
++(h(m)
+ℓi · h(m)
+ℓj )h(m-1)
+ki + (h(m-1)
+ki · h(m-1)
+kj )h(m-1)
+ℓi
+)
+,(4.5b)
+c(m)
+k =- 1
+36µ(τ)
+(
+(h(m)
+ℓi · h(m)
+kj )h(m)
+ℓj + (h(m-1)
+ki · h(m-1)
+ℓj )h(m-1)
+ℓi
++(h(m)
+ℓi · h(m)
+ℓj )(h(m)
+kj + h(m-1)
+ki
+)
+,(4.5c)
+c(m)
+ℓ =- 1
+36µ(τ)
+(
+(h(m)
+ℓi · h(m)
+kj )h(m-1)
+ki + (h(m-1)
+ki · h(m-1)
+ℓj )h(m)
+kj
++(h(m-1)
+ki · h(m-1)
+kj )(h(m)
+ℓj + h(m-1)
+ℓi
+)
+.(4.5d)
+Proof. Using the expression in (2.5b) and identity (3.3), we have
+wij(f (m)) =- 1
+36
+∑
+τ∈T(M)
+[vi,vj ]∪[vk,vℓ]⊂τ
+[vi,vj ]∩[vk,vℓ]=∅
+(h(m)
+ki × h(m)
+ℓi )⊤(h(m)
+ℓj × h(m)
+kj )
+µ(τ)
+=-
+∑
+τ∈T(M)
+[vi,vj ]∪[vk,vℓ]⊂τ
+[vi,vj ]∩[vk,vℓ]=∅
+(h(m)
+ki · h(m)
+ℓj )(h(m)
+ℓi · h(m)
+kj )- (h(m)
+ki · h(m)
+kj )(h(m)
+ℓi · h(m)
+ℓj )
+36µ(τ) .
+Hence, we can rewrite the numerator of wij(f (m))-wij(f (m-1)) as the following two terms:
+(h(m)
+ki · h(m)
+ℓj )(h(m)
+ℓi · h(m)
+kj )- (h(m-1)
+ki · h(m-1)
+ℓj )(h(m-1)
+ℓi · h(m-1)
+kj )
+=(h(m)
+ki · h(m)
+ℓj )(h(m)
+ℓi · h(m)
+kj )- (h(m-1)
+ki · h(m-1)
+ℓj )(h(m-1)
+ℓi · h(m-1)
+kj )
+- (h(m-1)
+ki · h(m-1)
+ℓj )(h(m)
+ℓi · h(m)
+kj ) + (h(m-1)
+ki · h(m-1)
+ℓj )(h(m)
+ℓi · h(m)
+kj )
+=
+{
+(ε(m)
+k -ε(m)
+i )· h(m)
+ℓj + h(m-1)
+ki · (ε(m)
+ℓ -ε(m)
+j )
+}
+(h(m)
+ℓi · h(m)
+kj )
++
+{
+(ε(m)
+ℓ -ε(m)
+i )· h(m)
+kj + h(m-1)
+ℓi · (ε(m)
+k -ε(m)
+j )
+}
+(h(m-1)
+ki · h(m-1)
+ℓj )
+===== page 13 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 13
+and
+(h(m)
+ki · h(m)
+kj )(h(m)
+ℓi · h(m)
+ℓj )- (h(m-1)
+ki · h(m-1)
+kj )(h(m-1)
+ℓi · h(m-1)
+ℓj )
+=(h(m)
+ki · h(m)
+kj )(h(m)
+ℓi · h(m)
+ℓj )- (h(m-1)
+ki · h(m-1)
+kj )(h(m-1)
+ℓi · h(m-1)
+ℓj )
+- (h(m-1)
+ki · h(m-1)
+kj )(h(m)
+ℓi · h(m)
+ℓj ) + (h(m-1)
+ki · h(m-1)
+kj )(h(m)
+ℓi · h(m)
+ℓj )
+=
+{
+(ε(m)
+k -ε(m)
+i )· h(m)
+kj + h(m-1)
+ki · (ε(m)
+k -ε(m)
+j )
+}
+(h(m)
+ℓi · h(m)
+ℓj )
++
+{
+(ε(m)
+ℓ -ε(m)
+i )· h(m)
+ℓj + h(m-1)
+ℓi · (ε(m)
+ℓ -ε(m)
+j )
+}
+(h(m-1)
+ki · h(m-1)
+kj ).
+Combining the above results, we obtain
+ˆw(m)
+ij =
+∑
+τ∈T(M)
+[vi,vj ]∪[vk,vℓ]⊂τ
+[vi,vj ]∩[vk,vℓ]=∅
+(
+-c(m)
+i ·ε(m)
+i - c(m)
+j ·ε(m)
+j + c(m)
+k ·ε(m)
+k + c(m)
+ℓ ·ε(m)
+ℓ
+)
+,
+where c(m)
+i , c(m)
+j , c(m)
+k and c(m)
+ℓ are defined in (4.5).
+By the definition of LV (f) in (2.5a) and using the result in Lemma 4.1, we obtain
+(([
+L(m)
+I L(m)
+B
+]
+-
+[
+L(m-1)
+I L(m-1)
+B
+])
+g(m)
+s
+)
+i
+=
+∑
+[vi,vj ]∈E(M)
+ˆw(m)
+ij (g(m)
+sj -g(m)
+si )
+=
+∑
+[vi,vj ]∈E(M)
+(g(m)
+sj -g(m)
+si )
+∑
+τ∈T(M)
+[vi,vj ]∪[vk,vℓ]⊂τ
+[vi,vj ]∩[vk,vℓ]=∅
+(
+-c(m)
+i ·ε(m)
+i - c(m)
+j ·ε(m)
+j + c(m)
+k ·ε(m)
+k + c(m)
+ℓ ·ε(m)
+ℓ
+)
+≡
+(
+T (m)
+s ε(m)
+)
+i
+(4.6)
+for i = 1,...,n and s = 1, 2, 3 with T (m)
+s ∈ Rn×3n and
+ε(m) =
+
+
+ε(m)
+1
+...
+ε(m)
+n
+
+∈ R3n.(4.7)
+With this critical result, we get the relationship between ε(m+1) and ε(m) as the following
+theorem.
+Theorem 4.2. Let g(m)
+s , ε(m), and T (m)
+s , for s = 1, 2, 3, be defined in (4.3b), (4.7), and
+(4.6), respectively. Let
+P =
+[
+e1 en+1 e2n+1 e2 en+2 e2n+2 ··· en e2n e3n
+]⊤
+be an 3n× 3n permutation matrix. Then
+ε(m+1) =P
+(
+I3⊗ (L(m)
+I )-1
+)
+
+
+T (m)
+1
+T (m)
+2
+T (m)
+3
+
+ε(m)≡T (m)ε(m).(4.8)
+===== page 14 =====
+14 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+Proof. From the definitions of εs(m+1), ε(m)
+t and ε(m) in (4.3a), (4.4), and (4.7), respec-
+tively, we have
+P
+
+
+ε1(m+1)
+ε2(m+1)
+ε3(m+1)
+
+ =
+
+
+ε(m+1)
+1
+...
+ε(m+1)
+n
+
+ =ε(m+1).(4.9)
+The results in (4.3), (4.6), (4.7) and (4.9) imply that
+ε(m+1) =P
+
+
+(
+L(m)
+I
+)-1([
+L(m)
+I L(m)
+B
+]
+-
+[
+L(m-1)
+I L(m-1)
+B
+])
+g(m)
+1
+(
+L(m)
+I
+)-1([
+L(m)
+I L(m)
+B
+]
+-
+[
+L(m-1)
+I L(m-1)
+B
+])
+g(m)
+2
+(
+L(m)
+I
+)-1([
+L(m)
+I L(m)
+B
+]
+-
+[
+L(m-1)
+I L(m-1)
+B
+])
+g(m)
+3
+
+
+=P
+(
+I3⊗ (L(m)
+I )-1
+)
+
+
+T (m)
+1
+T (m)
+2
+T (m)
+3
+
+ε(m).(4.10)
+Like the analysis of convergence for the stretch energy minimization for equiareal param-
+eterizations in [16], in the following theorem we show that Algorithm 4.1 for the volume-
+preserving parameterization is R-linearly convergent.
+Theorem 4.3. LetM ⊂R3 be a simply connected 3-manifold with a single genus-zero
+boundary. Let fs(m)
+I fors = 1, 2, 3 be defined in (4.2) andε(m) withε(m)
+t being defined in (4.9)
+and (4.4), respectively. Define
+Pm = (T (m)···T (0)) (4.11)
+withT (i) in (4.8). Considering Figure 6.2, we suppose that there exists m0 > 0 and c >0
+such that
+∥Pm∥2≤c, ρ (Pm+1)≤ρ(Pm)< 1,(4.12)
+andPm is diagonalizable for m≥ m0. Then, there exists a sequence {fs(mj )
+I } for s = 1, 2, 3
+satisfying R-linear convergence, i.e.,
+∥ε(mj )∥1/mj
+∞ < 1.
+Proof. SincePm is diagonalizable, for m≥ m0, from the assumption (4.12), there exists
+a subsequence{mj} such that
+lim
+j→∞
+P 1/mj
+mj =A
+with ρ(A)< 1. Here, P 1/mj
+mj is the mj-root ofPmj for which the eigenvalues are taken as the
+principal values of the eigenvalues ofPmj. Let
+P 1/mj
+mj =A +Emj
+===== page 15 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 15
+withEmj→ 0 as j→∞ . There is an operator norm ∥·∥ ∗ and a constant M∞ > 0 such that
+∥A∥∗< 1 and∥A∥∞≤M∞∥A∥∗. Then, for ε(mj ) =P (mj )ε(0) = (T (mj )···T (0))ε(0), we have
+ε(mj )
+
+1/mj
+∞
+≤
+Pmj
+1/mj
+∞ ∥ε(0)∥1/mj
+∞ =∥(A +Emj)mj∥1/mj
+∞ ∥ε(0)∥1/mj
+∞
+≤∥ (A +Emj)mj∥1/mj
+∗ M 1/mj
+∞ ∥ε(0)∥1/mj
+∞
+≤∥ (A +Emj)∥∗M 1/mj
+∞ ∥ε(0)∥1/mj
+∞ < 1
+for j sufficiently large.
+5. Projected gradient method for VOMT maps. The volume-/mass-preserving parame-
+terization computed by Algorithm 4.1 is not unique. For example, given a volume-/mass-
+preserving parameterization f, consider the rotation R ∈ SO(3) = {R ∈ R3×3|R⊤R =
+I3, det(R) = 1}. The map fR⊤ is also a volume-/mass-preserving parameterization and hence
+a minimizer of the volumetric stretch energy (2.4). In practical applications, it is usually
+desired that the map be unique. To guarantee the uniqueness of the parameterization, it is
+natural to impose a constraint to minimize the displacement of each point with the volume be-
+ing its weight. Such a map is called a VOMT map. More precisely, the VOMT map minimizes
+the cost function
+C(f) =
+∫
+M
+∥v-f(v)∥2
+2ν(v)
+under the constraint that f :M→ B3 is volume-/mass-preserving with respect to the vol-
+ume/mass measure ν :M→ R+. The VSEM algorithm, Algorithm 4.1, can be applied as a
+projection Π F : Rn×3→ Rn×3 to the space
+F =
+
+
+fR⊤∈ Rn×3
+⏐⏐⏐⏐⏐⏐
+f represents a volume-/mass-preserving map f :M→ B3
+R = argmin
+R∈SO(3)
+C(fR⊤) is the optimal rotation with respect to C
+
+
+
+so that the constraint can be conveniently satisfied.
+When f is a piecewise affine map, the volume measure is piecewise constant so that the
+cost function can be formulated as
+(5.1) C(f) =
+∑
+v∈V(M)
+∥v-f(v)∥2
+2ν(v),
+where
+ν(v) = 1
+4
+∑
+τ∈N (v)
+µ(τ)
+withN(v) being the set of neighboring tetrahedra of v. Noting that the piecewise affine map
+f is represented as a matrix f as in (2.1), the cost function C in (5.1) can be written as
+C(f)≡C ((f 1)⊤, (f 2)⊤, (f 3)⊤) =
+n∑
+t=1
+3∑
+s=1
+(vs
+t-fs
+t )2ν(vt).
+===== page 16 =====
+16 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+The gradient ofC is written as
+∇C(f) =-2(I3⊗ diag(ν(v1),··· ,ν (vn))) vec(v- f),
+where v = [v1, v2, v3] with vs = [vs
+1,...,v s
+n]⊤, s = 1, 2, 3, and vec(f)≡ [(f 1)⊤, (f 2)⊤, (f 3)⊤]⊤.
+The projected gradient method for VOMT maps is performed as follows. First, we compute
+a volume-/mass-preserving map f (0) by Algorithm 4.1 with the boundary being an area-
+preserving OMT map computed by the AOMT algorithm in [30]. Then, the map is updated
+along the negative gradient direction as
+(5.2a) vec( f
+(m+1)
+) = vec(f (m))-αm∇C(f (m)),
+where the step size αm is computed by
+αm = argmin
+α>0
+C(f
+(m+1)
+).(5.2b)
+Next, the map f
+(m+1)
+is projected to F by the VSEM algorithm with the initial Laplacian
+matrix being LV (f
+(m+1)
+) and the boundary map being that of f (0). As a result, the updated
+map is written as
+(5.3) f (m+1) = ΠF (f
+(m+1)
+).
+The iteration terminates when C(f (m+1))≥C (f (m)).
+The details of the computational procedure are summarized in Algorithm 5.1.
+Algorithm 5.1 Projected gradient method for the VOMT map
+Input: A simply connected tetrahedral mesh M and a tolerance ε.
+Output: A VOMT map f :M→ B3 induced by f.
+1: Let n be the number of vertices of M.
+2: Let B ={t|vt∈∂M} and I ={1,...,n }\B.
+3: Compute the initial map f by Algorithm 4.1.
+4: Let δ←∞ andˆf← f (ˆf←f, where ˆf is induced byˆf).
+5: while δ >ε do
+6: Update f as in (5.2) and (5.3).
+7: Update δ←C (ˆf)-C (f) andˆf← f (ˆf←f).
+8: end while
+9: return f .
+5.1. Convergence of the projected gradient method. Now, we provide a rigorous proof
+for the convergence of Algorithm 5.1.
+Theorem 5.1. LetC be convex and L-smooth, i.e.,∇2C- LI is positive semidefinite. As-
+sume the projection ΠF satisfies the properties of projection
+(
+vec(ΠF (f
+(m)
+))- vec(f
+(m)
+)
+)⊤(
+vec(ΠF (f
+(m)
+))- vec(f (m))
+)
+≤ 0,(5.4a)
+(
+vec(ΠF (f
+(m)
+))- vec(f
+(m)
+)
+)⊤(
+vec(ΠF (f
+(m)
+))- vec(f∗)
+)
+≤ 0,(5.4b)
+===== page 17 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 17
+and nonexpensiveness
+(5.5)
+vec(ΠF (f
+(m)
+))- vec(ΠF (f∗))
+
+2
+≤
+vec(f
+(m)
+)- vec(f∗)
+
+2
+,
+for every m≥ 1. Suppose αm∈ [η, 2
+L] with η >0 for every m≥ 1. Then,
+C(f (m))-C (f∗)≤ 4β +C(f (0))-C (f∗)
+m + 1 ,(5.6)
+whereβ = ∥vec(f (0))-vec(f∗)∥2
+2
+2η+η2L is a constant.
+Proof. For convenience, let
+δ∗C(f (m))≡C (f (m))-C (f∗), δ C(f (m))≡C (f (m))-C (f (m+1)),
+δ∗f (m)≡ vec(f (m))- vec(f∗), δ f (m)≡ vec(f (m))- vec(f (m+1)).
+Then, by (5.5) and the fundamental theorem of calculus, we have
+δ∗f (m+1)
+
+2
+=
+vec(ΠF (f
+(m+1)
+))- vec(ΠF (f∗))
+
+2
+≤
+vec(f
+(m+1)
+)- vec(f∗)
+
+2
+(by (5.5))
+=
+vec(f (m))-αm∇C(f (m))- vec(f∗)
+
+2
+=
+
+(
+I-αm
+∫ 1
+0
+∇2C(f∗ +t(f (m)- f∗)) dt
+)
+δ∗f (m)
+
+2
+(by the fundamental theorem of calculus)
+≤ max
+t∈[0,1]
+I-αm∇2C(f∗ +t(f (m)- f∗))
+
+2
+δ∗f (m)
+
+2
+≤
+δ∗f (m)
+
+2
+.(5.7)
+The last inequality follows from convex andL-smooth properties ofC withαmL≤ 2. However,
+for every k≥ 1, it holds that
+1
+αm
+δf (m)
+
+2
+2
+-∇C (f (m))⊤δf (m)
+=
+( 1
+αm
+δf (m)-∇C (f (m))
+)⊤
+δf (m)
+= 1
+αm
+(
+vec(f (m+1))- (vec(f (m))-αm∇C(f (m)))
+)⊤(
+vec(f (m+1))- vec(f (m))
+)
+= 1
+αm
+(
+vec(ΠF (f
+(m)
+))- vec(f
+(m)
+)
+)⊤(
+vec(ΠF (f
+(m)
+))- vec(f (m))
+)
+≤ 0, (by (5.4a))
+which implies that
+(5.8) ∇C(f (m))⊤δf (m)≥ 1
+αm
+δf (m)
+
+2
+2
+.
+===== page 18 =====
+18 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+Similarly, by (5.4b), we have
+(5.9) ∇C(f (m))⊤δ∗f (m+1)≤ 1
+αm
+(δf (m))⊤δ∗f (m+1).
+SinceC is convex, we obtain
+(5.10) δ∗C(f (m))≤∇C (f (m))⊤δ∗f (m).
+SinceC is L-smooth, we have
+(5.11) δC(f (m))≥∇C (f (m))⊤δf (m) + L
+2
+δf (m)
+
+2
+2
+.
+Then, by using (5.9), (5.10) and (5.11), it holds that
+δ∗C(f (m+1)) =δ∗C(f (m))-δC(f (m))
+≤∇C (f (m))⊤δ∗f (m)-
+(
+∇C(f (m))⊤δf (m) + L
+2
+δf (m)
+
+2
+2
+)
+(by (5.10), (5.11))
+=∇C(f (m))⊤δ∗f (m+1)- L
+2
+δf (m)
+
+2
+2
+≤ 1
+αm
+(δf (m))⊤δ∗f (m+1)- L
+2
+δf (m)
+
+2
+2
+(by (5.9))
+= 1
+αm
+(δf (m))⊤
+(
+δ∗f (m)-δf (m)
+)
+- L
+2
+δf (m)
+
+2
+2
+= 1
+αm
+(δf (m))⊤δ∗f (m)-
+( 1
+αm
++ L
+2
+)δf (m)
+
+2
+2
+≤ 1
+αm
+(δf (m))⊤δ∗f (m)≤ 1
+αm
+δf (m)
+
+2
+δ∗f (m)
+
+2
+.(5.12)
+From (5.7) and (5.12), we have
+δf (m)
+
+2
+≥ αmδ∗C(f (m+1))
+∥δ∗f (m)∥2
+≥ αmδ∗C(f (m+1))
+∥δ∗f (0)∥2
+.(5.13)
+Using the assumption αm∈ [η, 2
+L] and the results in (5.8), (5.11), and (5.13), it holds that
+δ∗C(f (m))-δ∗C(f (m+1)) =δC(f (m))
+≥∇C (f (m))⊤δf (m) + L
+2
+δf (m)
+
+2
+2
+(by (5.11))
+≥ 1
+αm
+δf (m)
+
+2
+2
++ L
+2
+δf (m)
+
+2
+2
+=
+( 1
+αm
++ L
+2
+)δf (m)
+
+2
+2
+(by (5.8))
+≥ α2
+m
+∥δ∗f (0)∥2
+2
+( 1
+αm
++ L
+2
+)
+δ∗C(f (m+1))2 = 2αm +α2
+mL
+2∥δ∗f (0)∥2
+2
+δ∗C(f (m+1))2 (by (5.13))
+≥ 2η +η2L
+2∥δ∗f (0)∥2
+2
+δ∗C(f (m+1))2 = 1
+2βδ∗C(f (m+1))2,
+===== page 19 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 19
+where β = ∥δ∗f (0)∥2
+2
+2η+η2L , which implies that
+δ∗C(f (m+1))2 + 2βδ∗C(f (m+1))- 2βδ∗C(f (m))≤ 0.
+This means that
+0≤δ∗C(f (m+1))≤
+√
+β2 + 2βδ∗C(f (m))-β.(5.14)
+Now, we use the result in (5.14) and mathematical induction on m to prove (5.6). First, we
+derive the following result, which will be used in the mathematical induction step:
+m≥ 1 ⇐⇒ 4m≥ 4 ⇐⇒ 8m≥ 4m + 4 ⇐⇒ m2 + 8m≥ (m + 2)2
+⇐⇒
+√
+m2 + 8m≥m + 2 ⇐⇒
+√
+m2 + 8m +m≥ 2(m + 1).
+By induction on m, we suppose
+δ∗C(f (m-1))≤ 4β +δ∗C(f (0))
+m .(5.15)
+Substituting (5.15) into (5.14), we have
+δ∗C(f (m))≤
+√
+β2 + 2β
+(4β +δ∗C(f (0))
+m
+)
+-β
+=
+2β
+(
+4β+δ∗C(f (0))
+m
+)
+√
+β2 + 2β
+(
+4β+δ∗C(f (0))
+m
+)
++β
+= 2β
+(
+4β +δ∗C(f (0))
+)
+√
+m2β2 + 2mβ
+(
+4β +δ∗C(f (0))
+)
++mβ
+≤ 2β
+(
+4β +δ∗C(f (0))
+)
+√
+m2β2 + 2mβ (4β) +mβ
+= 2
+(
+4β +δ∗C(f (0))
+)
+√
+m2 + 8m +m
+≤ 2
+(
+4β +δ∗C(f (0))
+)
+2(m + 1) = 4β +δ∗C(f (0))
+m + 1 .
+5.2. Nesterov's accelerated gradient method. Under mild assumptions of projection and
+nonexpensiveness properties, Theorem 5.1 shows that the Algorithm 5.1 has a convergence
+rate ofO(1/m). It is well known that the rate of convergence of the projected gradient method
+can be improved by applying Nesterov's accelerated gradient method [26] and its variation,
+FISTA [3]. More precisely, the iteration (5.2) is replaced by
+vec(ˆf (m+1)) = vec(f (m))-αm∇C(f (m)),
+vec(f
+(m+1)
+) = vec(ˆf (m+1)) + k
+k + 3
+(
+vec(ˆf (m+1))- vec(ˆf (m))
+)
+,(5.16)
+===== page 20 =====
+20 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+(a) Lion (b) David (c) Heart (d) Max Planck
+(e) Arnold (f) Igea (g) Apple (h) Brain
+Figure 6.1: The benchmark tetrahedral mesh models.
+for Nesterov's method, and
+vec(ˆf (m+1)) = vec(f (m))-αm∇C(f (m)),(5.17a)
+vec(f
+(m+1)
+) = (1-βm)vec(ˆf (m+1)) +βmvec(ˆf (m)),(5.17b)
+βm = 1-λm
+λm+1
+, λm =
+1 +
+√
+1 + 4λ2
+m-1
+2 , λ0 = 0,(5.17c)
+for its variation, FISTA, respectively. According to several numerical experiments, FISTA
+(5.17) performs slightly better than the primitive Nesterov method (5.16). Therefore, we
+adopt (5.17) to accelerate the projected gradient method in Algorithm 5.1.
+6. Numerical experiments. In this section, we first give numerical results to show the
+existence of the assumptions in (4.12) and then demonstrate the R-linear convergence of
+Algorithm 4.1 in Subsection 6.1. In Subsection 6.2, numerical validation is used to present
+the 1
+m convergence of Algorithm 5.1 in Theorem 5.1 and to show the accelerated effect of
+the FISTA accelerated gradient method. Finally, we demonstrate the numerical results from
+practical implementation in Subsection 6.3.
+Various benchmark tetrahedral mesh models demonstrated in Figure 6.1 are from Jacob-
+son's GitHub [17], Gu's website [12], and the BraTS databases [1, 2]. Some tetrahedral mesh
+models are generated by using iso2mesh [10, 28] and JIGSAW mesh generators [6, 5, 7, 8, 9].
+6.1. R-linear convergence of the VSEM algorithm. To show the R-linear convergence
+of the VSEM in Theorem 4.3, we assume that the matrix Pm in (4.11) satisfies the conditions
+in (4.12). In Figure 6.2, we demonstrate the numerical results for the spectral radius ρ(Pm)
+and∥Pm∥2 for the Apple, Brain and Venus benchmark models. The results show that the
+===== page 21 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 21
+0 10 20 30 40 50 60
+0.9955
+0.996
+0.9965
+0.997
+0.9975
+0.998
+0.9985
+0.999
+0.9995
+1
+6
+8
+10
+12
+14
+16
+18
+(a) Apple
+0 10 20 30 40 50 60
+0.9986
+0.9988
+0.999
+0.9992
+0.9994
+0.9996
+0.9998
+1
+5.2
+5.4
+5.6
+5.8
+6
+6.2
+6.4
+6.6
+6.8
+7 (b) Brain
+0 10 20 30 40 50 60
+0.993
+0.994
+0.995
+0.996
+0.997
+0.998
+0.999
+1
+4.5
+5
+5.5
+6
+6.5
+7
+7.5
+8
+8.5 (c) Venus
+Figure 6.2: Spectral radius of Pm and∥Pm∥2 for the Apple, Brain and Venus benchmark
+problems.
+0 100 200 300 400 500 600 700 800 900
+10 0
+Brain
+0 100 200 300 400 500 600 700 800 900
+10 0
+Apple
+0 100 200 300 400 500 600 700 800 900
+10 0
+Venus
+(a)∥ε(m)∥2 and∥σ(m)∥2
+750 800 850 900
+0.987
+0.9875
+0.988
+0.9885
+0.989
+0.9895
+0.99
+0.9905
+0.991
+0.9915
+0.992
+Brain
+750 800 850 900
+0.987
+0.9875
+0.988
+0.9885
+0.989
+0.9895
+0.99
+0.9905
+0.991
+0.9915
+0.992
+Apple
+750 800 850 900
+0.987
+0.9875
+0.988
+0.9885
+0.989
+0.9895
+0.99
+0.9905
+0.991
+0.9915
+0.992
+Venus (b)∥vec(f (∗))- vec(f (m))∥1/m
+∞
+Figure 6.3: Convergence behavior of∥ε(m)∥2 and stretch factor∥σ(m)∥2 in (a) and the enlarged
+R-linear convergence results off (m) in (b) for the Apple, Brain and Venus benchmark problems.
+Here, ¯σ and std represent the mean value and standard deviation of σ(900), respectively.
+conditions in (4.12) hold for each benchmark model. This means that the conditions in (4.12)
+are reasonable assumptions.
+Let σ(m) denote the stretch factor vector in (2.3) with µ(τ) = |τ| at the mth iteration
+and ε(m) in (4.9) denote the error terms of fs(m)
+I and fs(m-1)
+I . In Figure 6.3a, we show the
+convergence behavior of ∥ε(m)∥2 and∥σ(m)-σ(m-1)∥2. The numerical results tell us that
+both fs(m)
+I and σ(m) are convergent. The mean value (¯ σ) and standard deviation (std) of
+σ(900) for each benchmark model are shown in Figure 6.3a. Each ¯ σ is close to one, which
+means that the associated map is volume-preserving.
+Take fs(900)
+I as the convergence fs(∗)
+I and plot∥vec(f (∗))-vec(f (m))∥1/m
+∞ for variousm. We
+===== page 22 =====
+22 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+0 50 100 150 200
+0.164
+0.165
+0.166
+0.167
+0.168
+0.169
+0.17
+0.171
+-0.5
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+(a) David
+0 50 100 150 200
+0.408
+0.41
+0.412
+0.414
+0.416
+0.418
+0.42
+0.422
+0.424
+0.426
+-0.5
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4 (b) Lion
+0 50 100 150 200
+0.745
+0.75
+0.755
+0.76
+0.765
+0.77
+0.775
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4 (c) Arnold
+Figure 6.4: The relationship between the number of iterations and the transportation cost of
+the projected gradient algorithm for computing the VOMT maps for David, Lion and Arnold
+benchmark models.
+0 5 10 15 20
+0.164
+0.165
+0.166
+0.167
+0.168
+0.169
+0.17
+0.171
+-0.1
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+(a) David
+0 5 10 15 20 25 30 35
+0.408
+0.41
+0.412
+0.414
+0.416
+0.418
+0.42
+0.422
+0.424
+0.426
+-0.5
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4 (b) Lion
+0 5 10 15 20
+0.745
+0.75
+0.755
+0.76
+0.765
+0.77
+0
+2
+4
+6
+8
+10
+12
+14 (c) Arnold
+Figure 6.5: The relationship between the number of iterations and the transportation cost of
+the projected gradient algorithm with FISTA acceleration for computing the VOMT maps for
+David, Lion and Arnold benchmark models.
+show the results for m = 700,..., 900 in Figure 6.3b. These results demonstrate the R-linear
+convergence of the VSEM algorithm.
+6.2. Convergence of the projected gradient method. To verify the convergence of the
+projected gradient method in Algorithm 5.1 for computing the VOMT maps, in Figure 6.4
+we demonstrate the relationship between the number of iterations and the transportation
+costC(f) in (5.1) for the David, Lion and Arnold benchmark models. The convergence
+is, indeed,O(1/m), which is consistent with the conclusion of Theorem 5.1. The associated
+transportation costs atm = 200 of the David, Lion and Arnold benchmark models are 0.16478,
+0.40994, and 0.74783, respectively.
+In Figure 6.5, we show the transportation cost for computing the VOMT maps of the
+David, Lion, and Arnold benchmark models by using the projection gradient algorithm with
+FISTA acceleration. The results in the figure show that the algorithm converges in less
+===== page 23 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 23
+0 5 10
+Number of Iterations
+6.4
+6.6
+6.8
+7
+7.2Volumetric Stretch Energy
+0 5 10
+Number of Iterations
+6.3
+6.35
+6.4
+6.45
+6.5
+Volumetric Stretch Energy
+0 5 10
+Number of Iterations
+6.3
+6.35
+6.4
+6.45
+6.5
+6.55
+6.6
+6.65
+6.7
+Volumetric Stretch Energy
+0 5 10
+Number of Iterations
+6.3
+6.35
+6.4
+6.45
+6.5
+Volumetric Stretch Energy
+(a) Arnold (b) Igea (c) David (d) Apple
+Figure 6.6: The relationship between the number of iterations and the volumetric stretch
+energy (2.4) of the VSEM algorithm for computing volume-preserving parameterizations of
+the benchmark mesh models.
+than 35 iterations, and the rate of convergence is O(1/m2). The associated transportation
+costs of the David, Lion and Arnold benchmark models are 0 .16465, 0.40921, and 0.74749,
+respectively, which reach smaller cost values than the 200th iteration of the original projected
+gradient method in Figure 6.4. These results indicate that the FISTA indeed accelerates the
+convergence of the projection gradient algorithm.
+6.3. Practical implementations. In Subsections 6.1 and 6.2, we give numerical validation
+for the theoretical convergences in Theorems 4.3 and 5.1. To reduce the computational cost,
+we will give some numerical observations to build up an efficient method for computing the
+VOMT map.
+To show the effectiveness of the VSEM algorithm in decreasing the energy (2.4), in Figure
+6.6 we demonstrate the relationship between the number of iterations and the volumetric
+stretch energy for the benchmark mesh models. From the results in the figure, we observe
+that the energy decreases drastically in the first five steps and tends to converge to a constant
+after that. Therefore, we take the maximal iterations of Algorithm 4.1 to be 5.
+In Table 6.1, we demonstrate the mean and std of the stretch factors as well as the volu-
+metric stretch energy of the volume-preserving parameterization computed by Algorithm 4.1
+at the 5th iteration. These results indicate that Algorithm 4.1 with 5 iterations is effective in
+computing the desired volume-preserving mappings.
+In addition, from Figure 6.5, the transportation cost also drastically decreases in the first
+few steps. This indicates that we can set maximal iterations of the projected gradient method
+with FISTA acceleration to be 2 to reduce the computational cost. Therefore, in practical
+implementation, the maximal iterations of the projected gradient method with FISTA accel-
+eration (PGFISTA) are equal to 2, and in each iteration of PGFISTA, Algorithm 4.1 with 5
+iterations is used to compute the desired volume-preserving mapping.
+In Table 6.2, we show the numerical results of the VOMT maps computed by the PGFISTA
+for the tetrahedral mesh models of human brains from the BraTS database [2, 1]. We observe
+===== page 24 =====
+24 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+Table 6.1: The mean and std of the stretch factors, the volumetric stretch energy, computa-
+tional time cost, and numbers of folding tetrahedra of the volume-preserving parameterization
+computed by the VSEM algorithm with 5 iterations.
+model #( T(M)) #( V(M)) stretch factor EV (f) # fold-
+mean std ings
+Arnold 36,875 6,990 1.0129 0.1716 6.3014 3
+Heart 103,751 18,408 1.0023 0.0551 6.2722 1
+Igea 130,375 22,930 1.0020 0.0462 6.2738 0
+David Head 233,663 40,669 1.0034 0.0780 6.2873 0
+Max Planck 390,361 66,935 1.0025 0.0814 6.2872 8
+Apple 559,122 102,906 1.0002 0.0201 6.2813 0
+that the volume-preserving properties of the resulting VOMT maps are satisfactory, with
+the std of the stretch factors less than 0 .1 and the volumetric stretch energies close to 2 π.
+Additionally, it is worth noting that the resulting VOMT maps are very close to bijective with
+less than 0.001% folding tetrahedra. These results make us more confident in the practical
+applications of VOMT maps in analyzing brain images.
+Remark 6.1. By applying the large-scale bounded distortion mapping [21, 20], the folding
+tetrahedra can be unfolded, slightly sacrificing the volume distortion, so that the resulting
+mapping is bijective.
+7. Concluding remarks. In this paper, we provided the theoretical foundation for discrete
+volumetric stretch energy minimization for computing volume-preserving parameterizations
+and developed the associated efficient VSEM algorithm with guaranteed R-linear convergence.
+In addition, based on the VSEM algorithm, we proposed a projected gradient method with
+Nesterov-based acceleration for the computation of VOMT maps with a guaranteed O(1/m)
+convergence rate. The associated numerical experiments were demonstrated to justify the
+consistency of the theoretical and numerical results. Numerical results also showed the ef-
+fectiveness and accuracy of the proposed VSEM and VOMT algorithms. Such encouraging
+results provide a solid foundation for further applications of volume-preserving parameteriza-
+tions and OMT maps.
+Acknowledgments. We are grateful to Professor Tiexiang Li from Southeast University
+and Nanjing Center for Applied Mathematics for valuable discussions and for providing the
+medical 3D MRI brain images in Table 6.2.
+REFERENCES
+[1] U. Baid, S. Ghodasara, M. Bilello, S. Mohan, E. Calabrese, E. Colak, K. Farahani, J. Kalpathy-Cramer,
+F. C. Kitamura, S. Pati, L. M. Prevedello, J. D. Rudie, C. Sako, R. T. Shinohara, T. Bergquist,
+R. Chai, J. Eddy, J. Elliott, W. Reade, T. Schaffter, T. Yu, J. Zheng, B. Annotators, C. Davatzikos,
+J. Mongan, C. Hess, S. Cha, J. Villanueva-Meyer, J. B. Freymann, J. S. Kirby, B. Wiestler, P. Crivel-
+laro, R. R. Colen, A. Kotrotsou, D. Marcus, M. Milchenko, A. Nazeri, H. Fathallah-Shaykh, R. Wiest,
+===== page 25 =====
+CONVERGENCE ANALYSIS OF VSEM AND ASSOCIATED OMT 25
+Table 6.2: The mean and std of the stretch factors, the volumetric stretch energy, trans-
+portation cost value, and numbers of folding tetrahedra of the VOMT maps computed by the
+projected gradient algorithm with FISTA acceleration.
+BraTS 20 #(T(M)) #( V(M)) stretch factor EV (f) C(f) # fold-
+image no. mean std ings
+212 728,672 123,656 1.0009 0.0945 6.3325 0.0915 4
+234 767,428 129,842 1.0013 0.0979 6.3371 0.1140 2
+254 758,586 128,511 1.0010 0.0982 6.3360 0.0943 7
+258 701,419 119,090 1.0010 0.0914 6.3287 0.1054 6
+270 762,801 129,035 1.0021 0.0602 6.2905 0.0921 5
+277 753,014 127,580 1.0015 0.0933 6.3189 0.1111 6
+289 717,220 121,738 1.0025 0.0756 6.2942 0.0941 8
+294 734,164 124,593 1.0011 0.0992 6.3291 0.1129 7
+297 739,479 125,546 1.0011 0.0951 6.3330 0.0940 9
+306 720,254 122,412 1.0014 0.0918 6.3249 0.1104 7
+320 733,924 124,475 1.0013 0.0996 6.3224 0.0875 7
+321 655,973 111,732 1.0014 0.0965 6.3329 0.1266 7
+339 695,370 118,004 1.0012 0.0843 6.3192 0.1030 6
+344 736,101 124,691 1.0007 0.0847 6.3244 0.1076 2
+351 700,369 118,864 1.0015 0.0996 6.3211 0.1334 6
+352 736,959 124,868 1.0014 0.0977 6.3383 0.1138 2
+361 721,220 122,203 1.0012 0.0865 6.3163 0.1162 4
+364 740,970 125,510 1.0013 0.0854 6.3107 0.0959 3
+A. Jakab, M.-A. Weber, A. Mahajan, B. Menze, A. E. Flanders, and S. Bakas. The RSNA-ASNR-
+MICCAI BraTS 2021 benchmark on brain tumor segmentation and radiogenomic classification, 2021.
+[2] S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J. S. Kirby, J. B. Freymann, K. Farahani, and
+C. Davatzikos. Advancing the cancer genome atlas glioma MRI collections with expert segmentation
+labels and radiomic features. Sci. Data, 4(170117), 2017.
+[3] A. Beck and M. Teboulle. A fast iterative shrinkage-thresholding algorithm for linear inverse problems.
+SIAM J. Imaging Sci. , 2(1):183-202, 2009.
+[4] N. Bonnotte. From Knothe's rearrangement to Brenier's optimal transport map. SIAM J. Math. Anal. ,
+45(1):64-87, 2013.
+[5] D. Engwirda. Locally optimal Delaunay-refinement and optimisation-based mesh generation . PhD thesis,
+University of Sydney, 2014.
+[6] D. Engwirda. Voronoi-based point-placement for three-dimensional Delaunay-refinement. Procedia Eng.,
+124:330-342, 2015.
+[7] D. Engwirda. Conforming restricted Delaunay mesh generation for piecewise smooth complexes. Procedia
+Eng., 163:84-96, 2016.
+[8] D. Engwirda and D. Ivers. Face-centred Voronoi refinement for surface mesh generation. Procedia
+Engineering, 82:8-20, 2014.
+[9] D. Engwirda and D. Ivers. Off-centre steiner points for Delaunay-refinement on curved surfaces. Comput.-
+Aided Des., 72:157-171, 2016.
+[10] Q. Fang and D. A. Boas. Tetrahedral mesh generation from volumetric binary and grayscale images. In
+2009 IEEE International Symposium on Biomedical Imaging: From Nano to Macro , pages 1142-1145,
+===== page 26 =====
+26 T.-M. HUANG, W.-H. LIAO, W.-W. LIN, M.-H. YUEH, AND S.-T. YAU
+2009.
+[11] M. S. Floater and K. Hormann. Surface parameterization: a tutorial and survey. In Advances in Mul-
+tiresolution for Geometric Modelling , pages 157-186. Springer Berlin Heidelberg, 2005.
+[12] X. Gu. Optimal Mass Transportation Map . https://www3.cs.stonybrook.edu/∼gu/software/omt/index.
+html, 2022.
+[13] X. Gu, F. Luo, J. Sun, and S.-T. Yau. Variational principles for Minkowski type problems, discrete
+optimal transport, and discrete Monge-Amp` ere equations.Asian J. Math. , 20(2):383-398, 2016.
+[14] S. Haker, L. Zhu, A. Tannenbaum, and S. Angenent. Optimal mass transport for registration and warping.
+Int. J. Comput. Vision , 60(3):225-240, 2004.
+[15] K. Hormann, B. L´ evy, and A. Sheffer. Mesh parameterization: Theory and practice. InACM SIGGRAPH
+Course Notes, 2007.
+[16] T.-M. Huang, W.-H. Liao, and W.-W. Lin. Fundamental theory and R-linear convergence of stretch
+energy minimization for equiareal parameterizations. arxiv:2207.13943, 2022.
+[17] A. Jacobson. GitHub Repository for Common 3D Test Models . https://github.com/alecjacobson/
+common-3d-test-models, 2021.
+[18] S. Kolouri, S. R. Park, M. Thorpe, D. Slepcev, and G. K. Rohde. Optimal mass transport: Signal
+processing and machine-learning applications. IEEE Signal Process. Mag. , 34(4):43-59, 2017.
+[19] S. Kolouri, A. B. Tosun, J. A. Ozolek, and G. K. Rohde. A continuous linear optimal transport approach
+for pattern analysis in image datasets. Pattern Recognit., 51:453-462, 2016.
+[20] S. Kovalsky. GitHub Repository for Large-Scale Bounded Distortion Mappings . https://github.com/
+shaharkov/LargeScaleBD, 2015.
+[21] S. Z. Kovalsky, N. Aigerman, R. Basri, and Y. Lipman. Large-scale bounded distortion mappings. ACM
+Trans. Graph., 34(6):191:1-191:10, 2015.
+[22] N. Lei, K. Su, L. Cui, S.-T. Yau, and X. D. Gu. A geometric view of optimal transportation and generative
+model. Comput. Aided Geom. Des. , 68:1-21, 2019.
+[23] P. H. Li, Q. L. Wang, and L. Zhang. A novel earth mover's distance methodology for image matching
+with gaussian mixture models. In Proceedings of the IEEE International Conference on Computer
+Vision, pages 1689-1696, 2013.
+[24] W.-W. Lin, C. Juang, M.-H. Yueh, T.-M. Huang, T. Li, S. Wang, and S.-T. Yau. 3D brain tumor
+segmentation using a two-stage optimal mass transport algorithm. Sci. Rep., 11(1):14686, 2021.
+[25] W.-W. Lin, J.-W. Lin, T.-M. Huang, T. Li, M.-H. Yueh, and S.-T. Yau. A novel 2-phase residual U-net
+algorithm combined with optimal mass transportation for 3D brain tumor detection and segmentation.
+Sci. Rep., 12(1):6452, 2022.
+[26] Y. Nesterov. A method for solving a convex programming problem with convergence rate O(1/k2). In
+Dokl. Akad. Nauk SSSR , volume 269, pages 543-547, 1983.
+[27] Y. Rubner, C. Tomasi, and L. Guibas. The earth mover's distance as a metric for image retrieval. Int.
+J. Comput. Vis. , 40(2):99-121, 2000.
+[28] A. P. Tran, S. Yan, and Q. Fang. Improving model-based fnirs analysis using mesh-based anatomical and
+light-transport models. Neurophotonics, 7(1):015008, 2020.
+[29] W. Wang, D. Slepˇ cev, S. Basu, J. A. Ozolek, and G. K. Rohde. A linear optimal transportation framework
+for quantifying and visualizing variations in sets of images.Int. J. Comput. Vis., 101(2):254-269, 2013.
+[30] M.-H. Yueh, T.-M. Huang, T. Li, W.-W. Lin, and S.-T. Yau. Projected gradient method combined with
+homotopy techniques for volume-measure-preserving optimal mass transportation problems. J. Sci.
+Comput., 88(3), 2021.
+[31] M.-H. Yueh, T. Li, W.-W. Lin, and S.-T. Yau. A novel algorithm for volume-preserving parameterizations
+of 3-manifolds. SIAM J. Imaging Sci. , 12(2):1071-1098, 2019.

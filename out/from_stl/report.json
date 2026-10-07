@@ -1,0 +1,63 @@
+{
+  "input": {
+    "n_vertices": 575,
+    "n_tets": 2259,
+    "volume": 4.0413872531268815
+  },
+  "stage1_harmonic": {
+    "method": "star+relax",
+    "seconds": 0.08805319992825389,
+    "ratio_min": 0.9501046393764416,
+    "ratio_max": 1.0893373570831804,
+    "ratio_mean": 1.0213234718533886,
+    "ratio_std": 0.028283253042778754,
+    "distortion_mean": 0.02920050296258935,
+    "distortion_max": 0.08933735708318036,
+    "distortion_p99": 0.07671666878416006,
+    "n_flipped": 0,
+    "total_volume_ratio": 1.0204850092899656,
+    "stretch_energy": 4.211703625906764,
+    "stretch_lower_bound": 4.208658873963657,
+    "stretch_excess": 0.0007234494489307686,
+    "isovolumetric_energy": 0.0029836322095757595,
+    "max_singular_value": 1.0709381379274074,
+    "min_singular_value": 0.9433272249929086
+  },
+  "stage2_volume": {
+    "iterations": 81,
+    "seconds": 0.07370269997045398,
+    "ratio_min": 0.8978650515955667,
+    "ratio_max": 1.150671951747746,
+    "ratio_mean": 1.0190707545008373,
+    "ratio_std": 0.043831399783441444,
+    "distortion_mean": 0.03854218964315266,
+    "distortion_max": 0.15067195174774595,
+    "distortion_p99": 0.1251925419923924,
+    "n_flipped": 0,
+    "total_volume_ratio": 1.0204738360898533,
+    "stretch_energy": 4.215143500644674,
+    "stretch_lower_bound": 4.208566714000614,
+    "stretch_excess": 0.0015627141235947661,
+    "isovolumetric_energy": 0.006444836125598208,
+    "max_singular_value": 1.1355860551687749,
+    "min_singular_value": 0.8852138995503875
+  },
+  "remesh_refine1": {
+    "n_vertices": 2834,
+    "n_tets": 9036,
+    "volume_error": 0.0,
+    "n_flipped": 0,
+    "radius_ratio_mean": 44.25925179149317,
+    "min_dihedral_min": 6.470522631290985,
+    "seconds": 0.059723999933339655
+  },
+  "remesh_uniform": {
+    "n_vertices": 953,
+    "n_tets": 4766,
+    "volume_error": -0.014917326372077988,
+    "n_flipped": 0,
+    "radius_ratio_mean": 23.33402733510343,
+    "min_dihedral_min": 1.0427347642114255,
+    "seconds": 0.039010000065900385
+  }
+}

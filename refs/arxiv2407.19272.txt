@@ -1,0 +1,1856 @@
+
+===== page 1 =====
+Volume-Preserving Parameterizations via
+Preconditioned Nonlinear Conjugate Gradient
+Method
+Shu-Yung Liu1, Tsung-Ming Huang1, Wen-Wei Lin2,3,4, and Mei-Heng Yueh1
+1Department of Mathematics, National Taiwan Normal University, Taipei, Taiwan
+(lii227857@gmail.com, min@ntnu.edu.tw, yue@ntnu.edu.tw)
+2Nanjing Center for Applied Mathematics, Nanjing, China
+3Shanghai Institute for Mathematics and Interdisciplinary Sciences, Shanghai, China
+4Department of Applied Mathematics, National Yang Ming Chiao Tung University, Hsinchu, Taiwan
+(wwlin@math.nctu.edu.tw)
+Abstract
+A volume-preserving parameterization is a bijective mapping that maps a 3-manifold
+onto a canonical domain while preserving local volume. We formulate this problem as
+an unconstrained nonlinear optimization problem by introducing an isovolumetric energy
+that quantifies volumetric distortion. This energy is minimized using a preconditioned
+nonlinear conjugate gradient method, which is globally convergent when the line search
+satisfies the strong Wolfe conditions. Numerical experiments demonstrate that the
+proposed method achieves improved accuracy and efficiency, and it supports applications
+in shape registration and volumetric deformation.
+Keywords.Tetrahedral mesh, Simplicial mapping, Volume-preserving parameteri-
+zation, Nonlinear conjugate gradient method
+Mathematics Subject Classification.65D18, 68U05, 68U01, 65D17
+1 Introduction
+A parameterization of a simply connected 3-manifold is a bijective map from the mani-
+fold to a simple canonical domain (e.g., a unit ball or cube), thereby simplifying compu-
+tation on complex geometric structures for subsequent processing. Numerous volumetric
+mapping methods have been developed, including close-to-conformal deformations [6],
+the simplicial foliation method [5], scalable locally injective mappings [35], the simplex
+lifting method [11], foldover-free mappings [20], and symmetric volume mappings [1].
+A volume-preserving parameterization is a parameterization that preserves the local
+volume of a given 3-manifold. It has been applied to medical imaging tasks such as
+1
+arXiv:2407.19272v2  [math.NA]  26 Sep 2026
+===== page 2 =====
+brain tumor segmentation [29, 30]. In this application, a volume-preserving map serves
+as a preprocessing step that maps the brain to a unit cube, reducing the raw image
+size by removing redundant space outside the brain. As a result, the subsequent neural
+network training operates on a cube representation of the brain, improving both training
+efficiency and accuracy in identifying tumor regions.
+Several methods have been proposed to compute such mappings. Gu et al. [22, 36],
+based on the theory of convex polyhedra, compute a polyhedral decomposition of the
+unit ball such that the volume of each polyhedral cell matches the vertex volume of the
+given tetrahedral mesh. The resulting map, which sends each cell to its corresponding
+vertex, is a discrete optimal transport map. Therefore, it can be represented as the
+gradient of a piecewise linear convex function, and the associated convex optimization
+problem can be solved by Newton's method.
+Alternatively, Choi et al. [7, 32] treat densities as local volume ratios and adopt
+the density-equalizing map framework. The density is evolved according to the heat
+equation, which induces a velocity field that can be integrated to recover the vertex
+positions. The heat equation is solved via the implicit Euler method, and its equilibrium
+state yields the desired volume-preserving parameterization on the unit ball.
+On the other hand, Yueh et al. [39, 40, 27, 37] introduced the volumetric stretch
+energy, a nonlinear functional that measures local volume distortion, whose minimization
+yields the desired volume-preserving mapping subject to a fixed total-volume constraint.
+Their approach typically fixes the boundary and updates the interior vertices via a
+fixed-point iteration. While it converges rapidly in practice, each step requires solving
+a linear system, which can be computationally expensive on large tetrahedral meshes.
+Moreover, from a theoretical standpoint, global convergence of the fixed-point iteration
+is not generally guaranteed. As a result, nonlinear conjugate-gradient (CG) methods,
+which have low memory requirements and well-established convergence properties under
+suitable line-search conditions, can be preferable for large-scale problems.
+The CG method was originally proposed for symmetric positive definite linear sys-
+tems [26]. It improves the gradient descent method by incorporating an additional cor-
+rection term, yielding faster convergence and finite termination. It was later extended
+to nonlinear unconstrained optimization [19], and global convergence has since been es-
+tablished for several variants under step sizes satisfying the Wolfe conditions [2, 23, 9].
+However, the nonlinear CG method can suffer from inefficiency in practice. In par-
+ticular, it is susceptible to jamming, where many short steps are taken with limited
+progress. To address this, various modifications to the correction parameter have been
+proposed [34, 18, 10, 25]. For additional background and details, the reader is referred
+to [8, 24].
+In this paper, we compute ball-shaped volume-preserving parameterizations by min-
+imizing local volume distortion with the nonlinear CG method. Unlike the fixed-point
+iterations that require a fixed boundary condition, the nonlinear CG method permits
+boundary gliding on the unit sphere by incorporating spherical coordinates. Since
+boundary displacement can alter the total volume, we generalize the volumetric stretch
+energy by introducing an isovolumetric energy as the objective function, thereby re-
+2
+===== page 3 =====
+laxing the total volume constraint. Furthermore, this formulation provides a suitable
+symmetric positive definite preconditioner that significantly improves convergence while
+maintaining global convergence under strong Wolfe line searches, achieving state-of-the-
+art accuracy in volume preservation.
+1.1 Contribution
+The primary contributions of this paper are listed as follows:
+(i) We formulate the ball-shaped volume-preserving parameterization as an isovol-
+umetric energy minimization (IEM), which allows boundary vertices to be opti-
+mized along the unit sphere by utilizing spherical coordinates.
+(ii) We solve the IEM problem by preconditioning the nonlinear CG method, which
+is globally convergent. The proof can be regarded as a generalization of the
+convergence results for the nonlinear CG method presented in [33, Chapter 5].
+(iii) Numerical experiments indicate that the effectiveness of reducing volume distor-
+tion is significantly improved compared to the previous state-of-the-art method.
+(iv) We also provide applications to shape registration and deformation, which demon-
+strate the practical utility of the proposed method.
+1.2 Notation
+In this paper, we adopt the following notation.
+•Rrepresents the set of real numbers.
+•edenotes the identity mapping.
+•Bold letters, such asfandg, indicate real-valued vectors.
+•Capital letters and blackboard bold lowercase letters, such asLandf, represent
+real-valued matrices.
+•Typewriter-style letters, such asIandB, are used to denote ordered sets of
+indices.
+•f i refers to thei-th entry of the vectorf.
+•f I denotes the subvector offconsisting of entriesf i fori∈I.
+•L i,j represents the (i, j)-th entry of the matrixL.
+•L I,J denotes the submatrix ofL, composed of entriesL i,j fori∈Iandj∈J.
+3
+===== page 4 =====
+1.3 Organization of the paper
+The remainder of this paper is structured as follows. In Section 2, we introduce simplicial
+3-manifolds, mappings, and the isovolumetric energy functional. Section 3 formulates
+the IEM problem for ball-shaped mappings and provides the explicit formula for the
+energy gradient. In Section 4, we propose the preconditioned nonlinear CG method
+for solving the IEM problem. The convergence analysis is presented in Section 5. Sec-
+tion 6 includes numerical experiments and comparisons with state-of-the-art methods.
+Applications to volume-preserving registration and deformation are demonstrated in
+Section 7, followed by concluding remarks in Section 8.
+2 Simplicial 3-manifolds, mappings, and functionals
+Simplicial 3-manifolds, mappings, and the isovolumetric energy functional are intro-
+duced in Subsections 2.1, 2.2, and 2.3, respectively.
+2.1 Simplicial 3-manifolds
+A simplicial 3-manifoldMis the underlying set of a homogeneous simplicial 3-complex
+K(M) = S3
+ℓ=0 Kℓ(M) consisting ofnvertices
+K0(M) =
+
+vs = (v1
+s , v2
+s , v3
+s )⊤ ∈R 3	n
+s=1,
+mtetrahedra
+K3(M) ={τ t = [vit, vjt, vkt, vℓt]⊂R 3 |v it, vjt, vkt, vℓt ∈ K0(M)}m
+t=1,
+triangular faces
+K2(M) ={[v i, vj, vk]|[v i, vj, vk, vℓ]∈ K3(M) for somev ℓ ∈ K0(M)},
+and edges
+K1(M) ={[v i, vj]|[v i, vj, vk]∈ K2(M) for somev k ∈ K0(M)},
+where [v0, . . . , vk] denotes thek-simplex with verticesv 0, . . . , vk. Simplicial 3-manifolds
+are known as tetrahedral meshes, commonly used to represent solid shapes in computer
+graphics and computational mechanics.
+2.2 Simplicial mappings
+A simplicial mappingf:M →R 3 is a specific piecewise affine mapping such that its
+imagef(M) forms the underlying set of a simplicial 3-complex. For each tetrahedron
+τ= [v i, vj, vk, vℓ]∈ K3(M), the restriction mapf| τ is determined by the images of its
+vertices,
+fi ≡f(v i) = (f 1
+i , f2
+i , f3
+i )⊤, v i ∈ K0(M).
+4
+===== page 5 =====
+For anyv∈τ, the restrictionf| τ (v) can be written in barycentric form as
+f| τ (v) = |[v, vj, vk, vℓ]|
+|τ| fi + |[vi, v, vk, vℓ]|
+|τ| fj + |[vi, vj, v, vℓ]|
+|τ| fk + |[vi, vj, vk, v]|
+|τ| fℓ,
+where the signed volume|τ|=|[v i, vj, vk, vℓ]|is defined as
+|[vi, vj, vk, vℓ]|= 1
+6 ((vj -v i)×(v k -v i))⊤(vℓ -v i).
+A simplicial mappingfis said to be orientation-preserving if
+|f(τ)|>0,for everyτ∈ K 3(M),
+and orientation-reversing if
+|f(τ)|<0,for everyτ∈ K 3(M).
+A simplicial mappingfis said to be volume-preserving if the volume of each transformed
+tetrahedron is proportional to the original one with a global constant scaling factor
+c∈R, i.e.,
+|f(τ)|=c|τ|,for everyτ∈ K 3(M).
+In this case, the mappingfis orientation-preserving ifc >0, and orientation-reversing
+ifc <0.
+2.3 Isovolumetric energy functional
+In this paper, the adopted objective functional for computing volume-preserving param-
+eterizations is the isovolumetric energy, defined as
+EI(f) = V(e)
+V(f) EV(f)- V(f),(2.1a)
+whereVdenotes the image volume measurement,edenotes the identity mapping onM,
+andE V denotes the volumetric stretch energy functional [27] defined as
+EV(f) =
+X
+τ∈K 3(M)
+|f(τ)| 2
+|τ| .(2.1b)
+The definition ofE V in (2.1b) is equivalent to [27, (3.3)] with a scaling factor of 2/3.
+Furthermore, for orientation-preserving mappings,E I admits a continuous extension to
+degenerate cases. In this setting, the image volume is the sum of positive tetrahedral
+volumes, and henceE V (f)→0 asV(f)→0. We therefore defineE I(f) = 0 whenever
+V(f) = 0.
+The volumetric stretch energyE V yields volume-preserving maps when minimized
+under a fixed total-volume constraint. Specifically, ifV(e) =V(f), thenE V is mini-
+mized by volume-preserving mappingsf, as shown in [27, Theorem 3.3]. Without this
+constraint, however,E V admits only the minimum of zero, achieved by a constant map
+5
+===== page 6 =====
+f≡c.
+For a ball-shaped mapping, the resulting image volumeV(f) corresponds to a poly-
+hedron that approximates the unit ball, whose volume depends on the boundary vertices.
+As the boundary vertices glide along the unit sphere during the iterative minimization
+ofE V, the image volumeV(f) changes, making it undesirable to enforce the condition
+V(e) =V(f). To address this issue, we replaceE V with the isovolumetric energyE I,
+which removes the need for the total image volume constraint while still offering a similar
+characterization without the volume restriction, as stated in the theorem below.
+Theorem 2.1.LetMbe a simplicial3-manifold andfbe an orientation-preserving
+simplicial mapping defined onM. The isovolumetric energy in(2.1)satisfies
+EI(f)≥0,
+with equality occurring only whenfis volume-preserving.
+Proof.Applying the Cauchy-Schwarz inequality to (2.1b), we get
+EV(f)V(e) =
+X
+τ∈K 3(M)
+|f(τ)| 2
+|τ|
+X
+τ∈K 3(M)
+|τ| ≥
+
+ X
+τ∈K 3(M)
+|f(τ)|
+
+
+2
+=V(f) 2.
+Dividing both sides of the inequality byV(f), we obtain
+V(e)
+V(f) EV(f)≥ V(f),
+which means the isovolumetric energy (2.1) satisfiesE I(f)≥0. Equality holds only
+when |f(τ)|
+|τ| is constant, i.e., whenfis volume-preserving.
+Theorem 2.1 shows thatE I generalizesE V by relaxing the volume constraint. This,
+in turn, allows us to compute volume-preserving mappings while letting the boundary
+vertices move along the unit sphere.
+Recall that a simplicial mapfis fully determined by its vertex images. In practice,
+we representfin matrix form as
+f≡
+
+
+f ⊤
+1
+...
+f ⊤
+n
+
+ =
+
+
+f 1
+1 f 2
+1 f 3
+1
+... ... ...
+f 1
+n f 2
+n f 3
+n
+
+ ≡
+h
+f 1 f 2 f 3
+i
+∈R n×3.(2.2)
+Under this representation, the volumetric stretch energyE V can be expressed as
+EV(f) = 1
+3 trace(f ⊤LV(f)f) = 1
+3
+3X
+s=1
+f s⊤LV(f)f s,(2.3a)
+wherefandf s are defined in (2.2), andL V(f) is the weighted Laplacian matrix defined
+6
+===== page 7 =====
+θk,ℓ
+i,j (f )
+fi
+fℓ
+fk
+fj
+Figure 2.1.An illustration of the dihedral angle between [f i, fk, fℓ] and [f j, fℓ, fk] in
+the tetrahedron [f i, fj, fk, fℓ].
+as
+[LV(f)] i,j =
+
+
+
+-
+X
+[vi,vj ,vk,vℓ]∈K3(M)
+[ωV(f)] k,ℓ
+i,j if [vi, vj]∈ K1(M),
+-
+X
+[vi,vk]∈K1(M)
+[LV(f)] i,k ifj=i,
+0 otherwise.
+(2.3b)
+The mapping-dependent weightω V(f) is the modified cotangent weight defined as
+[ωV(f)] k,ℓ
+i,j =
+cot (θk,ℓ
+i,j (f))|[f k, fℓ]| |[fi, fj, fk, fℓ]|
+6|[v i, vj, vk, vℓ]| ,(2.3c)
+whereθ k,ℓ
+i,j (f) denotes the dihedral angle between [fi, fk, fℓ] and [fj, fℓ, fk] in [fi, fj, fk, fℓ]
+on the edge [f k, fℓ], as illustrated in Figure 2.1. The detailed derivation can be found
+in [27, Theorem 3.1].
+With this representation ofE V, the computation of a ball-shaped volume-preserving
+mapping can be formulated as an isovolumetric energy minimization (IEM) problem with
+respect tof s, which is an unconstrained nonlinear optimization problem, as described
+in Section 3.
+3 IEM for ball-shaped parameterizations
+Recall that a ball-shaped parameterization of a simplicial 3-manifold is a bijective map
+whose boundary vertices lie on the unit sphere. We enforce this boundary constraint by
+expressing the boundary vertices in spherical coordinates.
+The index sets of boundary and interior vertices are denoted as
+B={b|v b ∈∂M}andI={i|v i ∈ M\∂M},
+respectively, and we denoten I = #Iandn B = #B. Then, the boundary mapping
+f 1
+B ,f 2
+B ,f 3
+B can be represented in spherical coordinates as
+f 1
+B = sinθ⊙cosϕ,f 2
+B = sinθ⊙sinϕ,andf 3
+B = cosθ,(3.1)
+whereθ= (θ 1, . . . , θnB)⊤ ∈R nB andϕ= (ϕ 1, . . . , ϕnB)⊤ ∈R nB. Conversely, the spherical
+7
+===== page 8 =====
+coordinates (θ,ϕ) can be recovered fromf 1
+B ,f 2
+B ,f 3
+B as
+θ= arccos(f 3
+B ),ϕ= atan2(f 2
+B ,f 1
+B ),(3.2)
+where atan2 denotes the four-quadrant inverse tangent. With this boundary expres-
+sion, the IEM problem for ball-shaped parameterizations becomes the unconstrained
+nonlinear optimization:
+f ∗ = argmin
+f 1
+I ,f 2
+I ,f 3
+I ∈R nI
+θ,ϕ∈R nB
+EI(f 1
+I ,f 2
+I ,f 3
+I ,θ,ϕ).(3.3)
+We next derive the gradient ofE I in (3.3) with respect tof s
+I ,θ, andϕfors= 1,2,3.
+Since the image volumeV(f) depends only on the boundary vertices, it suffices to
+expressV(f) in terms of the spherical variablesθandϕ. Letα= [v i, vj, vk]∈ K2(∂M)
+be a boundary triangular face. We form the tetrahedron by the image of boundary face
+f(α) together with the origin0 3 ofR 3, given by
+f(τ α) = [03, f(α)] = [03, fi, fj, fk].
+The total image volume is then the sum of the volumes of these boundary tetrahedra
+V(f) =
+X
+α∈K2(∂M)
+|f(τ α)|= 1
+6
+X
+[vi,vj ,vk]∈K2(∂M)
+f ⊤
+i (fj ×f k),
+as illustrated in Figure 3.1. We denote the three coordinate vectors of its imagef(α)
+by
+f s
+α = (f s
+i , fs
+j , fs
+k )⊤, s= 1,2,3.
+Then, the signed volume of the tetrahedronf(τ α) can be formulated as
+|f(τ α)|= 1
+6 f ⊤
+i (fj ×f k) = 1
+6 det
+
+
+f 1
+i f 2
+i f 3
+i
+f 1
+j f 2
+j f 3
+j
+f 1
+k f 2
+k f 3
+k
+
+ = 1
+6 f 1⊤
+α (f 2
+α ×f 3
+α),
+which coincides with the volume of tetrahedron [0 3,f 1
+α,f 2
+α,f 3
+α]. Because movingf 1
+α par-
+allel to the plane spanned byf 2
+α andf 3
+α does not change the volume, the gradient with
+respect tof 1
+α is normal to that plane. Thus, the gradients with respect tof 1
+α,f 2
+α, andf 3
+α
+are
+∇f 1α|f(τ α)|= 1
+6 (f 2
+α ×f 3
+α),∇ f 2α|f(τ α)|= 1
+6 (f 3
+α ×f 1
+α),∇ f 3α|f(τ α)|= 1
+6 (f 1
+α ×f 2
+α).
+Now we representf 1
+α,f 2
+α,f 3
+α in spherical coordinatesθ α = (θ i, θj, θk)⊤ andϕ α =
+8
+===== page 9 =====
+x
+y
+z
+ϕ
+θ 1
+f (τα)
+f (α)
+Figure 3.1.An illustration for the tetrahedronf(τ α) formed by the boundary facef(α)
+and the origin0 3 ofR 3.
+(ϕi, ϕj, ϕk)⊤ as
+f 1
+α =
+
+
+sinθ i cosϕ i
+sinθ j cosϕ j
+sinθ k cosϕ k
+
+ =
+
+
+sinθ i
+sinθ j
+sinθ k
+
+ ⊙
+
+
+cosϕ i
+cosϕ j
+cosϕ k
+
+ =: sinθ α ⊙cosϕ α,
+f 2
+α =
+
+
+sinθ i sinϕ i
+sinθ j sinϕ j
+sinθ k sinϕ k
+
+ =
+
+
+sinθ i
+sinθ j
+sinθ k
+
+ ⊙
+
+
+sinϕ i
+sinϕ j
+sinϕ k
+
+ =: sinθ α ⊙sinϕ α,
+f 3
+α =
+
+
+cosθ i
+cosθ j
+cosθ k
+
+ = cosθ α,
+where⊙denotes the Hadamard product of matrices or vectors. By applying the chain
+rule, the gradient of|f(τ α)|with respect toθ α andϕ α is formulated as
+∇θα|f(τ α)|= 1
+6
+ 
+cosθ α ⊙cosϕ α ⊙(f 2
+α ×f 3
+α) + cosθ α ⊙sinϕ α ⊙(f 3
+α ×f 1
+α) (3.4a)
+-sinθ α ⊙(f 1
+α ×f 2
+α)
+
+,
+∇ϕα|f(τ α)|= 1
+6
+ 
+sinθ α ⊙cosϕ α ⊙(f 3
+α ×f 1
+α)-sinθ α ⊙sinϕ α ⊙(f 2
+α ×f 3
+α)
+
+.(3.4b)
+We denote the gradient ofV(f) with respect toθandϕas∇ θV(f) and∇ ϕV(f), respec-
+tively, which can be obtained by assembling associated tetrahedra using the formulae in
+(3.4).
+On the other hand, from [27, Theorem 3.5], the gradient ofE V(f) with respect to
+f s is formulated as
+∇f sEV(f) = 2L V(f)f s,fors= 1,2,3.(3.5)
+Under a reordering with respect toIandB, the gradient formula (3.5) is equivalent to
+∇f s
+I EV(f) = 2
+ 
+[LV(f)] I,If s
+I + [LV(f)] I,Bf s
+B
+
+,(3.6a)
+∇f s
+B EV(f) = 2
+ 
+[LV(f)] B,If s
+I + [LV(f)] B,Bf s
+B
+
+,fors= 1,2,3.(3.6b)
+9
+===== page 10 =====
+Ultimately, we obtain the explicit gradient ofE I(f) in (3.3) with respect tof s
+I ,θ, and
+ϕ, which is formulated as
+∇f s
+I EI(f) = V(e)
+V(f) ∇f s
+I EV(f)
+= 2V(e)
+V(f)
+ 
+[LV(f)] I,If s
+I + [LV(f)] I,Bf s
+B
+
+,fors= 1,2,3, (3.7a)
+∇θEI(f) =∇ θ
+ V(e)
+V(f)
+
+EV(f) + V(e)
+V(f) ∇θEV(f)- ∇θV(f)
+= 2V(e)
+V(f)
+
+cosθ⊙cosϕ⊙
+ 
+[LV(f)] B,If 1
+I + [LV(f)] B,Bf 1
+B
+
++ cosθ⊙sinϕ⊙
+ 
+[LV(f)] B,If 2
+I + [LV(f)] B,Bf 2
+B
+
+-sinθ⊙
+ 
+[LV(f)] B,If 3
+I + [LV(f)] B,Bf 3
+B
+
+-
+
+1 + V(e)E V(f)
+V(f) 2
+
+∇θV(f),(3.7b)
+and
+∇ϕEI(f) =∇ ϕ
+ V(e)
+V(f)
+
+EV(f) + V(e)
+V(f) ∇ϕEV(f)- ∇ϕV(f)
+= 2V(e)
+V(f)
+
+sinθ⊙cosϕ⊙
+ 
+[LV(f)] B,If 2
+I + [LV(f)] B,Bf 2
+B
+
+-sinθ⊙sinϕ⊙
+ 
+[LV(f)] B,If 1
+I + [LV(f)] B,Bf 1
+B
+
+-
+
+1 + V(e)E V(f)
+V(f) 2
+
+∇ϕV(f).(3.7c)
+Using the explicit gradient formulas forE I in (3.7), we develop a nonlinear CG
+method with appropriate preconditioning to solve the optimization problem (3.3), which
+is explained in the next section.
+4 Preconditioned nonlinear CG method of IEM
+In this section, we present the algorithm that applies the preconditioned nonlinear CG
+method to solve the IEM problem in (3.3).
+Since the target domain is the solid unit ball, we first globally scale the tetrahedral
+mesh by normalizing the vertices along the boundary's principal axes to make the mesh
+closer to a spherical shape. Letv∈R n×3 be the vertex matrix,v B ∈R nB×3 be the
+boundary vertex matrix, and ¯vB = 1
+nB
+PnB
+i=1 v i be its centroid. We compute the singular
+value decomposition (SVD) by
+(v B -1¯v⊤
+B ) =UΣR ⊤,
+10
+===== page 11 =====
+and then rotate and scale the whole mesh by
+v←(v-1¯v ⊤
+B )RΣ -1.(4.1)
+This alignment recenters the mesh and makes the boundary closer to a sphere.
+For the initial mapping, we adopt the fixed-point method in [39, Algorithm 4.4],
+which computes a volume-preserving map by solving a linear system at each iteration
+while keeping the boundary fixed. Although this approach does not guarantee global
+convergence, it typically achieves a rapid energy decrease in the first few iterations. After
+about 10 iterations, however, the improvement becomes marginal (see Section 6.1). We
+therefore run this fixed-point method for 15 iterations and use the resulting map as the
+initial guess for our preconditioned nonlinear CG algorithm.
+At thekth iteration, we represent the mappingf (k) by
+f (k) :=
+
+
+f 1
+I
+(k)
+f 2
+I
+(k)
+f 3
+I
+(k)
+θ(k)
+ϕ(k)
+
+
+.(4.2)
+The corresponding gradient vector is denoted as
+g(k) :=∇E I(f (k)) =
+
+
+∇f 1
+I
+EI(f (k))
+∇f 2
+I
+EI(f (k))
+∇f 3
+I
+EI(f (k))
+∇θEI(f (k))
+∇ϕEI(f (k))
+
+
+=:
+
+
+g1
+I
+(k)
+g2
+I
+(k)
+g3
+I
+(k)
+g(k)
+θ
+g(k)
+ϕ
+
+
+,(4.3)
+which is explicitly formulated in (3.7).
+Starting fromf (0), we update it iteratively by
+f (k+1) =f (k) +α kp(k),(4.4a)
+whereα k is chosen by a line search satisfying the Wolfe conditions, andp (k) is the
+preconditioned CG direction at thekth step, given by
+p(k) :=
+
+
+p1
+I
+(k)
+p2
+I
+(k)
+p3
+I
+(k)
+p(k)
+θ
+p(k)
+ϕ
+
+
+=-M -1g(k) +β kp(k-1),p (0) =-M -1g(0) (4.4b)
+11
+===== page 12 =====
+with the corrective scalar computed in theM -1-inner product,
+βk = g(k)⊤ M -1g(k)
+g(k-1)⊤M -1g(k-1)
+= ∥g(k)∥2
+M -1
+∥g(k-1)∥2
+M -1
+,(4.4c)
+whereMis a suitable preconditioner.
+A good preconditioner is a symmetric positive definite matrix that approximates the
+Hessian∇ 2EI. When the image volumeV(f) varies mildly,E I(f) is well approximated
+byE V(f), and applying the product rule to the gradient∇ f sEV in (3.5) gives
+∇2
+f sEV(f) = 2L V(f) + 2 Df sLV(f)f s, s= 1,2,3,(4.5)
+where the third-order tensor D f sLV(f)∈R n×n×n is defined by
+[Df sLV(f)] i,j,ℓ = ∂
+∂f s
+ℓ
+[LV(f)] i,j,
+and the matrix D f sLV(f)f s ∈R n×n is given by
+[Df sLV(f)f s]i,ℓ =
+nX
+j=1
+[Df sLV(f)] i,j,ℓf s
+j =
+nX
+j=1
+∂
+∂f s
+ℓ
+[LV(f)] i,jf s
+j .
+Since the principal submatrices ofL V(f) are typically symmetric positive definite, we
+keep the first term in (4.5) and adopt the block-diagonal preconditioner
+M=
+"
+I3 ⊗[L V(f (0))]I,I
+I2 ⊗[L V(f (0))]B,B
+#
+.(4.6)
+SinceMis fixed, in practice, we compute the preordered Cholesky decomposition so
+that the linear systems involving [L V(f (0))]I,I and [LV(f (0))]B,B can be efficiently solved
+using forward and backward substitution in each iteration.
+For the CG correction parameterβ k, we tested several standard choices (see Sec-
+tion 6.2) and found that they produced broadly similar numerical behavior on our
+IEM problem. Moreover, the preconditioned variants consistently outperformed the un-
+preconditioned ones. We therefore adopt the preconditioned Fletcher-Reeves formula
+(4.4c), for which global convergence is established in Section 5.
+The step length from an exact line search satisfies
+α∗ = argminφ(α)≡E I
+ 
+f (k) +αp (k)
+.
+BecauseE I is nonlinear, we approximateα ∗ by quadratic and cubic interpolation [33,
+Chapter 3.5], using the previous step length as the initial trial step, denoted asα 0.
+In the quadratic model, we constructφ q to match the value and derivative at 0 and
+12
+===== page 13 =====
+the value atα 0: 
+
+
+φq(0) =φ(0) =E I
+ 
+f (k)
+,
+φ′
+q(0) =φ ′(0) =p (k)⊤
+∇EI
+ 
+f (k)
+,
+φq(α0) =φ(α 0) =E I
+ 
+f (k) +α 0p(k)
+.
+(4.7)
+This gives
+φq(α)≡a α 2 +φ ′(0)α+φ(0), a= φ(α0)-φ(0)-α 0φ′(0)
+α2
+0
+(4.8)
+and the quadratic minimizer
+α1 = argminφ q(α) =- φ′(0)
+2a .(4.9)
+Ifα 1 does not provide a sufficient decrease that satisfies
+φ(α1)< ℓ(α1)≡φ(0) +c 1α1φ′(0),(4.10)
+wherec 1 = 1
+2 -εwithεbeing a positive number close to zero, we switch to a cubic
+model
+φc(α) =b α3 +c α2 +φ ′(0)α+φ(0) (4.11)
+that satisfies (4.7) together withφ c(α1) =φ(α 1). The coefficients can be obtained by
+"
+b
+c
+#
+= 1
+α2
+0α2
+1(α1 -α 0)
+"
+α2
+0 -α2
+1
+-α3
+0 α3
+1
+# "
+φ(α1)-φ(0)-φ ′(0)α1
+φ(α0)-φ(0)-φ ′(0)α0
+#
+.(4.12)
+and the cubic minimizer is
+α2 = argminφ c(α) = -c+
+p
+c2 -3bφ ′(0)
+3b .(4.13)
+The computational procedure is outlined in detail in Algorithm 1.
+We note that the requirement ofc 1 in (4.10) coincides with the condition (5.1a),
+which is used in our global convergence analysis in Section 5. In practice, taking the
+quadratic step and scaling it by 0.9 satisfies this condition in nearly all our tests. A
+numerical illustration is given in Section 6.1.
+5 Global convergence analysis
+In this section, we provide a proof of the global convergence of the proposed Algorithm 1.
+The main theorem (Theorem 5.1) generalizes the convergence analysis of the nonlinear
+CG method introduced in [33, Chapter 5]. Similar techniques have been applied to the
+convergence analysis of authalic energy minimization for disk area-preserving param-
+eterizations [31]. One of the main differences is that we change the definition of the
+denominator of cosθ (k)
+M in the modified Zoutendijk's condition (Lemma 5.4) so that the
+proof of Theorem 5.1 becomes simpler.
+13
+===== page 14 =====
+Algorithm 1Preconditioned Nonlinear CG Method for IEM
+Input:A simply connected tetrahedral meshMand a toleranceϵ.
+Output:An approximate volume-preserving simplicial mappingf.
+1:Compute the SVD and update vertices by (4.1).
+2:Letnbe the number of elements inK 0(M).
+3:LetB={s|v s ∈∂M}andI={1,· · ·, n} \B.
+4:Compute a boundary mappingf s
+B , fors= 1,2,3, using [39, Algorithm 4.3].
+5:LetL←L V(e) as (2.3b).
+6:fork= 1, . . . ,15do
+7:Solve the linear systemL I,If s
+I =-L I,Bf s
+B , fors= 1,2,3.
+8:UpdateL←L V(f) as (2.3b).
+9:end for
+10:Let the preconditionersM I ←L I,I andM B ←L B,B.
+11:Perform Cholesky decompositions ofM I andM B.
+12:Compute the spherical coordinates [θ,ϕ] by (3.2).
+13:Compute the energy valueE=E I(f) as (2.1).
+14:Letδ← ∞.
+15:whileδ > ϵdo
+16:LetE 0 ←E.
+17:Compute gradientsg s
+I,g θ,g ϕ fors= 1,2,3 by (3.7).
+18:SolveM Ihs
+I =g s
+I,M Bhθ =g θ andM Bhϕ =g ϕ, fors= 1,2,3.
+19:ifδ=∞then
+20:Computeλ← P3
+s=1(gs
+I
+⊤hs
+I) +g ⊤
+θ hθ +g ⊤
+ϕ hϕ.
+21:Updatep s
+I ← -hs
+I,p θ ← -hθ, andp ϕ ← -hϕ, fors= 1,2,3.
+22:else
+23:Letλ 0 ←λ.
+24:Computeλ← P3
+s=1(gs
+I
+⊤hs
+I) +g ⊤
+θ hθ +g ⊤
+ϕ hϕ.
+25:Letβ←λ/λ 0.
+26:Updatep s
+I ← -hs
+I +βp s
+I,p θ ← -hθ +βp θ, andp ϕ ← -hϕ +βp ϕ, for
+s= 1,2,3.
+27:end if
+28:Compute a step lengthαby (4.9) or (4.13).
+29:Updatef s
+I ←f s
+I +αp s
+I,θ←θ+αp θ, andϕ←ϕ+αp ϕ, fors= 1,2,3.
+30:Updatef s
+B by the spherical-coordinate formula (3.1), fors= 1,2,3.
+31:UpdateL←L V(f) as (2.3b).
+32:Compute the energy valueE=E I(f) as (2.1).
+33:Updateδ←E 0 -E.
+34:end while
+14
+===== page 15 =====
+Theoretical guarantees for the global convergence of Algorithm 1 are established,
+assuming that each step lengthα k satisfies the strong Wolfe conditions
+EI(f (k+1))-E I(f (k))≤c 1 αkg(k)⊤
+p(k),(5.1a)
+|g(k+1)⊤
+p(k)| ≤c2 |g(k)⊤
+p(k)|,(5.1b)
+with 0< c 1 < c2 < 1
+2 . The existence of each desirable value ofα k is ensured by
+Lemma 5.2, assuming thatp (k) is a descent direction ofE I atf (k).
+In the following lemma, we establish the Lipschitz continuity of both the objective
+functional and its gradient, which are crucial for proving the convergence of the proposed
+method.
+Lemma 5.1.The isovolumetric energyE I in(2.1)and its gradient∇E I are both Lip-
+schitz continuous with respect tofin(4.2), provided that the image volume is bounded
+away from zero, i.e.,V(f)≥v ∗ for some constantv ∗ >0.
+Proof.Recall thatfrepresents the vertex-image vector off, with boundary vertices
+written in spherical coordinates. We considerfin a compact feasible set
+D= [-1,1] 3nI ×[0, π]nB ×[-π, π]nB ∩ {f| V(f)≥v∗},
+wheren I andn B are the numbers of interior and boundary vertices. Since the functional
+EI in (2.1) is built from the volume|f(τ)|andV(f)≥v ∗ >0, it is smooth with respect
+to the vertex imagef i on [-1,1] 3. By the chain rule,E I is smooth with respect tofon
+Das well.
+Letu,v∈Dsuch that the line segment betweenu,vlies inDand defineϕ(t) =
+EI((1-t)u+tv). Sinceϕis smooth, by the mean value theorem, there existsξ 1 ∈(0,1)
+such that
+EI(v)-E I(u) =ϕ(1)-ϕ(0) =ϕ ′(ξ1) =∇E I(w1)⊤(v-u),
+wherew 1 = (1-ξ 1)u+ξ 1v. Hence,
+|EI(v)-E I(u)| ≤ ∥∇EI(w1)∥2 ∥v-u∥ 2 ≤sup
+D
+∥∇EI(f)∥ 2∥v-u∥ 2.
+SinceDis compact and∇E I is continuous, by the extreme value theorem, the supremum
+is finite, soE I is Lipschitz onD.
+On the other hand, to show the Lipschitz continuity of∇E I, we defineφ(t) =
+(∇EI(v)- ∇EI(u))⊤∇EI((1-t)u+tv) foru,v∈Dsuch that the line segment between
+u,vlies inD. Due to the smoothness of∇E I, the mean value theorem guarantees the
+existence of a valueξ 2 ∈(0,1) such that
+∥∇EI(v)- ∇EI(u)∥2
+2 =φ(1)-φ(0) =φ ′(ξ2)
+= (∇EI(v)- ∇EI(u))⊤∇2EI(w2)(v-u),
+15
+===== page 16 =====
+wherew 2 = (1-ξ 2)u+ξ 2v. Hence,
+∥∇EI(v)- ∇EI(u)∥2
+2 ≤ ∥∇EI(v)- ∇EI(u)∥2 ∥∇2EI(w2)∥2 ∥v-u∥ 2
+≤sup
+D
+∥∇2EI(f)∥ 2 ∥∇EI(v)- ∇EI(u)∥2∥v-u∥ 2.
+SinceDis compact and∇ 2EI is continuous, by the extreme value theorem, the supre-
+mum is finite, so∇E I is Lipschitz onD.
+To ensure that the iterative method converges to a critical point ofE I, we need a
+descent direction and a step length that together produce a sufficient decrease ofE I at
+each iteration. SinceE I is bounded below, wheneverp (k) is a descent direction, there
+exists a step length satisfying the strong Wolfe conditions (5.1), as stated in the following
+lemma.
+Lemma 5.2([33, Lemma 3.1]).Letp (k) be a descent direction atf (k). For0< c 1 <
+c2 <1, there exist intervals of step lengths satisfying the strong Wolfe conditions(5.1).
+Fork= 0, the initial directionp (0) =-M -1g(0) is a descent direction ifM -1 is
+symmetric and positive definite, which guarantees the existence of a step length satis-
+fying the strong Wolfe conditions. To ensure thatp (k) remains a descent direction for
+k≥1, the parameterc 2 in (5.1b) should be chosen from the interval (0, 1
+2 ), as shown in
+the following lemma, which is a variant of [33, Lemma 5.6].
+Lemma 5.3.Let Algorithm 1 be implemented with step lengthα k satisfying the strong
+Wolfe conditions(5.1)with a parameterc 2 ∈(0, 1
+2 ). Then, for everyk,p (k) is a descent
+direction and satisfies
+- 1
+1-c 2
+≤ g(k)⊤
+p(k)
+∥g(k)∥2
+M -1
+≤ 2c2 -1
+1-c 2
+,(5.2)
+provided thatMis a symmetric positive definite matrix. Here,∥ · ∥ M denotes theM-
+norm, defined as∥v∥ M =
+√
+v⊤Mv.
+Proof.First, we note thatφ(c 2) = 2c2-1
+1-c2
+is monotone increasing andφ( 1
+2 ) = 0. Hence,
+ifc 2 ∈(0, 1
+2 ), the right-hand side of (5.2) is negative, sop (k) is a descent direction once
+(5.2) is established.
+We prove (5.2) by induction onk. Fork= 0, sincep (0) =-M -1g(0), we have
+g(0)⊤
+p(0)
+∥g(0)∥2
+M -1
+=-1,
+which satisfies (5.2). Assume the induction hypothesis (5.2) holds fork=n. Then, for
+k=n+ 1, from (4.4b) and (4.4c), we have
+g(n+1)⊤
+p(n+1)
+∥g(n+1)∥2
+M -1
+=-1 +β n+1
+g(n+1)⊤
+p(n)
+∥g(n+1)∥2
+M -1
+=-1 + g(n+1)⊤
+p(n)
+∥g(n)∥2
+M -1
+.(5.3)
+16
+===== page 17 =====
+By the induction hypothesis,p (k) is a descent direction. Hence, by Lemma 5.2, there
+exists a step length satisfying the second Wolfe condition (5.1b), given by
+c2 g(n)⊤
+p(n) ≤g (n+1)⊤
+p(n) ≤ -c2 g(n)⊤
+p(n).(5.4)
+By combining (5.3) and (5.4), we obtain
+-1 +c 2
+g(n)⊤
+p(n)
+∥g(n)∥2
+M -1
+≤ g(n+1)⊤
+p(n+1)
+∥g(n+1)∥2
+M -1
+≤ -1-c2
+g(n)⊤
+p(n)
+∥g(n)∥2
+M -1
+.
+Then, from the induction hypothesis (5.2) withk=nagain, we have
+- 1
+1-c 2
+=-1- c2
+1-c 2
+≤ g(n+1)⊤
+p(n+1)
+∥g(n+1)∥2
+M -1
+≤ -1 + c2
+1-c 2
+= 2c2 -1
+1-c 2
+,
+i.e., (5.2) holds fork=n+ 1.
+This sufficient descent property provided by Lemma 5.3, together with the strong
+Wolfe line search, leads to a global bound on the sum of the squared gradient components
+along the search directions. This is stated in the following lemma, which is a variant of
+Zoutendijk's condition.
+Lemma 5.4(modified Zoutendijk's condition).LetMbe a symmetric positive definite
+matrix. Suppose Algorithm 1 is implemented with the step lengthα k satisfying the
+strong Wolfe conditions(5.1)with0< c 1 < c2 < 1
+2 , andV(f)≥v ∗ on each segment
+[f (k),f (k+1)]. Then,
+∞X
+k=0
+cos2 θ(k)
+M ∥g(k)∥2
+M -1 <∞,(5.5a)
+wherecosθ (k)
+M is defined as
+cosθ (k)
+M = -g(k)⊤
+p(k)
+∥g(k)∥M -1∥p(k)∥M
+,(5.5b)
+Proof.Recall that the second Wolfe condition (5.1b) states that
+g(k+1)⊤
+p(k) ≥c 2 g(k)⊤
+p(k).(5.6)
+Subtractingg (k)⊤
+p(k) from both sides of (5.6) yields
+ 
+g(k+1) -g (k)⊤p(k) ≥(c 2 -1)g (k)⊤
+p(k).(5.7)
+Since∇E I is Lipschitz continuous, (5.7) implies
+(c2 -1)g (k)⊤
+p(k) ≤ ∥g(k+1) -g (k)∥2 ∥p(k)∥2 ≤η∥f (k+1) -f (k)∥2 ∥p(k)∥2.(5.8)
+17
+===== page 18 =====
+for someη >0. The values in (5.8) can be estimated inM-norm as
+∥f (k+1) -f (k)∥2 =∥M -1/2(f (k+1) -f (k))∥M ≤ ∥M-1/2∥M ∥f (k+1) -f (k)∥M ,(5.9)
+and
+∥p(k)∥2 =∥M -1/2p(k)∥M ≤ ∥M-1/2∥M ∥p(k)∥M .(5.10)
+From (5.8)-(5.10), we have
+αk = ∥f (k+1) -f (k)∥M
+∥p(k)∥M
+= ∥f (k+1) -f (k)∥M ∥p(k)∥M
+∥p(k)∥2
+M
+≥ c2 -1
+η∥M -1/2∥2
+M
+g(k)⊤
+p(k)
+∥p(k)∥2
+M
+.(5.11)
+By substituting (5.11) into the first Wolfe condition (5.1a), we obtain
+EI(f (k+1))≤E I(f (k))-c 1
+1-c 2
+η∥M -1/2∥2
+M
+g(k)⊤
+p(k)
+∥p(k)∥2
+M
+g(k)⊤
+p(k)
+≤E I(f (k))-eη(g(k)⊤
+p(k))2
+∥p(k)∥2
+M
+=E I(f (k))-eηcos 2 θ(k)
+M ∥g(k)∥2
+M -1,(5.12)
+whereeη= c1(1-c2)
+η∥M -1/2∥2
+M
+>0 and cosθ (k)
+M is given by (5.5b). By applying the recursive
+inequality of (5.12), we obtain
+kX
+j=0
+cos2 θ(j)
+M ∥g(j)∥2
+M -1 ≤ 1
+eη
+ 
+EI(f (0))-E I(f (k+1))
+
+.(5.13)
+SinceE I(f)≥0, the valueE I(f (0))-E I(f (k+1)) in (5.13) is bounded. Therefore,
+lim
+k→∞
+kX
+j=0
+cos2 θ(j)
+M ∥g(j)∥2
+M -1 ≤sup
+f
+1
+eη
+ 
+EI(f (0))-E I(f)
+
+<∞,
+which is equivalent to (5.5).
+Lemma 5.4 shows that, along the iterations, either the gradient norm eventually
+becomes small or the search direction becomes nearly orthogonal to-g (k). While,
+asp (k) =-M -1g(k), the global convergence follows directly because cosθ (k)
+M = 1 for
+allk, in the nonlinear CG method, the correction term may makep (k) deviate from
+-M -1g(k). Despite this, the bound on-g (k)⊤
+p(k) provided by Lemma 5.3 makes cosθ(k)
+M
+under control. This allows us to establish global convergence, as stated in the following
+theorem.
+Theorem 5.1.AssumeMis a symmetric positive definite matrix. Let Algorithm 1 be
+implemented withα k satisfying the strong Wolfe conditions(5.1)with0< c 1 < c2 < 1
+2 ,
+andV(f)≥v ∗ on each segment[f (k),f (k+1)]. Then,
+lim inf
+k→∞
+∥g(k)∥M -1 = 0.(5.14)
+18
+===== page 19 =====
+Proof.We establish (5.14) using a proof by contradiction. Suppose, to the contrary,
+that there exists a natural numbern 0 and a positive real numberγ >0 such that
+∥g(k)∥M -1 ≥γ, for every natural numberk > n 0. Moreover, if Algorithm 1 does not
+terminate after finitely many iterations, we have∥g (k)∥M -1 >0 for allk. Hence, there
+exists a constantε >0 such that
+∥g(k)∥M -1 ≥ε,for allk.(5.15)
+Since each step lengthα k satisfies the second Wolfe condition (5.1b) withc 2 ∈(0, 1
+2 ),
+Lemma 5.3 implies thatp (k) is a descent direction and
+1-2c 2
+1-c 2
+≤ -g(k)⊤
+p(k)
+∥g(k)∥2
+M -1
+≤ 1
+1-c 2
+(5.16)
+Substituting cosθ (k)
+M in (5.5b) into (5.16) yields
+1-2c 2
+1-c 2
+∥g(k)∥M -1
+∥p(k)∥M
+≤cosθ (k)
+M ≤ 1
+1-c 2
+∥g(k)∥M -1
+∥p(k)∥M
+.(5.17)
+Sincep (k) is a descent direction, by Lemma 5.4 and left inequality (5.17), we obtain
+∞X
+k=0
+∥g(k)∥4
+M -1
+∥p(k)∥2
+M
+<∞.(5.18)
+Then, substituting the assumption (5.15) into (5.18) gives
+∞X
+k=0
+1
+∥p(k)∥2
+M
+<∞.(5.19)
+TheM-norm ofp (k) =-M -1g(k) +β kp(k-1) can be estimated by
+∥p(k)∥2
+M =∥M -1g(k)∥2
+M -2β k(M -1g(k))⊤(Mp (k-1)) +β 2
+k ∥p(k-1)∥2
+M
+≤ ∥g(k)∥2
+M -1 + 2βk |g(k)⊤
+p(k-1)|+β 2
+k ∥p(k-1)∥2
+M .(5.20)
+The second Wolfe condition (5.1b) and the right inequality of (5.16) imply
+|g(k)⊤
+p(k-1)| ≤ -c2 g(k-1)⊤
+p(k-1) ≤ c2
+1-c 2
+∥g(k-1)∥2
+M -1.(5.21)
+Thus, (5.20), (5.21), and (4.4c) imply
+∥p(k)∥2
+M ≤ ∥g(k)∥2
+M -1 + 2c2
+1-c 2
+βk∥g(k-1)∥2
+M -1 +β 2
+k ∥p(k-1)∥2
+M
+=∥g (k)∥2
+M -1 + 2c2
+1-c 2
+∥g(k)∥2
+M -1 +β 2
+k ∥p(k-1)∥2
+M
+=
+ 1 +c 2
+1-c 2
+
+∥g(k)∥2
+M -1 +β 2
+k∥p(k-1)∥2
+M .(5.22)
+19
+===== page 20 =====
+Letc 3 = (1 +c 2)/(1-c 2)≥1. The recursive inequality (5.22) with the initial vector
+p(0) =-M -1g(0) implies
+∥p(k)∥2
+M ≤c 3
+
+∥g(k)∥2
+M -1 +
+k-1X
+i=0
+ kY
+j=i+1
+β2
+j
+
+∥g(i)∥2
+M -1
+
+.(5.23)
+It can be derived from the expression ofβ k in (4.4c) that
+kY
+j=i+1
+β2
+j = ∥g(k)∥4
+M -1
+∥g(i)∥4
+M -1
+.(5.24)
+By substituting the product ofβ k in (5.23) into (5.24), we obtain
+∥p(k)∥2
+M ≤c 3∥g(k)∥4
+M -1
+kX
+i=0
+1
+∥g(i)∥2
+M -1
+.(5.25)
+Since∇E I is Lipschitz continuous by Lemma 5.1, there existsγ >0 such that∥g(k)∥M -1 ≤
+¯γ. Moreover, by (5.15), we have
+kX
+i=0
+1
+∥g(i)∥2
+M -1
+≤ k+ 1
+ε2 .(5.26)
+Consequently, from (5.25), we have
+∥p(k)∥2
+M ≤ c3γ4
+ε2 (k+ 1).
+This implies
+∞X
+k=0
+1
+∥p(k)∥2
+M
+≥ ε2
+c3γ4
+∞X
+k=0
+1
+k+ 1 =∞
+which contradicts (5.19).
+6 Numerical experiments
+In this section, we present the numerical results of the proposed preconditioned nonlinear
+CG method for IEM, as described in Algorithm 1. The benchmark tetrahedral mesh
+models shown in Figure 6.1 are sourced from Jacobson's GitHub [28], Gu's website [21],
+and the BraTS databases [3, 4]. Some tetrahedral mesh models are generated using the
+iso2mesh[17, 38] andJIGSAWmesh generators [12, 13, 14, 15, 16]. All experiments are
+implemented in MATLAB on a laptop with an AMD Ryzen 9 5900HS processor and 32
+GB of RAM.
+6.1 Initialization and step length
+We first examine the effect of the initial solution and the step-length selection. At the
+beginning of Algorithm 1, we carry out the fixed-point iteration of volumetric stretch
+20
+===== page 21 =====
+Model name Arnold Heart Igea Brain
+#K0(M) 6,990 18,408 22,930 27,834
+#K3(M) 36,875 103,751 130,375 158,583
+Model name Lion David Head Max Planck Apple
+#K0(M) 36,727 40,669 66,935 102,906
+#K3(M) 207,774 233,663 390,361 559,122
+Figure 6.1.The benchmark tetrahedral mesh models.
+energy minimization (VSEM) [39, Algorithm 4.4] for 15 iterations to obtain an initial
+solution. This VSEM method reduces the objective functionalE I rapidly in the early
+iterations, but its effectiveness diminishes after roughly ten iterations, as demonstrated
+by Figure 6.2 (left), where we ran the VSEM method for 100 iterations (blue) on the
+Arnold model. As a result, we use the VSEM method for 15 iterations to provide the
+initial map and then switch to the preconditioned nonlinear CG method, which continues
+to decreaseE I (orange).
+For the step length of the line-search method, as described in Section 4, we first
+approximate the one-dimensional functionφby the quadratic modelφ q in (4.8). If the
+resulting step does not satisfy the sufficient-decrease condition (4.10), we then refine it
+using the cubic model. Figure 6.2 (right) shows the first iteration of Algorithm 1 on
+the Arnold model, where both the quadratic modelφ q (orange) and the cubic modelφ c
+(yellow) closely match the line-search curveφ(blue). Thus, the minimizers ofφ q and
+φc both provide good estimates of the true minimizer, and the cubic model is rarely
+needed. In practice, we take 0.9×argminφ q, which satisfies (4.10) in almost all of our
+numerical experiments.
+6.2 Corrective parameter and preconditioning
+We next examine the effect of different choices of the corrective parameterβ k in (4.4c)
+for our IEM problem (3.3). We test Algorithm 1 with four standard nonlinear CG
+formulas forβ k [19, 34, 10, 25], both with and without preconditioning. In particular,
+21
+===== page 22 =====
+0 20 40 60 80 100
+#Iterations
+10-2
+10-1
+100
+EI
+# VSEMcontinue
+VSEM fixed-point method
+IEM nonlinear CG method
+0 0.5 1 1.5 2
+,
+0.03
+0.035
+0.04
+0.045
+0.9#argmin 'q "
+'(,)
+'q(,)
+'c(,)
+`(,)
+Figure 6.2.Left: Isovolumetric energyE I in (2.1a) over iterations for VSEM [39,
+Algorithm 4.4] (blue) and for Algorithm 1 (orange) initialized by VSEM. Right: Line-
+search curve at the first iteration of Algorithm 1 on the Arnold model, together with its
+quadratic and cubic approximations (4.8), (4.11), and the sufficient decrease condition
+(4.10).
+we consider the CG direction without preconditioning
+p(k+1) =-g (k+1) +β kp(k),p (0) =-g (0),
+with the followingβ k, given by
+βFR
+k = ∥g(k+1)∥2
+∥g(k)∥2 , β PR
+k = g(k+1)⊤
+yk
+∥g(k)∥2 , β DY
+k = ∥g(k+1)∥2
+p(k)⊤
+y(k) ,
+βN
+k =
+
+y(k) -2p (k) ∥y(k)∥2
+p(k)⊤
+y(k)
+⊤ g(k+1)
+p(k)⊤
+y(k) ,(6.1)
+wherey (k) =g (k+1) -g (k). On the other hand, the CG direction with preconditioning
+p(k+1) =-M -1g(k+1) + ¯βkp(k),p (0) =-M -1g(0),
+is tested with the following ¯βk, given by
+¯βFR
+k = ∥g(k+1)∥2
+M -1
+∥g(k)∥2
+M -1
+, ¯βPR
+k = g(k+1)⊤
+M -1yk
+∥g(k)∥2
+M -1
+, ¯βDY
+k = ∥g(k+1)∥2
+M -1
+p(k)⊤
+y(k) ,
+¯βN
+k =
+
+M -1y(k) -2p (k) ∥y(k)∥2
+p(k)⊤
+y(k)
+⊤ g(k+1)
+p(k)⊤
+y(k) .(6.2)
+The numerical results of isovolumetric energyE I obtained using different corrective
+parameters (6.1) and (6.2) across all benchmark models are summarized in Table 1.
+Unexpectedly, all four variants of parameters produced broadly similar results, both
+with and without preconditioning. Yet, the preconditioned variants noticeably improved
+the outcomes relative to those without preconditioning. It is worth noting that this
+constant preconditioning increased the computational time by only about 7%, reflecting
+the efficiency provided by the preordered Cholesky decomposition.
+While a constant preconditioner is efficient and compatible with our global conver-
+22
+===== page 23 =====
+Table 1: Isovolumetric energyE I after 100 iterations of Algorithm 1, comparing runs
+with and without preconditioning and with different CG parameterβ k (6.1) and (6.2).
+Model name non-preconditioning preconditioning
+βFRk βPRk βDYk βNk ¯βFRk ¯βPRk ¯βDYk ¯βNk
+Arnold 1.5×10 -2 1.5×10-2 1.5×10-2 1.5×10-2 9.6×10-3 9.2×10-3 9.3×10-3 9.4×10-3
+Heart 3.8×10 -3 3.8×10-3 3.8×10-3 3.9×10-3 3.2×10-3 3.1×10-3 3.2×10-3 3.1×10-3
+Igea 2.7×10 -3 2.7×10-3 2.7×10-3 2.7×10-3 2.4×10-3 2.4×10-3 2.4×10-3 2.4×10-3
+Brain 4.2×10 -3 4.2×10-3 4.2×10-3 4.3×10-3 3.9×10-3 3.8×10-3 3.8×10-3 3.8×10-3
+Lion 1.3×10 -2 1.3×10-2 1.3×10-2 1.4×10-2 8.2×10-3 8.0×10-3 8.1×10-3 8.0×10-3
+David Head 4.8×10-3 4.8×10-3 4.8×10-3 4.9×10-3 4.2×10-3 4.2×10-3 4.2×10-3 4.2×10-3
+Max Planck 2.9×10-3 2.9×10-3 2.9×10-3 3.0×10-3 2.2×10-3 2.1×10-3 2.2×10-3 2.1×10-3
+Apple 4.6×10 -4 4.6×10-4 4.6×10-4 4.6×10-4 3.8×10-4 3.8×10-4 3.8×10-4 3.8×10-4
+gence result, the nonlinearity ofE I suggests that updating the preconditioner at each
+iteration may better approximate the Hessian and improve practical convergence. We
+therefore compare Algorithm 1 with the fixed preconditionerMin (4.6) against an
+updated variant
+Mk =
+"
+I3 ⊗[L V(f (k))]I,I
+I2 ⊗[L V(f (k))]B,B
+#
+.(6.3)
+Figure 6.3 (left) illustrates the convergence of Algorithm 1 using the preconditionersM
+andM k on the Lion model over 200 iterations. The updatedM k attains a lower value
+ofE I at the early stage, but its performance tends to level off as the iterations progress.
+Therefore, a practical trade-off is to update the preconditioner only during the initial
+iterations and then keep it fixed for the remainder of the process. Figure 6.3 (right)
+compares three strategies: updating the preconditioner at each iteration, updating it for
+the first 25 iterations, and updating it for the first 50 iterations. As expected, extending
+the initial update phase leads to a lower value ofEI and yields results similar to updating
+it at each iteration.
+0 50 100 150 200
+#Iterations
+0.01
+0.015
+0.02
+0.025EI
+Fixed preconditioner
+Updated preconditioner
+0 50 100 150 200
+#Iterations
+7.5
+8
+8.5
+9
+9.5
+10EI
+#10-3
+Updated preconditioner
+Updated until 50 iter.
+Updated until 25 iter.
+Figure 6.3.Left: Isovolumetric energyE I over 200 iterations on the Lion model for
+Algorithm 1 with fixed preconditionerM(4.6) and updated preconditionerM k in (6.3).
+Right: Effect of the preconditioning update strategy on the Lion model: updated every
+iteration, updated only for the first 25 or 50 iterations.
+23
+===== page 24 =====
+Table 2: Numerical comparison of the proposed IEM by Algorithm 1 and the VSEM
+by the fixed-point iteration [39, Algorithm 4.4] after 500 iterations.D V(f, τ): per-
+tetrahedron volume distortion (6.4).E I: isovolumetric energy (2.1).
+Model name
+IEM by Algorithm 1 VSEM by fixed-point iteration[39, Alg. 4.4]
+DV(f, τ) EI(f) Time #Fold-D V(f, τ) EI(f) Time #Fold-
+Mean SD (sec.) ings Mean SD (sec.) ings
+Arnold 3.2×10 -2 3.1×10-2 7.7×10-3 20 0 6.2×10 -2 6.9×10-2 3.0×10-2 20 2
+Heart 1.7×10 -2 2.1×10-2 2.8×10-3 80 0 2.3×10 -2 3.4×10-2 5.8×10-3 109 1
+Igea 1.5×10 -2 1.8×10-2 2.2×10-3 100 0 1.9×10 -2 2.7×10-2 4.1×10-3 162 0
+Brain 2.1×10 -2 2.2×10-2 3.5×10-3 136 0 2.6×10 -2 2.9×10-2 5.5×10-3 212 0
+Lion 2.9×10 -2 3.1×10-2 6.9×10-3 181 0 4.2×10 -2 5.3×10-2 1.8×10-2 252 3
+David Head 2.1×10-2 2.2×10-2 3.6×10-3 209 0 2.6×10 -2 3.5×10-2 7.3×10-3 350 0
+Max Planck 1.3×10-2 1.8×10-2 1.9×10-3 371 0 1.7×10 -2 2.9×10-2 4.1×10-3 947 6
+Apple 6.0×10 -3 6.2×10-3 3.1×10-4 538 0 8.1×10 -3 1.0×10-2 6.6×10-4 1746 0
+6.3 Comparison to the state-of-the-art method
+We now evaluate the volume preservation of the mappings produced by Algorithm 1
+and compare the results with those produced by a state-of-the-art method.
+For each tetrahedronτ∈ K3(M), we quantify the volume distortion by
+DV(f, τ) =
+
+|f(τ)|/V(f)- |τ|/V(e)
+|τ|/V(e)
+ .(6.4)
+Figure 6.4 shows the histograms ofD V(f, τ) for the mappings obtained by Algorithm 1
+after 500 iterations. Most tetrahedra exhibit distortions below 0.1, indicating good local
+volume preservation.
+We next compare our method against the VSEM by the fixed-point iteration method
+[39, Algorithm 4.4], which has been reported to outperform an OMT-based approach [36,
+Algorithm 4]. Table 2 summarizes results for Algorithm 1 and VSEM over all benchmark
+models after 500 iterations, including the mean and standard deviation (SD) ofDV(f, τ),
+the isovolumetric energyE I (2.1), computational time cost, and the number of folded
+tetrahedra. The same data are visualized in Figures 6.5 and 6.6.
+Across all models, Algorithm 1 consistently achieves a lower value ofE I, along
+with reduced mean and standard deviation ofD V(f, τ), which indicates better vol-
+ume preservation compared to the VSEM method. Moreover, our approach is also less
+time-consuming than the VSEM method, especially for large meshes. This efficiency
+arises because the VSEM method requires solving a linear system at each iteration,
+whereas our approach utilizes a constant preconditioner with preordered Cholesky fac-
+tors applied consistently throughout the process. Furthermore, in our experiments,
+Algorithm 1 produced no folded tetrahedra, providing numerical evidence of bijectivity,
+while VSEM occasionally exhibited foldovers.
+In summary, Algorithm 1 demonstrates improved accuracy and efficiency compared
+to the VSEM method [39, Algorithm 4.4].
+7 Applications to shape registration and deformation
+The isovolumetric energy is invariant under rotations. Consequently, the computed
+parameterizations are defined up to a global rotation inSO(3). A one-to-one correspon-
+24
+===== page 25 =====
+Arnold Heart Igea Brain
+0 0.1 0.2
+0
+5
+10
+15
+20Percentages
+0 0.1 0.2
+0
+10
+20
+30Percentages
+0 0.1 0.2
+0
+5
+10
+15
+20
+25Percentages
+0 0.1 0.2
+0
+5
+10
+15Percentages
+Lion David Head Max Planck Apple
+0 0.1 0.2
+0
+10
+20
+30Percentages
+0 0.1 0.2
+0
+5
+10
+15
+20Percentages
+0 0.05 0.1
+0
+20
+40
+60Percentages
+0 0.05
+0
+5
+10
+15Percentages
+Figure 6.4.Histograms of the local volume distortionD V(f, τ) (6.4) for mappings
+computed by Algorithm 1.
+Isovolumetric Energy
+ArnoldHeart IgeaBrainLion
+David HeadMax Planck
+Apple
+10-4
+10-3
+10-2
+10-1
+IEM
+VSEM
+Computational Time Costs
+ArnoldHeart IgeaBrainLion
+David HeadMax Planck
+Apple
+101
+102
+103 IEM
+VSEM
+Figure 6.5.Comparison of the proposed IEM by Algorithm 1 with the VSEM by the
+fixed-point iteration [39, Algorithm 4.4] on all benchmark models. Left: isovolumetric
+energyE I in (2.1). Right: computational time.
+25
+===== page 26 =====
+Mean of Volume Distortion
+ArnoldHeart IgeaBrainLion
+David HeadMax Planck
+Apple
+10-2
+10-1
+IEM
+VSEM
+SD of Volume Distortion
+ArnoldHeart IgeaBrainLion
+David HeadMax Planck
+Apple
+10-2
+10-1
+IEM
+VSEM
+Figure 6.6.Comparison of the proposed IEM by Algorithm 1 with the VSEM by
+the fixed-point iteration [39, Algorithm 4.4] on all benchmark models. Left: mean
+volume distortionD V(f, τ) in (6.4). Right: standard deviation of the volume distortion
+DV(f, τ).
+dence between two parameterized manifolds can therefore be established by determining
+an optimal rotation inSO(3).
+Specifically, for two tetrahedral meshesM 0 andM 1, we first apply Algorithm 1 to
+compute volume-preserving parameterizationsf s :M s →R 3,s= 0,1. We then remove
+the remaining SO(3) freedom by solving
+gs = argmin
+g∈SO(3)
+X
+v∈K0(Ms)
+∥g◦f s(v)-v∥ 2
+2 vol(v), s= 0,1,
+where vol(v) denotes the vertex volume ofvdefined by vol(v) = 1
+4
+P
+τ∋v |τ|. A rigid
+alignment on the unit ball is given byh=g -1
+1 ◦g 0. Ultimately, the volume-preserving
+registrationφ:M 0 → M1 between the two manifolds is given byφ=f -1
+1 ◦h◦f 0, as
+illustrated in Figure 7.1.
+To visualize the deformation induced by the mappingφ, one can employ the linear
+homotopy, defined as
+H(v, t) = (1-t)v+tφ(v).(7.1)
+In Figure 7.2, we demonstrate the simplicial 3-manifoldsH(M 0, t) fort= 0, 1
+3 , 2
+3 , and
+1, which show that the deformation is very subtle because the shapes of the two given
+simplicial 3-manifolds are similar.
+8 Concluding remarks
+In this paper, we introduced an isovolumetric energy functional for measuring the volume
+distortion of simplicial mappings. By expressing boundary vertices in spherical coordi-
+nates, we reformulated the computation of ball-shaped volume-preserving parameteriza-
+tions as an unconstrained nonlinear optimization problem. This formulation enables the
+use of a preconditioned nonlinear CG method, whose global convergence under a strong
+Wolfe line search is also established. Numerical experiments on all benchmark models
+26
+===== page 27 =====
+M 0
+φ=f -1
+1 ◦h◦f 0
+- - - - - - - - - - →
+M 1
+f 0
+y
+f 1
+y
+h=g -1
+1 ◦g 0
+- - - - - - - - - - →
+Figure 7.1.An illustration of the computational procedures of a volume-preserving
+registration mapping between two simplicial 3-manifolds.
+H(M 0,0)H(M 0, 1
+3 )H(M 0, 2
+3 )H(M 0,1)
+Figure 7.2.The image of linear homotopyH(M 0, t) between the identity mapping and
+the volume-preserving registration mapping, as defined in (7.1).
+27
+===== page 28 =====
+demonstrate that the proposed method achieves better volume preservation and higher
+efficiency than the previous state-of-the-art VSEM method. Finally, we illustrate the
+practical utility of the method through volume-preserving registration and deformation
+between manifolds.
+Data Availability
+The MATLAB demo is available athttp://tiny.cc/SphereIEM. Additional data are
+available from the corresponding authors upon request.
+Acknowledgements
+This work was supported by the National Science and Technology Council, the National
+Center for Theoretical Sciences, and the Higher Education Sprout Project-Center for
+Optimal Intelligent Data Analytics and Prediction.
+Conflict of interest
+The authors declare that there are no conflicts of interest.
+9 References
+[1] S. M. Abulnaga, O. Stein, P. Golland, and J. Solomon. Symmetric volume maps:
+Order-invariant volumetric mesh correspondence with free boundary. ACM Trans.
+Graph., 42(3), Apr. 2023.
+[2] M. Al-Baali. Descent property and global convergence of the Fletcher-Reeves
+method with inexact line search. IMA Journal of Numerical Analysis, 5(1):121-124,
+01 1985.
+[3] U. Baid, S. Ghodasara, M. Bilello, S. Mohan, E. Calabrese, E. Colak, K. Fara-
+hani, J. Kalpathy-Cramer, F. C. Kitamura, S. Pati, L. M. Prevedello, J. D. Rudie,
+C. Sako, R. T. Shinohara, T. Bergquist, R. Chai, J. Eddy, J. Elliott, W. Reade,
+T. Schaffter, T. Yu, J. Zheng, B. Annotators, C. Davatzikos, J. Mongan, C. Hess,
+S. Cha, J. Villanueva-Meyer, J. B. Freymann, J. S. Kirby, B. Wiestler, P. Crivel-
+laro, R. R. Colen, A. Kotrotsou, D. Marcus, M. Milchenko, A. Nazeri, H. Fathallah-
+Shaykh, R. Wiest, A. Jakab, M.-A. Weber, A. Mahajan, B. Menze, A. E. Flanders,
+and S. Bakas. The RSNA-ASNR-MICCAI BraTS 2021 benchmark on brain tumor
+segmentation and radiogenomic classification, 2021.
+[4] S. Bakas, H. Akbari, A. Sotiras, M. Bilello, M. Rozycki, J. S. Kirby, J. B. Freymann,
+K. Farahani, and C. Davatzikos. Advancing The Cancer Genome Atlas glioma
+MRI collections with expert segmentation labels and radiomic features. Sci. Data,
+4(170117), 2017.
+28
+===== page 29 =====
+[5] M. Campen, C. T. Silva, and D. Zorin. Bijective maps from simplicial foliations.
+ACM Trans. Graph., 35(4), 2016.
+[6] A. Chern, U. Pinkall, and P. Schr¨ oder. Close-to-conformal deformations of volumes.
+ACM Trans. Graph., 34(4), July 2015.
+[7] G. P. T. Choi and C. H. Rycroft. Volumetric density-equalizing reference map with
+applications. Journal of Scientific Computing, 86(3), Feb. 2021.
+[8] Y. Dai, J. Han, G. Liu, D. Sun, H. Yin, and Y.-X. Yuan. Convergence properties
+of nonlinear conjugate gradient methods. SIAM J. Optim., 10(2):345-358, 2000.
+[9] Y. H. Dai and Y. Yuan. Convergence properties of the Fletcher-Reeves method.
+IMA J. Numer. Anal., 16(2):155-164, 04 1996.
+[10] Y. H. Dai and Y. Yuan. A nonlinear conjugate gradient method with a strong
+global convergence property. SIAM J. on Optim., 10(1):177-182, 1999.
+[11] X. Du, N. Aigerman, Q. Zhou, S. Z. Kovalsky, Y. Yan, D. M. Kaufman, and T. Ju.
+Lifting simplices to find injectivity. ACM Trans. Graph., 39(4), 2020.
+[12] D. Engwirda. Locally optimal delaunay-refinement and optimisation-based mesh
+generation. PhD Thesis, 2014.
+[13] D. Engwirda. Voronoi-based point-placement for three-dimensional delaunay-
+refinement. Procedia Eng., 124:330-342, 2015.
+[14] D. Engwirda. Conforming restricted delaunay mesh generation for piecewise smooth
+complexes. Procedia Eng., 163:84-96, 2016.
+[15] D. Engwirda and D. Ivers. Face-centred voronoi refinement for surface mesh gen-
+eration. Procedia Eng., 82:8-20, 2014.
+[16] D. Engwirda and D. Ivers. Off-centre steiner points for delaunay-refinement on
+curved surfaces. Comput.-Aided Des., 72:157-171, 2016.
+[17] Q. Fang and D. A. Boas. Tetrahedral mesh generation from volumetric binary and
+grayscale images. In 2009 IEEE International Symposium on Biomedical Imaging:
+From Nano to Macro, pages 1142-1145, 2009.
+[18] R. Fletcher. Conjugate Direction Methods, chapter 4, pages 80-94. John Wiley &
+Sons, Ltd, 2000.
+[19] R. Fletcher and C. M. Reeves. Function minimization by conjugate gradients.
+Comput. J., 7(2):149-154, 1964.
+[20] V. Garanzha, I. Kaporin, L. Kudryavtseva, F. Protais, N. Ray, and D. Sokolov.
+Foldover-free maps in 50 lines of code. ACM Trans. Graph., 40(4), 2021.
+[21] X. Gu. Optimal Mass Transportation Map.https://www3.cs.stonybrook.edu/
+~gu/software/omt/index.html, 2022.
+29
+===== page 30 =====
+[22] X. Gu, F. Luo, J. Sun, and S.-T. Yau. Variational principles for Minkowski type
+problems, discrete optimal transport, and discrete Monge-Amp` ere equations. Asian
+J. Math., 20(2):383-398, 2016.
+[23] L. Guanghui, H. Jiye, and Y. Hongxia. Global convergence of the Fletcher-Reeves
+algorithm with inexact linesearch. Appl. Math. J. Chinese Univ., 10(1):75-82, Mar.
+1995.
+[24] W. Hager. A survey of nonlinear conjugate gradient method. Pacific Journal of
+Optimization, 2, 01 2006.
+[25] W. W. Hager and H. Zhang. A new conjugate gradient method with guaranteed
+descent and an efficient line search. SIAM J. Optim., 16(1):170-192, 2005.
+[26] M. R. Hestenes, E. Stiefel, et al. Methods of conjugate gradients for solving linear
+systems, volume 49. NBS Washington, DC, 1952.
+[27] T.-H. Huang, W.-H. Liao, W.-W. Lin, M.-H. Yueh, and S.-T. Yau. Convergence
+analysis of volumetric stretch energy minimization and its associated optimal mass
+transport. SIAM J. Imaging Sci., 16(3):1825-1855, 2023.
+[28] A. Jacobson. GitHub Repository for Common 3D Test Models.https://github.
+com/alecjacobson/common-3d-test-models, 2021.
+[29] W.-W. Lin, C. Juang, M.-H. Yueh, T.-M. Huang, T. Li, S. Wang, and S.-T. Yau.
+3D brain tumor segmentation using a two-stage optimal mass transport algorithm.
+Sci. Rep., 11:14686, 2021.
+[30] W.-W. Lin, J.-W. Lin, T.-M. Huang, T. Li, M.-H. Yueh, and S.-T. Yau. A novel
+2-phase residual U-net algorithm combined with optimal mass transportation for
+3D brain tumor detection and segmentation. Sci. Rep., 12:6452, 2022.
+[31] S.-Y. Liu and M.-H. Yueh. Convergent authalic energy minimization for disk area-
+preserving parameterizations. J. Sci. Comput., 100(2):43, 2024.
+[32] Z. Lyu, Q. Chen, G. P. T. Choi, and L. M. Lui. Volumetric parameterization for
+3-dimensional simply-connected manifolds, arXiv:2506.17025, 2025.
+[33] J. Nocedal and S. J. Wright. Numerical Optimization. Springer, New York, NY,
+USA, 2nd edition, 2006.
+[34] E. Polak and G. Ribiere. Note sur la convergence de methodes de directions con-
+juguees. Revue francaise d'informatique et de recherche operationnelle. Serie rouge,
+3(R1):35-43, 1969.
+[35] M. Rabinovich, R. Poranne, D. Panozzo, and O. Sorkine-Hornung. Scalable locally
+injective mappings. ACM Trans. Graph., 36(2), 2017.
+30
+===== page 31 =====
+[36] K. Su, W. Chen, N. Lei, J. Zhang, K. Qian, and X. Gu. Volume preserving mesh
+parameterization based on optimal mass transportation. Comput. Aided Design,
+82:42-56, 2017.
+[37] Z.-H. Tan, T. Li, W.-W. Lin, and S.-T. Yau.n-dimensional volumetric stretch
+energy minimization for volume-/mass-preserving parameterizations with applica-
+tions. SIAM J. Imaging Sci., 18(2):1141-1175, 2025.
+[38] A. P. Tran, S. Yan, and Q. Fang. Improving model-based functional near-infrared
+spectroscopy analysis using mesh-based anatomical and light-transport models.
+Neurophotonics, 7(1):015008, 2020.
+[39] M.-H. Yueh, T. Li, W.-W. Lin, and S.-T. Yau. A novel algorithm for volume-
+preserving parameterizations of 3-manifolds. SIAM J. Imaging Sci., 12(2):1071-
+1098, 2019.
+[40] M.-H. Yueh, T. Li, W.-W. Lin, and S.-T. Yau. A new efficient algorithm for
+volume-preserving parameterizations of genus-one 3-manifolds. SIAM J. Imaging
+Sci., 13(3):1536-1564, 2020.
+31

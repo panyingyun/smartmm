@@ -1,0 +1,304 @@
+===== ftetwild_README =====
+# Fast Tetrahedral Meshing in the Wild
+![](./figs/1k.jpg)
+
+Yixin Hu, Teseo Schneider, Bolun Wang, Denis Zorin, Daniele Panozzo.
+ACM Transactions on Graphics (SIGGRAPH 2020)
+
+```bash
+@article{10.1145/3386569.3392385,
+author = {Hu, Yixin and Schneider, Teseo and Wang, Bolun and Zorin, Denis and Panozzo, Daniele},
+title = {Fast Tetrahedral Meshing in the Wild},
+year = {2020},
+issue_date = {July 2020},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {39},
+number = {4},
+issn = {0730-0301},
+url = {https://doi.org/10.1145/3386569.3392385},
+doi = {10.1145/3386569.3392385},
+journal = {ACM Trans. Graph.},
+month = jul,
+articleno = {117},
+numpages = {18},
+keywords = {mesh generation, robust geometry processing, tetrahedral meshing}
+}
+```
+
+## Important Tips
+
+👀 👀 We have the original version of "fTetWild" - TetWild. Check it out 👉 [TetWild](https://github.com/Yixin-Hu/TetWild).
+
+👀 👀 We have a 2D version of "fTetWild" - TriWild. TriWild is able to deal with both linear and curved constraints. Now we are able to mesh curves robustly! Check it out 👉 [TriWild](https://github.com/wildmeshing/TriWild).
+
+
+💡💡💡 **If you are interested in the algorithm details, please refer to our [paper](https://yixin-hu.github.io/ftetwild.pdf) first. We provide plenty of examples and statistics in the paper.**
+
+💡💡💡 **Check our license first.**
+
+💡💡💡 **Our algorithm is robust both in theory and in practice. If you do find fTetWild crash (on your laptop), please test it (on cluster) with more resource given. The most complex model I tested requires >32GB memory.**
+
+💡💡💡 **The orientation of input faces is as important as the position of their vertices. Our algorithm is faithful to the input face position and orientation [check Tetwild](https://github.com/Yixin-Hu/TetWild#important-tips)**
+
+
+## Dataset
+Here is pre-generated tetmeshes and the extracted surface meshes for research-purpose usage. **Please kindly cite our paper when using our pre-generated data.**
+
+- 10k Input: [Thingi10k](https://ten-thousand-models.appspot.com/)
+- 10k Output:
+[10k tetmeshes](https://drive.google.com/file/d/13zmGxikHiiSv9-eu8wZDTOWtPmR-KV5b/view?usp=sharing)
+
+- Figures in the paper: [Input/output & scripts](https://drive.google.com/file/d/1qTukYF3N05jLxKxYQK5tNOUdFAr_0sf1/view?usp=sharing)
+
+## Installation via CMake
+
+Our code was originally developed on MacOS and has been tested on Linux and Windows. We provide the commands for installing fTetWild in MacOS:
+
+- Clone the repository into your local machine:
+
+```bash
+git clone https://github.com/wildmeshing/fTetWild.git
+```
+
+- Compile the code using cmake (default in Release mode):
+
+```bash
+cd fTetWild
+mkdir build
+cd build
+cmake ..
+make
+```
+
+You may need to install `gmp` before compiling the code. You can install it via
+
+- [homebrew](https://brew.sh/) on mac:
+```bash
+brew install gmp
+```
+- Package manager on Unix:
+```
+sudo apt-get install gmp
+```
+- [Conda](https://anaconda.org) on Windows:
+```
+conda install -c conda-forge mpir
+```
+
+**Note Windows** The executable needs that the file `mpir.dll` is in the same directiory of `FloatTetwild_bin.exe`. Once you compliled the code, copy `mpir.dll` (e.g., `<conda_dir>\Library\bin`) to the directoy containing `FloatTetwild_bin.exe`.
+
+**Note** if cmake cannot find gmp you need to export the envirnement variable `GMP_INC` and `GMP_LIB` to the folder where you installed (e.g., `<conda_dir>\Library\include` for `GMP_INC` and `<conda_dir>\Library\lib` for `GMP_LIB`).
+
+- Check the installation:
+
+```bash
+./FloatTetwild_bin --help
+```
+This command should show a list of fTetWild parameters.
+
+## Usage
+
+### Input/output Format
+
+The inputs of our software are triangle surface meshes in `.off/.obj/.stl/.ply` format.
+
+We support `.mesh/.msh` format output. The default output format is `.msh` with minimum dihedral angle recorded as element scalar field, which can be visualized by software [Gmsh](http://gmsh.info/). You can use `PyMesh::MshLoader` and `PyMesh::MshSaver` in `pymesh/` for read and write `.msh` meshes.
+
+
+### Features
+
+Our software is quite easy to use. Basically, users only need to provide a surface triangle mesh as input and our mesher would output a tetrahedral mesh by using default settings. If you want to customize your own tetmeshes, we also provide some options.
+
+- Envelope of size *epsilon*
+
+Using smaller envelope preserves features better but also takes longer time (Users can enable [Fast Envelope](https://github.com/wangbolun300/fast-envelope)
+
+===== ftetwild_LICENSE ===== ERR HTTP Error 404: Not Found
+
+===== tetwild_LICENSE ===== ERR HTTP Error 404: Not Found
+
+===== wildmeshing_py_README ===== ERR HTTP Error 404: Not Found
+
+===== pymesh_README =====
+[![CircleCI](https://circleci.com/gh/PyMesh/PyMesh/tree/main.svg?style=svg)](https://circleci.com/gh/PyMesh/PyMesh/tree/main)
+[![Build Status](https://travis-ci.org/PyMesh/PyMesh.svg?branch=main)](https://travis-ci.org/PyMesh/PyMesh)
+[![Documentation Status](https://readthedocs.org/projects/pymesh/badge/?version=latest)](https://pymesh.readthedocs.io/en/latest/?badge=latest)
+
+
+### About PyMesh ###
+
+**PyMesh** is a code base developed by Qingnan Zhou for his PhD research at New
+York University.  It is a rapid prototyping platform focused on geometry
+processing.  **PyMesh** is written with both C++ and Python, where
+computational intensive functionalities are realized in C++, and Python is used
+for creating minimalistic and easy to use interfaces.
+
+![PyMesh][teaser]
+(Model source: [Bust of Sappho](https://www.thingiverse.com/thing:14565))
+
+### Documentation ###
+
+[Latest documentation](http://pymesh.readthedocs.org/en/latest/)
+
+### Quick try ###
+
+Perhaps the easiest way of trying out PyMesh is through
+[docker](https://www.docker.com/):
+
+    docker run -it pymesh/pymesh
+    Python 3.6.4 (default, Feb 17 2018, 09:32:33)
+    [GCC 4.9.2] on linux
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import pymesh
+
+For example, to run [meshstat.py](scripts/meshstat.py):
+
+    docker run -it --rm -v `pwd`:/models pymesh/pymesh meshstat.py -x /models/model.obj
+
+This command mounts your current working directory to the `/models` directory
+in a docker container and executes the `meshstat.py` script on the mesh file
+`model.obj` in the current directory.
+
+### Download Source ###
+
+To retrieve the code:
+
+    git clone https://github.com/PyMesh/PyMesh.git
+    cd PyMesh
+    git submodule update --init
+
+### Dependencies ###
+
+PyMesh has the following required dependencies:
+
+* [Python](https://www.python.org/) v2.7 and v3.x.
+* [NumPy](http://www.numpy.org/) v1.8 or higher
+* [SciPy](http://www.scipy.org/) v0.13 or higher
+* [nose](http://nose.readthedocs.io/en/latest/) v1.3.7 or higher
+
+The following C++ libraries are required.  They are included in
+`$PYMESH_PATH/third_party` directory.
+
+* [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page) v3.2 or higher
+* [PyBind11](https://github.com/pybind/pybind11)
+
+PyMesh also has a number of optional dependencies:
+
+* [Carve](https://github.com/qnzhou/carve): A fast, robust constructive solid
+  geometry library.
+* [CGAL](https://www.cgal.org/): The Computational Geometry Algorithms Library.
+* [Clipper](http://www.angusj.com/delphi/clipper.php): An open source freeware
+  library for clipping and offsetting lines and polygons.
+* [Cork](https://github.com/gilbo/cork): A 3D boolean/CSG library.
+* [Draco](https://google.github.io/draco/): An open-source library for
+  compressing and decompressing 3D geometric meshes and point clouds
+* [Geogram](http://alice.loria.fr/software/geogram/doc/html/index.html): A
+  programming library of geometric algorithms
+* [libigl](http://igl.ethz.ch/projects/libigl/): A simple C++ geometry
+  processing library.
+* [MMG](https://www.mmgtools.org/): Robust, open source & multidisciplinary
+  software for remeshing.
+* [Qhull](http://www.qhull.org/): Engine for convex hulls, Delaunay
+  triangulations, Voronoi diagrams computations.
+* [Quartet](https://github.com/crawforddoran/quartet): A tetrahedral mesh
+  generator that does isosurface stuffing with an acute tetrahedral tile.
+* [TBB](https://www.threadingbuildingblocks.org/): Thread building blocks from
+  Intel.
+* [Tetgen](http://wias-berlin.de/software/tetgen/): Tetrahedral mesh generation
+  engine.
+* [Triangle](http://www.cs.cmu.edu/~quake/triangle.html): A two-Dimensional
+  quality mesh generator and Delaunay triangulator.
+
+All of the optional libraries are included in `$PYMESH_PATH/third_party`
+directory.
+
+### Specify Dependency Locations ###
+
+All dependencies are included as git submodules in the `third_party` directory.
+It is recommended to build these dependencies directly (see [Build](#Build) section).
+However, it is possible to use an existing dependency installed on your system.
+If the dependent library is not installed in standard locations
+(``/usr/local/``, ``/opt/local``), one needs to set environment variables that
+point to the correct directories.  PyMesh check the following environment
+variables:
+
+* Eigen: Set ``EIGEN_PATH`` to the directory containing the `eigen3` directory.
+* CGAL: Set ``CGAL_PATH`` to the directory containing `UseCGAL.cmake` file.
+    * Boost: Set ``BOOST_
+
+===== pymesh_LICENSE ===== ERR HTTP Error 404: Not Found
+
+===== instant_meshes_README =====
+# Instant Meshes
+[![Build Status](https://travis-ci.org/wjakob/instant-meshes.svg?branch=master)](https://travis-ci.org/wjakob/instant-meshes)
+[![Build status](https://ci.appveyor.com/api/projects/status/dm4kqxhin5uxiey0/branch/master?svg=true)](https://ci.appveyor.com/project/wjakob/instant-meshes/branch/master)
+
+<img width="170" height="166" src="https://github.com/wjakob/instant-meshes/raw/master/resources/icon.png">
+
+This repository contains the interactive meshing software developed as part of the publication
+
+> **Instant Field-Aligned Meshes**<br/>
+> Wenzel Jakob, Marco Tarini, Daniele Panozzo, Olga Sorkine-Hornung<br/>
+> In *ACM Transactions on Graphics (Proceedings of SIGGRAPH Asia 2015)*<br/>
+> [PDF](http://igl.ethz.ch/projects/instant-meshes/instant-meshes-SA-2015-jakob-et-al.pdf),
+> [Video](https://www.youtube.com/watch?v=U6wtw6W4x3I),
+> [Project page](http://igl.ethz.ch/projects/instant-meshes/)
+
+
+##### In commercial software
+
+Since version 10.2, Modo uses the Instant Meshes algorithm to implement its
+automatic retopology feature. An interview discussing this technique and more
+recent projects is available [here](https://www.foundry.com/trends/design-visualisation/mitsuba-renderer-instant-meshes).
+
+## Screenshot
+
+![Instant Meshes logo](https://github.com/wjakob/instant-meshes/raw/master/resources/screenshot.jpg)
+
+## Pre-compiled binaries
+
+The following binaries (Intel, 64 bit) are automatically generated from the latest GitHub revision.
+
+> [Microsoft Windows](https://instant-meshes.s3.eu-central-1.amazonaws.com/Release/instant-meshes-windows.zip)<br/>
+> [Mac OS X](https://instant-meshes.s3.eu-central-1.amazonaws.com/instant-meshes-macos.zip)<br/>
+> [Linux](https://instant-meshes.s3.eu-central-1.amazonaws.com/instant-meshes-linux.zip)
+
+Please also fetch the following dataset ZIP file and extract it so that the
+``datasets`` folder is in the same directory as ``Instant Meshes``, ``Instant Meshes.app``,
+or ``Instant Meshes.exe``.
+
+> [Datasets](https://instant-meshes.s3.eu-central-1.amazonaws.com/instant-meshes-datasets.zip)
+
+Note: On Linux, Instant Meshes relies on the program ``zenity``, which must be installed.
+
+## Compiling
+
+Compiling from scratch requires CMake and a recent version of XCode on Mac,
+Visual Studio 2015 on Windows, and GCC on Linux. 
+
+On MacOS, compiling should be as simple as
+
+    git clone --recursive https://github.com/wjakob/instant-meshes
+    cd instant-meshes
+    cmake .
+    make -j 4
+
+To build on Linux, please install the prerequisites ``libxrandr-dev``,
+``libxinerama-dev``, ``libxcursor-dev``, and ``libxi-dev`` and then use the
+same sequence of commands shown above for MacOS.
+
+On Windows, open the generated file ``InstantMeshes.sln`` after step 3 and proceed building as usual from within Visual Studio.
+
+## Usage
+
+To get started, launch the binary and select a dataset using the "Open mesh" button on the top left (the application must be located in the same directory as the 'datasets' folder, otherwise the panel will be empty).
+
+The standard workflow is to solve for an orientation field (first blue button) and a position field (second blue button) in sequence, after which the 'Export mesh' button becomes active. Many user interface elements display a descriptive message when hovering the mouse cursor above for a second.
+
+A range of additional information about the input mesh, the computed fields,
+and the output mesh can be visualized using the check boxes accessible via the
+'Advanced' panel.
+
+Clicking the left mouse button and dragging rotates the object; right-dragging
+(or shift+left-dragging) translates, and the mouse wheel zooms. The fields can also be manipulated using brush tools that are accessible by clicking the first icon in each 'Tool' row.

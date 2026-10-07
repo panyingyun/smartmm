@@ -1,0 +1,332 @@
+
+===== page 1 =====
+The n-dimensional cotangent formula
+Keenan Crane
+September 24, 2019
+Abstract. The Laplace-Beltrami operator ∆ plays a central role in geometric algorithms on curved do-
+mains. The so-called cotangent formula provides a convenient approximation of the Laplace-Beltrami operator
+for 2-dimensional triangulated surfaces. This note extends the cotangent formula to the n-dimensional case.
+In particular, we give an expression for the gradient of the volume of an n-dimensional simplex in terms of
+the volumes of its faces and the cotangents of its dihedral angles, which in turn provides an n-dimensional
+discrete Laplace operator. As an important special case we give a convenient expression for tetrahedral
+meshes (n = 3).
+1 Introduction
+To motivate the cotangent formula, consider solving the Poisson equation
+∆u = f
+on a curved surface (M, g). Here f : M→ R is a source term, u : M→ R is an unknown function, and ∆ is
+the Laplace-Beltrami operator associated with M--or more simply, just the Laplacian. A common way to
+approximate the solution is to replace M by a triangulation K with vertices V and edges E, and solve the
+matrix equation
+Lu = Mf.
+Here u, f∈ R|V| encode the two functions, and M, L∈ R|V|×|V| are known as the mass matrix
+and stiffness matrix, respectively. There are many possible choices for these two matrices,
+and significant work has gone into developing discretizations that yield an accurate solution.
+In practice, a very simple discretization can actually work quite well--especially on fine
+triangulations with "nice" elements (e.g., those that satisfy the so-called Delaunay condition).
+For instance, a reasonable choice for the mass matrix M is a diagonal matrix where Mii
+equals one-third the area of all incident triangles. A standard choice for the stiffness matrix
+L is to use the 2-dimensional cotangent formula
+(Lu)i := 1
+2 ∑
+ij
+(cot αij + cot βij )(uj- ui).
+In other words: the Laplacian of the function u at vertex i is obtained by summing up the difference across
+all edges ij incident on i, weighted by the sum of the cotangents of the two interior angles αij, βij opposite ij.
+The cotangent formula can be derived in many different ways, and has been re-discovered many times
+over the years. The earliest known reference is MacNeal [1949, Section 3.2], where the formula is used to
+determine resistances in an electrical network whose voltages approximate the solution to a Laplace equation.
+Despite the age of this reference, it provides a rather clear description of the cotangent formula--including
+boundary conditions that are not described even by much later references. A footnote on page 68 credits Dr.
+1
+===== page 2 =====
+Stanley Frankel for the actual cotan construction, suggesting that the formula was likely known even prior
+to MacNeal's thesis. (Courant and others also discuss the use of triangulations to solve partial differential
+equations [Courant, 1943], but never appear to give the cotangent formula itself.) Duffin [1959] revisits the
+cotangent formula in the context of electrical networks, making again an explicit connection to the Dirichlet
+problem. Pinkall and Polthier [1993] apply the formula to the construction of discrete minimal surfaces,
+i.e., "soap films" interpolating a given boundary curve; Desbrun et al. [1999] derive the formula in the
+context of discrete mean curvature flow; it also shows up in discrete exterior calculus [Desbrun et al., 2008] as a
+discretization of the Hodge star operator on differential 1-forms. Meyer et al. [2003] discuss 3-manifolds
+embedded in n dimensions, but omits a critical length term. Chao et al. [2010] and Jacobson [2013] give the
+correct 3-dimensional formula in the context of elasticity and function interpolation, respectively. Given
+the long history of the cotangent formula, it is quite possible that the n-dimensional version given here also
+appears somewhere in the literature--though it is difficult to track down such a formula in a concise and
+easily-implementable form. Formulas derived via linear finite element theory are typically expressed via the
+Jacobian of a mapping to some reference element; generic formulas provided via discrete exterior calculus
+are given abstractly in terms of primal-dual volume ratios, which must still somehow be evaluated.
+In this note we take the following approach to obtain ann-dimensional cotangent formula. The first order
+variation of the volume of an immersed n-dimensional hypersurface f : M→ Rn+1 is equal to the mean
+curvature H = κ1 +··· + κn times the surface normal N (where κi are the principal curvatures). We also
+have (in any dimension) the relationship ∆ f = HN . Therefore, we can use the discrete volume variation to
+obtain a "mimetic" expression for the discrete Laplacian, in the sense of discrete differential geometry [Crane
+and Wardetzky, 2017]. We first derive an expression for the gradient of the volume of a single n-simplex;
+the cotangent formula for the discrete Laplace-Beltrami operator is then obtained by summing these values
+over appropriate simplices. Although the calculation is extrinsic, the resulting formula is valid in the purely
+intrinsic setting (e.g., when one has edge lengths but not vertex coordinates).
+2 V olume gradient
+2.1 3-dimensional case
+p
+N
+i
+j
+k
+l
+j
+k
+l
+p
+We first consider the 3-dimensional case, since the argument easily generalizes to n dimensions (whereas
+the 2-dimensional argument is a bit too elementary to illustrate the general idea). Consider a tetrahedron
+ijkl with vertex coordinates fi, fj, fk, fl in Euclidean 3-space E3. Then the volume of the tetrahedron can be
+expressed as
+V = 1
+3 Ah,
+2
+===== page 3 =====
+where A is the area of any base triangle--say, jkl--and h is the corresponding height, i.e., the length of the
+altitude passing through i. Since moving i parallel to the base does not change the volume, and a motion
+along the altitude changes only the height, the gradient with respect to the position of vertex i is given by
+∇ fi V = 1
+3 AN,
+where N is the inward unit normal at the base. If p is the foot of the altitude through i, then we can express
+this normal as
+N = 1
+h ( fi- f p).
+The foot splits the base into three smaller triangles--letting Uj, Uk, and Ul be the areas of triangles pkl,
+plj , and pjk, respectively, we can express the location of p in barycentric coordinates
+f p = Uj
+A fj + Uk
+A fk + Ul
+A fl.
+Noting that A = Uj + Uk + Ul, we then get
+3∇ fi V = A
+h ( fi- f p)
+= 1
+h ((Uj + Uk + Ul) fi- Uj fj- Uk fk- Ul fl)
+=
+Uj
+h ( fi- fj) + Uk
+h ( fi- fk) + Ul
+h ( fi- fl).
+All that remains is to evaluate the ratio of the small triangle areas to the height h. Consider for instance
+triangle pkl, and let q be the foot of the altitude through p. The area of this triangle can be expressed as
+Uj = 1
+2 ℓkl| f p- fq|,
+where ℓkl =| fl- fk| is the length of edge kl (i.e., just one half base times height). Then since| f p- fq| and
+h =| fi- f p| are the legs of a right triangle, we get
+Uj
+h = 1
+2 ℓlk
+| f p- fq|
+h = 1
+2 ℓkl cot θkl,
+where θkl is the interior dihedral angle at edge kl. Repeating this calculation for the other two triangles we
+obtain a cotangent formula for the volume gradient of a tetrahedron:
+∇ fi V = 1
+6
+(
+ℓkl cot θkl ( fi- fj) + ℓlj cot θlj ( fi- fk) + ℓjk cot θjk( fi- fl)
+)
+.
+i
+k
+l
+p q
+i
+p q
+3
+===== page 4 =====
+2.2 n-dimensional case
+The argument in the n-dimensional case is essentially identical, only the notation becomes more annoying.
+In particular, consider an n-simplex σ with vertices
+f0, . . . ,fn∈ En.
+Its volume can be expressed as
+V = 1
+n V0h0,
+where V0 denotes the volume of the n- 1 simplex σ0⊂ σ which omits vertex, and h0 denotes the height of
+the corresponding altitude. The gradient with respect to f0 is then
+∇ f0 V = 1
+n V0N0,
+where N0 is the inward unit normal of σ0. The foot p of the altitude splits σ0 into n simplices, each of degree
+n- 1; we will use Ur to denote the volume of the n- 1 simplex that omits vertices 0 and r, but contains the
+foot p and all other vertices of σ. The location of p can be expressed in barycentric coordinates as
+f p =
+n
+∑
+r=1
+Ur
+V0
+fr.
+Noting that
+V0 =
+n
+∑
+r=1
+Ur,
+we can write the volume gradient as
+n∇ f0 V = V0
+h0
+( fi- f p)
+= 1
+h0
+(∑n
+r=1 Ur fi- ∑n
+r=1 Ur fr)
+= ∑n
+r=1
+Ur
+h0
+( fi- fr).
+The volume Ur can be expressed as
+1
+(n- 1) V0,r| f p- f r
+q|,
+where V0,r is the volume of the (n- 1)-simplex that omits 0 and r but contains all other vertices of σ, and f r
+q
+is the location of the foot of this volume relative to the altitude passing through p. Just as in the tetrahedral
+case, then, the numerator| f p- f r
+q| and denominator h0 =| fi- f p| are legs of a right triangle, and we get
+Ur
+h0
+= 1
+(n- 1) V0,r
+| f p- f r
+q|
+h0
+= 1
+(n- 1) V0,r cot θ0,r,
+where θ0,r is the dihedral angle found at the face of σ that omits vertices 0 and r. All together, then, we have
+∇ f0 V = 1
+n(n- 1)
+n
+∑
+r=1
+V0,r cot θ0,r( f0- fr). (1)
+In other words, to get the volume gradient of a simplex σ with respect to the position of any vertex i, we
+take a weighted sum of edge vectors ij, where the weight is equal to the dihedral angle at the simplex σi,j
+complementary to ij in σ, times the volume of σi,j (along with the leading coefficient, which accounts for
+dimension). One can check that the units work out properly: the change in volume with respect to a linear
+motion should have units of lengthn-1, the volume of the complementary simplex has units of lengthn-2,
+the difference of vertex positions has units of length, and the dihedral angle is unitless.
+4
+===== page 5 =====
+One can also verify that this construction agrees with the 3-dimensional case: here, the volume V0,r
+corresponds to the length of the edge opposite 0r, and θ0,r is the dihedral angle of that edge. Likewise, in the
+2-dimensional case the volume V0,r is the volume of the 0-simplex obtained by omitting two of the triangle
+vertices; by convention, the volume of every 0-simplex is 1 and we are left with just the angle times the
+difference of f values, i.e., the ordinary cotangent formula. In the 1-dimensional case the complementary
+simplex is the empty set. Though it is possible to give an interpretation to Eqn. 1 in this case, it is perhaps
+simpler to just note that the gradient of the length ℓij of a segment ij with respect to the position of one of its
+vertices is a unit vector parallel to the segment:
+∇ fi ℓij = 1
+ℓij
+( fi- fj).
+In this case, the "cotan" weight is just the reciprocal of the edge length.
+3 Discrete Laplace operator
+To obtain a discrete Laplace operator at any vertex i, we can sum up the area gradients (with respect to fi)
+of all n-simplices containing i. This sum gives us an expression for (L f )i, and by substituting the vertex
+coordinates f for a generic function u, we get a general expression for the Laplace operator. This operator
+will be a weighted graph Laplacian on the 1-skeleton of the triangulation ( i.e., the graph of edges). More
+explicitly, for an n-dimensional triangulation with vertices|V| and edges|E|, the discrete Laplacian is a
+matrix L∈ R|V|×|V| with non-zero entries
+Li,j =-wij
+for each edge ij, where wij is an edge weight defined below, and
+Li,i =- ∑
+ij
+Li,j
+for each vertex i∈ V.
+In the 3-dimensional case the weight wij associated with any edge ij is given by
+wij = 1
+6 ∑
+ijkl
+ℓkl cot θij
+kl,
+i
+j
+k
+l
+5
+===== page 6 =====
+where the sum is taken over all tetrahedra ijkl containing edge ij, ℓkl is the length of edge kl and θij
+kl is the
+(interior) dihedral angle at edge ij of tetrahedron ijkl .
+In the n-dimensional case the edge weights are given by
+wij = 1
+n(n- 1) ∑
+σ∋ij
+Vσi,j cot θσi,j,
+where the sum is taken over all n-simplices σ containing edge ij, σi,j is the (n- 2)-simplex obtained by
+removing vertices i and j from σ, Vσi,j is the volume of this simplex, and θσi,j is the dihedral angle found at
+this simplex. (Note that for an n-simplex, dihedral angles are made by two faces of degree (n- 1), which
+always meet along some (n- 2)-simplex.) The volume V of any n-simplex σ with vertices f0, . . ., fn∈ En
+can be computed via
+V = 1
+n! det( f1- f0, . . . ,fn- f0),
+though in practice there may be more stable numerical algorithms.
+Finally, the 1-dimensional edge weights are just the reciprocal edge lengths:
+wij = 1
+ℓij
+.
+3.1 Properties of the n-dimensional cotan Laplacian
+As discussed by Wardetzky et al. [2007], not all properties of the smooth Laplace-Beltrami operator ∆
+immediately carry over to the discrete Laplacian L. The n-dimensional cotan Laplacian exhibits all the same
+properties as the 2-dimensional version: it is symmetric, has constant vectors in its null space (since, by
+construction, all rows sum to zero), exhibits linear precision (owing to the fact that the volume variation of
+an interior vertex is zero), and is positive semidefinite. For n = 1 the edge weights are always positive; for
+n = 2, the edge weights wij are positive if and only if the triangulation is Delaunay [Bobenko and Springborn,
+2007]. For n≥ 3 positivity of edge weights is less clear--for instance, if all dihedral angles θ are acute, then
+all angle cotans (and hence edge weights) will be positive. However, acuteness is unnecessarily restrictive,
+especially given that acute triangulations are difficult to obtain in practice Zamfirescu [2013], and may not
+even exist in higher dimensions Kopczy´nski et al. [2012].
+The full matrix L corresponds to a Laplace operator with zero-Neumann boundary conditions; removing
+the boundary rows/columns yields a discrete Laplace operator with zero-Dirichlet boundary conditions.
+3.2 Mass matrices
+As noted in Sec. 1, solving, e.g., a discrete Poisson equation involves not only the stiffness matrix L, but also a
+mass matrix M. A simple choice in the n-dimensional case is the diagonal matrix M∈ R|V|×|V| with entries
+Mii = 1
+n + 1 ∑
+σ∋i
+Vσ,
+where the sum is taken over all n-simplices σ containing vertex i, and Vσ denotes the volume of σ. The factor
+1/(n + 1) accounts for the fact that the volume of each n-simplex is evenly shared by its n + 1 vertices. This
+mass matrix is simple to implement and always has positive entries, but is not particularly accurate; Mullen
+et al. [2011] discuss several possible alternatives.
+Acknowledgements. Thanks to David Dumas for prompting this note. The note was written during
+the 2019 ICERM program on "Illustrating Mathematics." The author was also supported by a Packard
+Fellowship, NSF Award 1717320, and gifts from Autodesk, Adobe, and Facebook.
+6
+===== page 7 =====
+References
+Bobenko, A. I. and Springborn, B. A. (2007). A discrete laplace-beltrami operator for simplicial surfaces.
+Discrete & Computational Geometry , 38(4):740-756.
+Chao, I., Pinkall, U., Sanan, P ., and Schr¨oder, P . (2010). A simple geometric model for elastic deformations. In
+ACM SIGGRAPH 2010 Papers , SIGGRAPH '10, pages 38:1-38:6, New York, NY, USA. ACM.
+Courant, R. (1943). Variational methods for the solution of problems of equilibrium and vibrations. Bull.
+Amer. Math. Soc., 49(1):1-23.
+Crane, K. and Wardetzky, M. (2017). A glimpse into discrete differential geometry.Notices of the American
+Mathematical Society, 64(10):1153-1159.
+Desbrun, M., Kanso, E., and Tong, Y. (2008). Discrete Differential Forms for Computational Modeling , pages
+287-324. Birkh ¨auser Basel, Basel.
+Desbrun, M., Meyer, M., Schr ¨oder, P ., and Barr, A. H. (1999). Implicit fairing of irregular meshes using
+diffusion and curvature flow. InProceedings of the 26th Annual Conference on Computer Graphics and Interactive
+T echniques, SIGGRAPH '99, pages 317-324, New York, NY, USA. ACM Press/Addison-Wesley Publishing
+Co.
+Duffin, R. J. (1959). Distributed and lumped networks. Journal of Mathematics and Mechanics , 8(5):793-826.
+Jacobson, A. (2013). Algorithms and Interfaces for Real-Time Deformation of 2D and 3D Shapes . PhD thesis, ETH
+Zurich.
+Kopczy´nski, E., Pak, I., and Przytycki, P . (2012). Acute triangulations of polyhedra and n. Combinatorica,
+32(1):85-110.
+MacNeal, R. (1949). The Solution of Partial Differential Equations by Means of Electrical Networks . PhD thesis,
+California Institute of Technology.
+Meyer, M., Desbrun, M., Schr¨oder, P ., and Barr, A. H. (2003). Discrete differential-geometry operators for
+triangulated 2-manifolds. In Hege, H.-C. and Polthier, K., editors, Visualization and Mathematics III, pages
+35-57, Berlin, Heidelberg. Springer Berlin Heidelberg.
+Mullen, P ., Memari, P ., de Goes, F., and Desbrun, M. (2011). Hot: Hodge-optimized triangulations.ACM
+T rans. Graph., 30(4):103:1-103:12.
+Pinkall, U. and Polthier, K. (1993). Computing discrete minimal surfaces and their conjugates. Experiment.
+Math., 2(1):15-36.
+Wardetzky, M., Mathur, S., Kaelberer, F., and Grinspun, E. (2007). Discrete Laplace operators: No free lunch.
+In Belyaev, A. and Garland, M., editors, Geometry Processing. The Eurographics Association.
+Zamfirescu, C. T. (2013). Survey of two-dimensional acute triangulations. Discrete Mathematics, 313(1):35 -
+49.
+7

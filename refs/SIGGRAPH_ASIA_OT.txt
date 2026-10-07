@@ -1,0 +1,534 @@
+  
+===== page 1 =====  
+Surface and Volume Based Techniques for  
+Shape Modeling and Analysis  
+G. Patan´e1, X. Li2, David Gu3  
+1CNR-IMATI, Italy  
+2Louisiana State University, USA  
+3Stony Brook University, USA  
+SIGGRAPH Asia 2013 Course  
+David Gu Surface Geometry  
+===== page 2 =====  
+Discrete Optimal Mass Transportation  
+David Gu Surface Geometry  
+===== page 3 =====  
+Minkowski Problem  
+David Gu Surface Geometry  
+===== page 4 =====  
+Minkowski problem - 2D Case  
+Example  
+A convex polygon P in ℝ2 is determined by its edge lengths Ai  
+and the unit normal vectors ni.  
+Take anyu∈ ℝ2 and project P  
+to u, then⟨∑ i Aini ,u⟩ = 0,  
+therefore  
+∑  
+i  
+Aini = 0.  
+Ai  
+ni  
+David Gu Surface Geometry  
+===== page 5 =====  
+Minkowski problem - General Case  
+Minkowski Problem  
+Given k unit vectors n1,⋅⋅⋅ ,nk not  
+contained in a half-space in ℝn  
+and A1,⋅⋅⋅ ,Ak > 0, such that  
+∑  
+i  
+Aini = 0,  
+find a compact convex polytope P  
+with exactly k codimension-1 faces  
+F1,⋅⋅⋅ ,Fk, such that  
+1 area(Fi ) = Ai,  
+2 ni⊥ Fi.  
+n/u1D456  
+/u1D439/u1D456/u1D434/u1D456  
+David Gu Surface Geometry  
+===== page 6 =====  
+Minkowski problem - General Case  
+Theorem (Minkowski)  
+P exists and is unique up to  
+translations.  
+n/u1D456  
+/u1D439/u1D456/u1D434/u1D456  
+David Gu Surface Geometry  
+===== page 7 =====  
+Minkowski's Proof  
+Given h = (h1,⋅⋅⋅ ,hk ), hi > 0, define  
+compact convex polytope  
+P(h) ={x∣⟨x,ni⟩≤ hi ,∀i}  
+Let Vol : ℝk  
++  
+→ ℝ+ be the volume  
+Vol(h) = vol(P(h)), then  
+∂Vol(h)  
+∂hi  
+= area(Fi)  
+using Lagrangian multiplier, the solution  
+(up to scaling) to MP is the critical point  
+of Vol on{h∣h  
+i≥ 0,∑ hiAi = 1}.  
+Uniqueness part is proved using  
+Brunn-Minkowski inequality, which  
+implies (Vol(h))  
+1  
+n is concave in h.  
+n/u1D456  
+/u1D439/u1D456/u1D434/u1D456  
+David Gu Surface Geometry  
+===== page 8 =====  
+Piecewise Linear Convex Function  
+A Piecewise Linear convex function  
+f (x) := max{⟨x,pi⟩ + hi∣i = 1,⋅⋅⋅ ,k}  
+produces a convex cell decomposition  
+W  
+i of ℝn:  
+Wi ={x∣⟨x,pi⟩ + hi≥⟨ x,pj⟩ + hj ,∀j}  
+Namely, Wi ={x∣∇ f (x) = pi}.  
+Ω  
+/u1D44A /u1D456  
+/u1D439 /u1D456  
+/u1D70B/u1D457  
+/u1D462ℎ(/u1D465)  
+David Gu Surface Geometry  
+===== page 9 =====  
+Alexandrov Theorem  
+Theorem (Alexandrov 1950)  
+Given Ω compact convex domain in  
+ℝn, p1,⋅⋅⋅ ,pk distinct in ℝn,  
+A1,⋅⋅⋅ ,Ak > 0, such that  
+∑ Ai = Vol(Ω), there exists PL convex  
+function  
+f (x) := max{⟨x,pi⟩ + hi∣i = 1,⋅⋅⋅ ,k}  
+unique up to translation such that  
+Vol(Wi) = Vol({x∣∇ f (x) = pi}) = Ai .  
+Alexandrov's proof is topological, not  
+variational.  
+Ω  
+/u1D44A /u1D456  
+/u1D439 /u1D456  
+/u1D70B/u1D457  
+/u1D462ℎ(/u1D465)  
+David Gu Surface Geometry  
+===== page 10 =====  
+Voronoi Decomposition  
+David Gu Surface Geometry  
+===== page 11 =====  
+Voronoi Diagram  
+Voronoi Diagram  
+Given p1,⋅⋅⋅ ,pk in ℝn, the Voronoi cell  
+Wi at pi is  
+Wi ={x∣∣x- pi∣2≤∣ x- pj∣2,∀j}.  
+David Gu Surface Geometry  
+===== page 12 =====  
+Power Distance  
+Power Distance  
+Given pi associated with  
+a sphere (pi ,ri ) the  
+power distance from  
+q∈ ℝ  
+n to pi is  
+pow (pi,q) =∣pi-q∣2-r 2  
+i .  
+/u1D45D/u1D456  
+/u1D45E  
+/u1D45D/u1D45C/u1D464(/u1D45D/u1D456, /u1D45E) /u1D45F/u1D456  
+David Gu Surface Geometry  
+===== page 13 =====  
+Power Diagram  
+Given p1,⋅⋅⋅ ,pk in ℝn and power weights h1,⋅⋅⋅ ,hk, the power  
+Voronoi cell Wi at pi is  
+Wi ={x∣∣x- pi∣2 + hi≤∣ x- pj∣2 + hj ,∀j}.  
+David Gu Surface Geometry  
+===== page 14 =====  
+PL convex function vs. Power diagram  
+Lemma  
+Suppose f (x) = max{⟨x,pi⟩ + hi} is a  
+piecewise linear convex function, then its  
+gradient map induces a power diagram,  
+W  
+i ={x∣∇ f = pi}.  
+Proof.  
+⟨x,pi⟩ + hi≥⟨ x,pj⟩ + hj is equivalent to  
+∣x-pi∣2-2hi-∣pi∣2≤∣ x-pj∣2-2hj-∣pj∣2.  
+Ω  
+/u1D44A /u1D456  
+/u1D439 /u1D456  
+/u1D70B/u1D457  
+/u1D462ℎ(/u1D465)  
+David Gu Surface Geometry  
+===== page 15 =====  
+Variational Proof  
+Theorem (Gu-Luo-Sun-Y au 2012)  
+Ω is a compact convex domain in ℝn, p1,⋅⋅⋅ ,pk distinct in ℝn,  
+s : Ω→ ℝ is a positive continuous function. For any  
+A1,⋅⋅⋅ ,Ak > 0 with ∑ Ai =  
+/uni222B.alt01  
+Ω s(x)dx, there exists a vector  
+(h1,⋅⋅⋅ ,hk ) so that  
+f (x) = max{⟨x,pi⟩ + hi}  
+satisfies  
+/uni222B.alt01  
+Wi∩Ω s(x)dx = Ai, where Wi ={x∣∇ f (x) = pi}.  
+Furthermore, h is the minimum point of the convex function  
+E (h) =  
+/uni222B.alt02h  
+0  
+k  
+∑  
+i=1  
+wi (η )dη i-  
+k  
+∑  
+i=1  
+Aihi ,  
+where wi (η ) =  
+/uni222B.alt01  
+Wi (η )∩Ω s(x)dx is the volume of the cell.  
+David Gu Surface Geometry  
+===== page 16 =====  
+Variational Proof  
+X. Gu, F . Luo, J. Sun and S.-T.  
+Y au, "Variational Principles for  
+Minkowski Type Problems,  
+Discrete Optimal Transport,  
+and Discrete Monge-Ampere  
+Equations", arXiv:1302.5472  
+David Gu Surface Geometry  
+===== page 17 =====  
+Variational Proof  
+Proof.  
+For h = (h1,⋅⋅⋅ ,hk ) in ℝk, define the PL convex function f as  
+above and let Wi (h) ={x∣∇ f (x) = pi} and wi (h) = vol(Wi (h)),  
+1 H ={h∈ ℝk∣wi (h) > 0,∀i} is non-empty open convex set in  
+ℝk.  
+2 ∂wi  
+∂hj  
+= ∂wj  
+∂hi  
+≤ 0 for i∕= j. Thus the differential 1-form  
+∑ wi (h)dhi is closed in H. Therefore∃ a smooth F : H→ ℝ  
+so that ∂F  
+∂hi  
+= wi (h)  
+3 ∑ ∂wi (h)  
+∂hi  
+= 0, due to ∑ wi (h) = vol(Ω). Therefore the  
+Hessian of F is diagonally dominated, F (h) is convex in H.  
+4 F is strictly convex in H0 ={h∈ H∣∑ hi = 0} so that  
+∇ F = (w1,⋅⋅⋅ ,wk ).  
+If F strictly convex on an open convex set Ω in ℝk then  
+∇ F : Ω→ Rk is one-one. This shows the uniqueness part of  
+Alexandrov's theorem.  
+David Gu Surface Geometry  
+===== page 18 =====  
+Variational Proof  
+Proof.  
+It can be shown that the convex function  
+G(h) = F (h)-∑ Aihi  
+has a minimum point in H0, which is the solution to  
+Alexandrov's theorem.  
+David Gu Surface Geometry  
+===== page 19 =====  
+Geometric Interpretation  
+One can define a cylinder through ∂ Ω, the cylinder is truncated  
+by the xy-plane and the convex polyhedron. The energy term/uni222B.alt01h ∑ wi (η )dη i equals to the volume of the truncated cylinder.  
+David Gu Surface Geometry  
+===== page 20 =====  
+Computational Algorithm  
+Ω  
+/u1D44A /u1D456  
+/u1D439 /u1D456  
+/u1D70B/u1D457  
+/u1D462ℎ(/u1D465)  
+The convex energy is  
+E (h1,h2,⋅⋅⋅ ,hk ) =  
+k  
+∑  
+i=1  
+Aihi-  
+/uni222B.alt02h  
+0  
+k  
+∑  
+j=1  
+Wjdhj,  
+Geometrically, the energy is the volume beneath the parabola.  
+David Gu Surface Geometry  
+===== page 21 =====  
+Computational Algorithm  
+Ω  
+/u1D44A /u1D456  
+/u1D439 /u1D456  
+/u1D70B/u1D457  
+/u1D462ℎ(/u1D465)  
+The gradient of the energy is the areas of the cells  
+∇ E (h1,h2,⋅⋅⋅ ,hk ) = (A1- w1,A2- w2,⋅⋅⋅ ,Ak- wk )  
+David Gu Surface Geometry  
+===== page 22 =====  
+Computational Algorithm  
+The Hessian of the energy is the length ratios of edge and dual  
+edges,  
+∂wi  
+∂hj  
+=∣eij∣  
+∣¯eij∣  
+David Gu Surface Geometry  
+===== page 23 =====  
+Computational Algorithm  
+1 Initialize h = 0  
+2 Compute the Power Voronoi diagram, and the dual Power  
+Delaunay Triangulation  
+3 Compute the cell areas, which gives the gradient ∇ E  
+4 Compute the edge lengths and the dual edge lengths,  
+which gives the Hessian matrix of E, Hess(E )  
+5 Solve linear system  
+∇ E = Hess(E )dh  
+6 Update the height vector  
+(h)← h- λ dh,  
+where λ is a constant to ensure that no cell disappears  
+7 Repeat step 2 through 6, until∥dh∥ < ε.  
+David Gu Surface Geometry  
+===== page 24 =====  
+Optimal Mass Transport Mapping  
+David Gu Surface Geometry  
+===== page 25 =====  
+Optimal Transport Problem  
+(Ω, /u1D707)  
+(/u1D437, /u1D708)  
+/u1D719  
+/u1D45D  
+/u1D719(/u1D45D)  
+Earth movement cost.  
+David Gu Surface Geometry  
+===== page 26 =====  
+Optimal Mass Transportation  
+Problem Setting  
+Find the best scheme of transporting one mass distribution  
+(  
+µ,U) to another one (ν ,V ) such that the total cost is  
+minimized, where U,V are two bounded domains in ℝn, such  
+that /uni222B.alt02  
+U  
+µ(x)dx =  
+/uni222B.alt02  
+V  
+ν (y)dy,  
+0≤ µ∈ L1(U) and 0≤ ν∈ L1(V ) are density functions.  
+(/u1D707, /u1D448 ) (/u1D708, /u1D449 )  
+/u1D453  
+/u1D465 /u1D453 (/u1D465 )  
+David Gu Surface Geometry  
+===== page 27 =====  
+Optimal Mass Transportation  
+For a transport scheme s ( a mapping from U to V)  
+s : x∈ U→ y∈ V ,  
+the total cost is  
+C(s) =  
+/uni222B.alt02  
+U  
+µ(x)c(x,s(x))dx  
+where c(x,y) is the cost function.  
+(/u1D707, /u1D448 ) (/u1D708, /u1D449 )  
+/u1D453  
+/u1D465 /u1D453 (/u1D465 )  
+David Gu Surface Geometry  
+===== page 28 =====  
+Cost Function c(x,y )  
+The cost of moving a unit mass from point x to point y.  
+Monge(1781) : c(x,y) =∣x- y∣.  
+This is the natural cost function. Other cost functions include  
+c(x,y) = ∣x- y∣p,p∕= 0  
+c(x,y) = -log∣x- y∣  
+c(x,y) =  
+/uni221A.alt01  
+ε +∣x- y∣2,ε > 0  
+Any function can be cost function. It can be negative.  
+David Gu Surface Geometry  
+===== page 29 =====  
+Optimal Transportation Map  
+Problem  
+Is there an optima mapping T : U→ V such that the total cost  
+C is minimized,  
+C (T ) = inf{C (s) : s∈ S}  
+where S is the set of all measure preserving mappings,  
+namely s : U→ V satisfies  
+/uni222B.alt02  
+s-1(E)  
+µ(x)dx =  
+/uni222B.alt02  
+E  
+ν (y)dy,∀ Borel set E⊂ V  
+David Gu Surface Geometry  
+===== page 30 =====  
+Applications  
+Economy: producer-consumer problem, gas station with  
+capacity constraint,  
+Probability: Wasserstein distance  
+Image processing: image registration  
+Digital geometry processing: surface registration  
+David Gu Surface Geometry  
+===== page 31 =====  
+Image Registration  
+A. Tannenbaum: Medical image registration  
+David Gu Surface Geometry  
+===== page 32 =====  
+Resource Allocation  
+Determine the locations of gas stations{p1,p2,⋅⋅⋅ ,pk} with  
+capacities{c1,c2,⋅⋅⋅ ,ck} in a city with gasoline consumption  
+density µ, such that the total square of distances from each  
+family to the corresponding gas station is minimized.  
+David Gu Surface Geometry  
+===== page 33 =====  
+Surface Registration  
+Z. Su, W. Zeng, R. Shi, Y . Wang, J. Sun, J. Gao, X. Gu, "Area  
+Preserving Brain Mapping", CVPR, June, 2013.  
+David Gu Surface Geometry  
+===== page 34 =====  
+Solutions  
+Three categories:  
+1 Discrete category: both (µ,U) and (ν ,V ) are discrete,  
+2 Semi-continuous category: (µ,U) is continuous, (ν ,V ) is  
+discrete,  
+3 Continuous category: both (µ,U) and (ν ,V ) are  
+continuous.  
+David Gu Surface Geometry  
+===== page 35 =====  
+Kantorovich's Approach  
+Both (µ,U) and (ν ,V ) are discrete. µ and ν are Dirac  
+measures. (µ,U) is represented as  
+{(µ1,p1), (µ2,p2),⋅⋅⋅ , (µm,pm)},  
+(ν ,V ) is  
+{(ν1,q1), (ν2,q2),⋅⋅⋅ , (νn,qn)}.  
+A transportation plan f :{pi}→{ qj}, f ={fij}, fij means how  
+much mass is moved from (µi ,pi ) to (νj ,qj ), i≤ m,j≤ n. The  
+optimal mass transportation plan is:  
+min  
+f  
+fijc(pi ,qj )  
+with constraints:  
+n  
+∑  
+j=1  
+fij = µi ,  
+m  
+∑  
+i=1  
+fij = νj .  
+Optimizing a linear energy on a convex set, solvable by linear  
+programming method.  
+David Gu Surface Geometry  
+===== page 36 =====  
+Kantorovich's Approach  
+Kantorovich won Nobel's prize in economics.  
+min  
+f ∑  
+ij  
+fijc(pi ,pj ),  
+such that  
+∑  
+j  
+fij = µi ,∑  
+i  
+fij = νj .  
+mn unknowns in total. The  
+complexity is quite high.  
+(/u1D707 1, /u1D45D1)  
+(/u1D707 2, /u1D45D2)  
+(/u1D707 /u1D45A , /u1D45D/u1D45A )  
+(/u1D7081, /u1D45E1)  
+(/u1D7082, /u1D45E2)  
+(/u1D708/u1D45B, /u1D45E/u1D45B)  
+/u1D453/u1D456/u1D457  
+David Gu Surface Geometry  
+===== page 37 =====  
+Brenier's Approach  
+Theorem (Brenier)  
+If µ,ν > 0 and U is convex, and the cost function is quadratic  
+distance,  
+c(x,y) =∣x- y∣2  
+then there exists a convex function f : U→ ℝ unique upto a  
+constant, such that the unique optimal transportation map is  
+given by the gradient map  
+T : x→ ∇ f (x).  
+David Gu Surface Geometry  
+===== page 38 =====  
+Brenier's Approach  
+Continuous Category: In smooth case, the Brenier potential  
+f : U→ ℝ statisfies the Monge-Ampere equation  
+det  
+/uni0028.alt03  
+∂ 2f  
+∂xi∂xj  
+/uni0029.alt03  
+= µ(x)  
+ν (∇ f (x)) ,  
+and ∇ f : U→ V minimizes the quadratic cost  
+min  
+f  
+/uni222B.alt02  
+U  
+∣x- ∇ f (x)∣2dx.  
+David Gu Surface Geometry  
+===== page 39 =====  
+Semi-Continuous Category: Discrete Optimal  
+Transportation Problem  
+Wi  
+Ω  
+T  
+(pi, Ai)  
+Given a compact convex domain U in ℝn and p1,⋅⋅⋅ ,pk in ℝn  
+and A1,⋅⋅⋅ ,Ak > 0, find a transport map T : Ω→{ p1,⋅⋅⋅ ,pk}  
+with vol(T-1(pi )) = Ai, so that T minimizes the transport cost  
+/uni222B.alt02  
+U  
+∣x- T (x)∣2dx.  
+David Gu Surface Geometry  
+===== page 40 =====  
+Alexandrov Map vs Optimal Transport Map  
+Theorem (Aurenhammer-Hoffmann-Aronov 1998)  
+Alexandrov map ∇ f is the optimal transport map.  
+/u1D462 /u1D462∗  
+∇/u1D462  
+/u1D44A /u1D456 /u1D45D/u1D456  
+/u1D70B/u1D456  
+/u1D70B∗  
+/u1D456  
+Ω, /u1D4AF Ω∗, /u1D4AF ∗  
+/u1D45D/u1D45F/u1D45C/u1D457 /u1D45D/u1D45F/u1D45C/u1D457∗  
+David Gu Surface Geometry  
+===== page 41 =====  
+Optimal Transport Map Examples  
+David Gu Surface Geometry  
+===== page 42 =====  
+Optimal Transport Map Examples  
+David Gu Surface Geometry  
+===== page 43 =====  
+Normal Map  
+David Gu Surface Geometry  
+===== page 44 =====  
+Visualization  
+Conformal mapping Area-preserving mapping  
+David Gu Surface Geometry  
+===== page 45 =====  
+Visualization  
+David Gu Surface Geometry  
+===== page 46 =====  
+Visualization  
+X. Zhao, Z. Su, X. Gu, A. Kaufman, J. Sun, J. Gao, F . Luo,  
+"Area-preservation Mapping using Optimal Mass Transport",  
+IEEE TVCG, 2013.  
+David Gu Surface Geometry  
+===== page 47 =====  
+Visualization  
+David Gu Surface Geometry  
+===== page 48 =====  
+Visualization  
+David Gu Surface Geometry  
+===== page 49 =====  
+Visualization  
+David Gu Surface Geometry  
+===== page 50 =====  
+Visualization  
+David Gu Surface Geometry

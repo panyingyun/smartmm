@@ -1,0 +1,1041 @@
+
+===== page 1 =====
+IEEE TRANSACTIONS ON MEDICAL IMAGING, VOL. 23, NO. 8, AUGUST 2004 949
+Genus Zero Surface Conformal Mapping and Its
+Application to Brain Surface Mapping
+Xianfeng Gu, Yalin Wang*, Tony F. Chan, Paul M. Thompson, and Shing-Tung Yau
+Abstract-- We developed a general method for global conformal
+parameterizations based on the structure of the cohomology group
+of holomorphic one-forms for surfaces with or without boundaries
+(Gu and Yau, 2002), (Gu and Yau, 2003). For genus zero surfaces,
+our algorithm can find a unique mapping between any two genus
+zero manifolds by minimizing the harmonic energy of the map. In
+this paper, we apply the algorithm to the cortical surface matching
+problem. We use a mesh structure to represent the brain surface.
+Further constraints are added to ensure that the conformal map is
+unique. Empirical tests on magnetic resonance imaging (MRI) data
+show that the mappings preserve angular relationships, are stable
+in MRIs acquired at different times, and are robust to differences in
+data triangulation, and resolution. Compared with other brain sur-
+face conformal mapping algorithms, our algorithm is more stable
+and has good extensibility.
+Index Terms-- Brain mapping, conformal map, landmark
+matching, spherical harmonic transformation.
+I. I NTRODUCTION
+R
+ECENT developments in brain imaging have accelerated
+the collection and databasing of brain maps. Nonetheless,
+computational problems arise when integrating and comparing
+brain data. One way to analyze and compare brain data is to map
+them into a canonical space while retaining geometric informa-
+tion on the original structures as far as possible [3]-[9]. Among
+them, Schwartz et al. [3] and Timsari [7] computed quasi-iso-
+metric flat maps of the cerebral cortex. Hurdal et al. [5] and
+Haker et al. [6] computed quasi-conformal and conformal maps
+of the cerebral cortex, respectively.
+A. Previous Work
+Conformal surface parameterizations have been studied in-
+tensively. Most works on conformal parameterizations deal with
+Manuscript received January 5, 2004; revised April 28, 2004. This paper is
+an extended version of a paper published in Lecture Notes in Computer Sci-
+ence (Proceedings of Information Processing in Medical Imaging) , 2003 [32].
+This work was supported in part by the National Institutes of Health (NIH)
+under Grant R21 EB001 561 and Grant R21 RR019 771; in part by the National
+Science Foundation (NSF) under Contract DMS-9973341, NSF Contract ACI-
+0072112, ONR Contract N00014-03-1-0888, and NIH Contract P20 MH65166.
+The Guest Editors responsible for coordinating the review of this paper and rec-
+ommending its publication were C. J. Taylor and J. A. Noble.Asterisk indicates
+corresponding author.
+X. Gu is with the Department of Computer and Information Science and En-
+gineering, University of Florida, FL 32611 USA (e-mail: gu@cise.ufl.edu).
+*Y . Wang is with the Mathematics Department, the University of California,
+Los Angeles, CA 90095 USA (e-mail: ylwang@math.ucla.edu).
+T. F. Chan is with the Mathematics Department, the University of California,
+Los Angeles, CA 90095 USA (e-mail: chan@math.ucla.edu).
+P. M. Thompson is with the Laboratory of Neuro Imaging, Department of
+Neurology, School of Medicine, the University of California, Los Angeles USA
+(e-mail: thompson@loni.ucla.edu).
+S.-T. Yau is with the Department of Mathematics, Harvard University, Cam-
+bridge, MA 02138 USA (e-mail: yau@math.harvard.edu).
+Digital Object Identifier 10.1109/TMI.2004.831226
+surface patches homeomorphic to topological disks. For sur-
+faces with arbitrary topologies, Gu and Yau [1] introduce a gen-
+eral conformal parameterization based on a nonlinear flow for
+the genus zero case, and on the structure of the cohomology
+group of holomorphic one-forms in the case of genus greater
+than one. They generalize the method for surfaces with bound-
+aries in [2]. In this paper, we apply part of these algorithms (for
+the genus zero case) to the cortical surface matching problem
+and report our experimental results. In particular, the algorithms
+used in Sections II, III, and IV , are from [1], [2] and the data
+compression using spherical harmonic was also conceived there
+for other purposes.
+It is well known that all orientable surfaces are Riemann
+surfaces. If two surfaces can be conformally mapped to each
+other, they share the same conformal structure. Therefore,
+computing conformal mappings is equivalent to computing
+conformal structures for surfaces. For genus zero closed
+surfaces, harmonic maps are equivalent to conformal maps
+[10]. Many algorithms for surface parameterization are based
+on harmonic maps. By adding a periodic boundary condition,
+the harmonic mapping method can be generalized for the
+genus one case. For the higher genus case, the method is not
+applicable any more.
+1) Conformal Parameterization for Genus Zero Sur-
+faces: Most works on conformal parameterization only deal
+with genus zero surfaces. There are five basic approaches to
+achieve conformal parameterizations.
+a) Harmonic energy minimization. Eck et al. [11] introduce
+the discrete harmonic map, which approximates the con-
+tinuous harmonic map [10] by minimizing a metric dis-
+persion criterion. Desbrun et al. [12], [13] compute the
+discrete Dirichlet energy and apply conformal parameter-
+ization for interactive geometry remeshing. Pinkall and
+Polthier compute the discrete harmonic map and Hodge
+star operator for the purpose of creating a minimal sur-
+face [14]. Kanai et al. use a harmonic map for geometric
+metamorphosis in [15]. While the discrete harmonic map-
+ping is used, it is not clear that it approximates the har-
+monic map defined in the smooth category. Gu and Yau
+in [1] introduce a nonlinear optimization method to com-
+pute global conformal parameterizations for genus zero
+surfaces. The optimization is carried out in the tangent
+spaces of the sphere. It is different from the previous op-
+timization methods. It computes global parameterizations
+for genus zero surfaces.
+b) Cauchy-Riemann equation approximation .L e v y et
+al. [16] compute a quasi-conformal parameterization of
+topological disks by approximating the Cauchy-Riemann
+0278-0062/04$20.00 © 2004 IEEE
+===== page 2 =====
+950 IEEE TRANSACTIONS ON MEDICAL IMAGING, VOL. 23, NO. 8, AUGUST 2004
+TABLE I
+APPROACHES FOR CONFORMAL AND HARMONIC SURFACE PARAMETERIZATION
+equation using the least squares method. They show rig-
+orously that the quasi-conformal parameterization exists
+uniquely, and is invariant to similarity transformations,
+independent of resolution, and orientation-preserving.
+c) Laplacian operator linearization . Haker et al. [6], [17]
+use a method to compute a global conformal mapping
+from a genus zero surface to a sphere by representing the
+Laplace-Beltrami operator as a linear system.
+d) Angle-based method . Sheffer et al. [18] introduce an
+angle-based flattening method to flatten a mesh to a
+two-dimensional plane so that it minimizes the relative
+distortion of the planar angles with respect to their
+counterparts in the three-dimensional (3-D) space.
+e) Circle packing. Circle packing is introduced in [5], [19].
+Classical analytic functions can be approximated using
+circle packing. For general surfaces in
+, the circle
+packing method considers only the connectivity but not
+the geometry, so it is not suitable for our parameterization
+purpose.
+2) Global Conformal Parameterization for Nonzero Genus
+Closed Surfaces: For genus one surfaces, conformal parame-
+terization is introduced in [20] by adding periodic constraints
+for harmonic maps defined on the fundamental domain of the
+surface.
+It is impossible to generalize the current harmonic mapping
+method to the high genus case. The problem of computing con-
+formal structures for general surfaces with arbitrary topologies
+is completely solved by Gu and Yau in [1], [2]. The method is
+based on Hodge theory, and applicable for both closed surfaces
+and open surfaces with arbitrary genus.
+We summarize current conformal and harmonic surface pa-
+rameterization methods in Table I.
+There are some methods applying the Möbius automorphism
+group to brain conformal mapping. For instance, Tosun et al.
+[22], [23] used an approach based on Haker 's conformal map-
+ping and employed a M öbius transformation to minimize area
+distortion and sulcal alignment across multiple brains.
+B. Basic Idea
+Suppose
+are two surfaces. Locally they can be repre-
+sented as
+ , where
+ are their local
+coordinates, and
+ are vector-valued functions.
+The first fundamental form of
+ is
+ ,
+where
+Fig. 1. Conformal surface parameterization examples. (a) Is a real male face.
+(c) Is a square into which the human face is conformally mapped. (b) Is the
+conformal parameterization illustrated by the texture map. As shown, the right
+angles on the checkboard are well preserved on the surface in (b).
+Similarly, the first fundamental form of
+ is defined in the
+same way.
+ . Define a mapping
+between two surfaces. Using local coordinates,
+ can be
+represented as
+ .
+Then any tangent vector
+ on
+ will be mapped to a
+tangent vector
+ on
+(1)
+The length of
+ is
+(2)
+We use the length of
+ to define the length of
+ .
+Namely, we define a new metric for
+ which is induced by
+the mapping
+ and the metric on
+ . We call this metric the
+pull-back metric, and denote it by
+ . Replacing
+ in (2)
+by (1), we get the analytic formula for the pull-back metric
+(3)
+We call
+ a conformal mapping, if there exists a positive scalar
+function
+ , such that
+(4)
+where
+ is called the conformal factor.
+Intuitively, all the angles on
+ are preserved on
+ . Fig. 1
+shows a conformal mapping example. Fig. 1(a) shows a real
+male face. We conformally map it to a square as in 1(c) and
+get its conformal parameterization. We illustrate the conformal
+parameterization via the texture mapping of a checkerboard in
+Fig. 1.
+===== page 3 =====
+GU et al.: GENUS ZERO SURFACE CONFORMAL MAPPING AND ITS APPLICATION TO BRAIN SURFACE MAPPING 951
+It is well known that any genus zero surface can be mapped
+conformally onto the sphere and any local portion thereof onto
+a disk. This mapping, a conformal equivalence, is one-to-one,
+onto, and angle-preserving. Moreover, the elements of the first
+fundamental form remain unchanged, except for a scaling factor
+(the so-called Conformal Factor). For this reason, conformal
+mappings are often described as being similarities in the small.
+Since the cortical surface of the brain is a genus zero surface,
+conformal mapping offers a convenient method to retain local
+geometric information, when mapping data between surfaces.
+Indeed, several groups have created flattened representations or
+visualizations of the cerebral cortex or cerebellum [5], [6] using
+conformal mapping techniques. However, these approaches are
+either not strictly angle preserving [5], or there may be areas
+with large geometric distortions [6]. In this paper, we propose a
+new genus zero surface conformal mapping algorithm [1] and
+demonstrate its use in computing conformal mappings between
+brain surfaces. Our algorithm depends only on the surface
+geometry and is invariant to changes in image resolution
+and the specifics of the data triangulation. Our experimental
+results show that our algorithm has advantageous properties for
+cortical surface matching.
+Suppose
+is a simplicial complex, and
+ , which
+embeds
+ in
+ ; then
+ is called a mesh. Given two genus
+zero meshes
+ , there are many conformal mappings be-
+tween them. Our algorithm for computing conformal mappings is
+based on the fact that for genus zero surfaces
+is conformal if and only if
+ is harmonic. All conformal mappings
+between
+ form a group, the so-called Möbius group. Fig. 2
+shows some examples of Möbius transformations. We can con-
+formally map the surface of the head of Michelangelo 's David
+to a sphere. When we draw the longitude and latitude lines on
+the sphere, we can induce corresponding circles on the original
+surface [Fig. 2(a) and (b)]. We apply a Möbius transformation to
+the sphere and make the two eyes become north and south poles.
+When we draw the longitude and latitude lines again [Fig. 2(c)],
+we get an interesting result shown in Fig. 2(d). Note all the right
+angles between the lines are well preserved in Fig. 2(b) and
+(d). This example demonstrates that all the conformal mapping
+results form a Möbius group.
+Our method is summarized as follows: we first find a home-
+omorphism
+between
+ and
+ , then deform
+ such that
+minimizes the harmonic energy. To ensure the convergence of
+the algorithm, constraints are added; this also ensures that there
+is a unique conformal map.
+This paper is organized as follows. In Section II, we give the
+definitions of a piecewise linear function space, inner product
+and piecewise Laplacian. In Section III, we describe the steepest
+descent algorithm which is used to minimize the string energy.
+In Section IV , we detail our conformal spherical mapping al-
+gorithms. In Section V , the conformal parameterization is opti-
+mized by integrating landmark information. Section VI applies
+conformal mapping for spherical harmonic transformation, and
+rotation-invariant shape analysis. Experimental results on con-
+formal mapping for brain surfaces are reported in Section VII.
+In Section VIII, we compare our algorithm with other conformal
+mapping approaches used in neuroimaging. We conclude the
+paper in Section IX.
+Fig. 2. M öbius transformation example. We conformally map the surface of
+the head of Michelangelo's David to a sphere. In (a), we select the nose tip as
+the north pole and draw longitude and latitude lines on the sphere. (b) Shows the
+results on the original David head model. We apply a Möbius transformation on
+the sphere in (a) and make the two eyes become the north and south poles. When
+drawing the longitude and latitude lines on the sphere (c), we get an interesting
+configuration for the lines on the original surface (d).
+II. P IECEWISE LINEAR FUNCTION SPACE,I NNER PRODUCT
+AND LAPLACIAN
+If a diffeomorphism between genus zero surfaces minimizing
+the harmonic energy, it is conformal. Based on this fact, the
+algorithm is designed as a steepest descent method.
+This section formulates the mathematical concepts in a rig-
+orous way. The major concepts, the harmonic energy of a map
+and its derivative, are defined. Because all the calculation is car-
+ried out on surfaces, we use the absolute derivative. Further-
+more, for the purpose of implementation, we introduce the def-
+initions in discrete form.
+We use
+to represent the simplicial complex,
+ to denote
+the vertices, and
+ to denote the edge spanned by
+ .W e
+use
+ to represent the piecewise linear functions defined on
+, use
+ to represent vector value functions. We use
+ to
+represent the discrete Laplacian operator.
+Definition 1: All piecewise linear functions defined on
+form a linear space, denoted by
+ .
+In practice, we use
+ to approximate all functions de-
+fined on
+ . So the final result is an approximation to the con-
+formal mapping. The higher the resolution of the mesh is, the
+more accurate the approximated conformal mapping is.
+Definition 2: Suppose a set of string constants
+ are as-
+signed for each edge
+ , the inner product on
+ is defined
+as the quadratic form
+(5)
+The energy is defined as the norm on
+ .
+===== page 4 =====
+952 IEEE TRANSACTIONS ON MEDICAL IMAGING, VOL. 23, NO. 8, AUGUST 2004
+Fig. 3. Discrete Laplace -Beltrami operator. Edge /102/118
+/59/118
+/103has two corners
+against it /11/59 /12. The edge weight is defined as the summation of the cotangents
+of these corner angles.
+Definition 3: Suppose
+ , the string energy is defined
+as:
+(6)
+By changing the string constants
+ in the energy formula, we
+can define different string energies.
+Definition 4: If string constants
+ , the string energy
+is known as the Tuette energy.
+Definition 5: Suppose edge
+ has two adjacent faces
+, with
+ , as shown in Fig. 3, define the
+parameters
+(7)
+(8)
+(9)
+is defined similarly. If
+ , the string energy
+obtained is called the harmonic energy.
+The string energy is always a quadratic form. By carefully
+choosing the string coefficients, we make sure the quadratic
+form is positive definite. This will guarantee the convergence
+of the steepest descent method.
+Definition 6: The piecewise Laplacian is the linear operator
+on the space of piecewise linear functions
+on
+ , defined by the formula
+(10)
+If
+ minimizes the string energy, then
+ satisfies the condition
+. Suppose
+ are two meshes and the map
+is a map between them,
+ can be treated as a map
+from
+ to
+ also.
+Definition 7: For a map
+, we define the energy
+as the norm of
+(11)
+The Laplacian is defined in a similar way.
+Definition 8: For a map
+ , the piecewise Lapla-
+cian of
+ is
+(12)
+Fig. 4. Projected Laplacian. The Laplacian /1/102is a vector in/82
+, which can be
+decomposed into a normal component, /40/1
+/126/102/41
+, and tangential component,
+/68/126/102. The normal component is collinear with the normal to the target surface,
+and the tangential component is in the tangent space of the target surface.
+A map
+ is harmonic, if and only if
+ only
+has a normal component, and its tangential component is zero
+(13)
+A decomposition of Laplacian
+ is shown in Fig. 4.
+III. S TEEPEST DESCENT ALGORITHM
+Suppose we would like to compute a mapping
+such that
+ minimizes a string energy
+ . This can be solved
+easily by the steepest descent algorithm
+(14)
+is constrained to be on
+ ,s o
+ is a tangent vector
+field of
+ .
+Specifically, suppose
+ , and denote the image
+of each vertex
+ as
+ . The normal on
+ at
+ is
+. Define the normal component as below.
+Definition 9: The normal component
+(15)
+where
+ is the inner product in
+ .
+Definition 10: The absolute derivative is defined as
+(16)
+Then, (14) is
+ .
+IV . CONFORMAL SPHERICAL MAPPING
+Suppose
+ is
+ , then a conformal mapping
+can be constructed by using the steepest descent method. The
+major difficulty is that the solution is not unique but forms a
+Möbius group.
+Definition 11: Mapping
+is a Möbius transforma-
+tion if and only if
+(17)
+where
+ is the complex plane.
+All Möbius transformations form the Möbius transformation
+group. In order to determine a unique solution we can add dif-
+ferent constraints. In practice we use the following two con-
+straints: the zero mass-center constraint and a landmark con-
+straint.
+Definition 12: Mapping
+satisfies the zero
+mass-center condition if and only if
+(18)
+where
+ is the area element on
+ .
+===== page 5 =====
+GU et al.: GENUS ZERO SURFACE CONFORMAL MAPPING AND ITS APPLICATION TO BRAIN SURFACE MAPPING 953
+All conformal maps from
+ to
+ satisfying the zero mass-
+center constraint are unique up to the Euclidean rotation group
+(which is 3-D). We use the Gauss map as the initial condition.
+Definition 13: A Gauss map
+is defined as
+(19)
+where
+ is the normal at
+ .
+Algorithm 1: Spherical Tuette Mapping: Input (mesh
+, step length
+ , energy difference threshold
+ ), output
+where
+ minimizes the Tuette energy.
+1) Compute Gauss map
+ . Let
+ , compute
+Tuette energy
+ .
+2) For each vertex
+ , compute absolute derivative
+ .
+3) Update
+ by
+ .
+4) Compute Tuette energy
+ .
+5) If
+ , return
+ . Otherwise, assign
+ to
+and repeat steps 2)-5).
+Because the Tuette energy has a unique minimum, the algorithm
+converges rapidly and is stable. We use it as the initial condition
+for the conformal mapping.
+Algorithm 2: Spherical Conformal Mapping: Input (mesh
+, step length
+ , energy difference threshold
+ ), output
+. Here
+ minimizes the harmonic energy and satisfies
+the zero mass-center constraint.
+1) Compute Tuette embedding
+ . Let
+ , compute Tuette
+energy
+ .
+2) For each vertex
+ , compute the absolute derivative
+.
+3) Update
+ by
+ .
+4) Compute M öbius transformation
+ , such
+that
+(20)
+(21)
+where
+ is the area element on
+ .
+ is the mass
+center, and
+ minimizes the norm in the mass center
+condition.
+ is the conformal automorphism
+group of
+ , and it can be analytically represented as
+, where
+ is the stereographic
+projection
+and
+ is a Möbius transformation as defined in
+Definition 11.
+5) compute the harmonic energy
+ .
+6) If
+ , return
+ . Otherwise, assign
+ to
+and repeat Step 2) through to Step 6).
+Step 4) is nonlinear and expensive to compute. In practice we
+use the following procedure to replace it:
+compute the mass center
+ ;
+for all
+ ;
+for all
+ .
+This approximation method is good enough for our purpose. The
+resulting angle distortion is proportional to the square of the dis-
+tance between the mass center and the origin. When the devia-
+tion is small, this provides a very accurate approximation to a
+Möbius transformation. By choosing the step length carefully,
+the energy can be decreased monotonically at each iteration.
+V. OPTIMIZE THE CONFORMAL PARAMETERIZATION BY USING
+LANDMARKS
+In order to compare two brain surfaces, it is desirable to adjust
+the conformal parameterization and match the geometric fea-
+tures on the brains as well as possible. We define an energy to
+measure the quality of the parameterization. Suppose two brain
+surfaces
+are given, conformal parameterizations are de-
+noted as
+ and
+ , the matching energy
+is defined as
+(22)
+We can compose a Möbius transformation
+ with
+ , such that
+(23)
+where
+ is the group of Möbius transformations. We use land-
+marks to obtain the optimal Möbius transformation. Landmarks
+are commonly used in brain mapping. We manually label the
+landmarks on the brain as a set of uniformly parametrized sulcal
+curves [8], as shown in Fig. 9. First we conformally map two
+brains to the sphere, then we pursue an optimal M öbius trans-
+formation to minimize the Euclidean distance between the cor-
+responding landmarks on the spheres. Suppose the landmarks
+are represented as discrete point sets, and denoted as
+and
+ matches
+ . The landmark
+mismatch functional for
+ is defined as
+(24)
+In general, the above variational problem is a nonlinear one. In
+order to simplify it, we convert it to a least squares problem. First
+we project the sphere to the complex plane, then the M öbius
+transformation is represented as a complex linear rational for-
+mula, (17). We add another constraint for
+, so that
+ maps in-
+finity to infinity. That means the north poles of the spheres are
+mapped to each other. Then
+can be represented as a linear form
+. Then the functional of
+ can be simplified as
+(25)
+where
+ is the stereo-projection of
+ is the projection of
+is the conformal factor from the plane to the sphere, which
+can be simplified as
+(26)
+So the problem is a least squares problem.
+VI. S PHERICAL HARMONIC ANALYSIS
+Let
+ denote the Hilbert space of square integrable
+functions on the
+ . In the spherical coordinates,
+ is taken as
+the polar (colatitudinal) coordinate with
+ , and
+ as
+===== page 6 =====
+954 IEEE TRANSACTIONS ON MEDICAL IMAGING, VOL. 23, NO. 8, AUGUST 2004
+the azimuthal (longitudinal) coordinate with
+ . The
+usual inner product is given by
+(27)
+A function
+ is called a Spherical Harmonic ,
+if it is an eigenfunction of Laplace -Beltrami operator, namely
+, where
+ is a constant. There is a countable set
+of spherical harmonics which form an orthonormal basis for
+. For any nonnegative integer
+ and integer
+ with
+, the
+ -spherical harmonic
+ is a harmonic homoge-
+neous polynomial of degree
+ . The harmonics of degree
+ span
+a subspace of
+ of dimension
+ which is invariant
+under the rotations of the sphere. The expansion of any function
+in terms of spherical harmonics can be written
+(28)
+and
+ denotes the
+ Fourier coefficient, equal to
+. Spherical harmonic
+ has an explicit formula
+(29)
+where
+ is the associated Legendre function of degree
+ and
+order
+ , and
+ is a normalization factor. The details are ex-
+plained in [24].
+Once the brain surface is conformally mapped to
+ ,
+the surface can be represented as three spherical func-
+tions,
+, and
+ . The function
+is regularly sampled and transformed
+to
+ using the fast spherical harmonic transformation as
+described in [25].
+Many processing tasks that use the geometric surface of the
+brain can be accomplished in the frequency domain more effi-
+ciently, such as geometric compression, matching, surface de-
+noising, feature detection, and shape analysis [26], [27].
+A. Brain Geometry Compression
+Similar to image compression using Fourier analysis, geo-
+metric brain data can be compressed using spherical harmonic
+analysis [26]. Global geometric information is concentrated in
+the low-frequency components, whereas noise and locally de-
+tailed information are concentrated in the high-frequency part.
+By using low-pass filtering, we can keep the major geometric
+features and compress the brain surface without losing too much
+information.
+B. Rotation Invariant Shape Descriptor
+The geometric representation
+depends on the orientation of the brain. Brain registration
+has to be applied first in order to compare the geometric
+representations of two different brains. A rotation-invariant
+shape descriptor can be formulated based on the frequency co-
+efficients. Because the harmonics of degree
+span the rotation
+invariant subspace of
+ , the following shape descriptor
+is also rotation invariant:
+(30)
+TABLE II
+CPU TIMES FOR SURFACES OF DIFFERENT TRIANGLE COUNT ON A 1.9-GHz
+PC WITH WINDOWS XP OPERATING SYSTEM
+Given two brain surfaces, we can compute their shape de-
+scriptor from their spherical harmonic spectrum, and compare
+them directly without any registration.
+Fig. 12 illustrate the shape descriptors for the same brain with
+different orientations. It is clear that the shape descriptor is to-
+tally rotation invariant [28].
+The brain surface can be represented as a vector valued func-
+tion defined on the sphere via conformal mapping of its surface
+to the surface. The brain surface can then be decomposed in
+terms of linear combination of spherical harmonics. The vector
+valued spectrum, i.e., the harmonic coefficients expressed as
+components of a vector, can be used to analyze the shape. The
+main geometric features are encoded in the low-frequency part,
+while the noise will be in the high-frequency part. By filtering
+out the high-frequency coefficients, we can smooth the surface,
+and compress the geometry. By comparing the low-frequency
+coefficients, we can match surfaces, and compute the similarity
+of surfaces.
+VII. E
+XPERIMENTAL RESULTS
+The algorithm uses covariant differentiation to solve a geo-
+metric nonlinear partial differential equation (PDE). The com-
+plexity of the algorithm is
+ , where
+ is the number of the
+vertices of the brain mesh,
+ is the number of required iterations.
+mainly depends on the initial condition, i.e., how close it is to
+a conformal map.
+ also depends on the step length. Table II
+illustrates the CPU time for computing conformal maps of sur-
+faces of different triangle numbers on a 1.9-GHz PC with the
+Windows XP operating system.
+Comparing to other algorithms that solve a linear system,
+such as Haker et al. [6], our nonlinear algorithm has the
+following unique advantages. First, every point on the brain
+is treated in a uniform way -- no point maps to infinity as in
+[6]. Therefore, there are no specific areas with large distortion.
+Second, the method is very general, as it does not require the
+target surface to be a sphere. It can be easily generalized to
+compute harmonic maps between any two arbitrary genus zero
+surfaces.
+The 3-D brain meshes are reconstructed from 3-D
+256
+256
+ 124 T1 weighted SPGR (spoiled gradient)
+MRI images, by using an active surface algorithm that deforms
+a triangulated mesh onto the brain surface [9]. Fig. 5(a) and (c)
+shows the same brain scanned at different times [8]. Because
+of the inaccuracy introduced by scanner noise in the input data,
+as well as slight biological changes over time, the geometric
+information is not exactly the same. Fig. 5(a) and (c) reveals
+minor differences.
+The conformal mapping results are shown in Fig. 5(b) and (d).
+From this example, we can see that although the brain meshes
+are slightly different, the mapping results look quite similar. The
+===== page 7 =====
+GU et al.: GENUS ZERO SURFACE CONFORMAL MAPPING AND ITS APPLICATION TO BRAIN SURFACE MAPPING 955
+Fig. 5. Reconstructed brain meshes and their spherical harmonic mappings.
+(a) and (c) are the reconstructed surfaces for the same brain scanned at different
+times. Due to scanner noise and inaccuracy in the reconstruction algorithm,
+there are visible geometric differences. (b) and (d) are the spherical conformal
+mappings of (a) and (c), respectively; the normal information is preserved. By
+the shading information, the correspondence is illustrated.
+Fig. 6. Conformal texture mapping. (a) Texture mapping of the sphere;
+(b) Texture mapping of the brain. The conformality is visualized by texture
+mapping of a checkerboard image. The sphere is mapped to the plane by
+stereographic projection, then the planar coordinates are used as the texture
+coordinates. This texture parameter is assigned to the brain surface through
+the conformal mapping between the sphere and the brain surface. All the right
+angles in the texture are preserved on the brain surface.
+major features are mapped to the same position on the sphere.
+This suggests that the computed conformal mappings continu-
+ously depend on the geometry, and can match the major features
+consistently and reproducibly. In other words, conformal map-
+ping may be a good candidate for a canonical parameterization
+in brain mapping.
+Fig. 6 shows that the mapping is conformal by texture map-
+ping a checkerboard to both the brain surface mesh and a spher-
+ical mesh. Each black or white square in the texture is mapped to
+sphere by stereographic projection, and pulled back to the brain.
+Note that the right angles are preserved both on the sphere and
+the brain.
+Comparing conformal mapping to other spherical mapping
+method, such as Tuette brain mapping, the major difference is
+that Tuette is not intrinsic, and it highly depends on the represen-
+tation of the surface, including the triangulation and resolution.
+Fig. 7. Conformal mappings of surfaces with different resolutions. (a) Surface
+with 20 000 faces; (b) Surface with 50 000 faces. The original brain surface has
+50 000 faces, and is conformally mapped to a sphere, as shown in (a). Then, the
+brain surface is simplified to 20 000 faces, and its spherical conformal mapping
+is shown in (b).
+Fig. 8. Conformality measurement. (a) Intersection angles; (b) Angle
+distribution. The curves of iso-polar angle and iso-azimuthal angle are mapped
+to the brain, and the intersection angles are measured on the brain. The
+histogram is illustrated.
+Even for the same brain, different representations will produce
+different mapping results. Conformal mapping is more valuable
+for practical purposes. Conformal mappings are stable and de-
+pend continuously on the input geometry but not on the triangu-
+lations, and are insensitive to the resolutions of the data. Fig. 7
+shows the same surface with different resolutions, and their con-
+formal mappings. The mesh simplification is performed using
+a standard method. The refined model has 50 k faces, but the
+coarse one has 20 k faces. The conformal mappings map the
+major features to the same positions on the spheres.
+In order to measure the conformality, we map the iso-polar
+angle curves and iso-azimuthal angle curves from the sphere to
+the brain by the inverse conformal mapping, and measure the
+intersection angles on the brain. The distribution of the angles
+of a subject (A) are illustrated in Fig. 8. The angles are concen-
+trated about the right angle.
+Fig. 9 shows the landmarks, and the result of the optimization
+by a Möbius transformation. Our landmarks consist of a set of
+sulcal lines that were manually traced on 3-D surface models ex-
+tracted from individual MRI images [29]. The lines correspond
+to various sulci, such as the central sulcus, post-central sulcus,
+pre-central sulcus, etc. The mappings were constrained by all
+landmarks that occur consistently in the brains being matched.
+We also computed the matching energy, following (22). We
+did our testing on three example subjects. Their information
+is shown in Table III. We took subject A as the target brain.
+===== page 8 =====
+956 IEEE TRANSACTIONS ON MEDICAL IMAGING, VOL. 23, NO. 8, AUGUST 2004
+Fig. 9. M öbius transformation to minimize the deviations between landmarks.
+The dark curves are the landmarks. The correspondence between curves has
+been preassigned. The desired M öbius transformation is obtained to minimize
+the matching error on the sphere.
+TABLE III
+MATCHING ENERGY FOR THREE SUBJECTS.S UBJECT A WAS USED AS
+THE TARGET BRAIN.F OR SUBJECTS B AND C, WE FOUND MÖBIUS
+TRANSFORMATIONS THAT MINIMIZED THE LANDMARK MISMATCH
+FUNCTIONS,R ESPECTIVELY
+For each new subject model, we found a M öbius transforma-
+tion that minimized the landmark mismatch energy on the max-
+imum intersection subsets of it and A. As shown in Table III,
+the matching energies were reduced after the M öbius transfor-
+mation.
+Fig. 10 illustrates the geometric compression results using
+spherical harmonic compression. Fig. 11 shows the
+errors
+of the compression result. The low-pass filters are applied to re-
+move high-frequency components, and the surfaces are recon-
+structed from the remaining low-frequency components. The
+surface is normalized such that the total area is
+, then the
+error between the reconstructed surface and the original surface
+is computed. The curve shows the normalized
+ error vs the
+ratio of retained low-frequency components. The figure illus-
+trates that the major geometric information is encoded in the
+low-frequency part.
+Fig. 12 illustrates the relative error between the rotation-in-
+variant shape descriptors for the original brain surface and for
+the rotated brain surface. Because the first 30 low-frequency
+components generate more than 99% of the total energy, only
+the first 30 shape descriptor errors are shown in the figure. From
+the figure, it is clear that the relative errors are less than 1% and,
+therefore, the shape descriptors are rotation invariant.
+Fig. 10. This figure illustrates the geometric compression results using
+spherical harmonics. After we conformally map the brain to a sphere, we
+can use spherical harmonics to compress the geometry. (a) is the original
+brain surface. (b), (c), and (d) are brain surfaces reconstructed from spherical
+harmonics with
+/40/49/61/56/41/59/40/49/61/54/52/41, and /40/49/61/50/53/54/41of the original low-frequency
+coefficients, separately.
+Fig. 11. This figure illustrates the normalized /76
+errors of the compression.
+The method described in this paper is quite general. We tested
+the algorithm on other genus zero surfaces, including the hand
+and foot surface. Some of the experimental results are illustrated
+in Fig. 13.
+VIII. C
+OMPARISON WITH OTHER WORK
+Several other studies of conformal mappings between brain
+surfaces are reported in [5], [6], [17], and [19]. In [5] and [19],
+Hurdal et al.used the circle packing theorem and the ring lemma
+to establish a theorem: there is a unique circle packing in the
+plane (up to certain transformations) which is quasi-conformal
+(i.e., angular distortion is bounded) for a simply-connected tri-
+angulated surface. They demonstrated their experimental results
+for the surface of the cerebellum. This method only considers
+the topology without considering the brain 's geometric struc-
+ture. Given two different mesh structures of the same brain, one
+can predict that their methods may generate two different map-
+ping results. Compared with their work, our method preserves
+===== page 9 =====
+GU et al.: GENUS ZERO SURFACE CONFORMAL MAPPING AND ITS APPLICATION TO BRAIN SURFACE MAPPING 957
+Fig. 12. The brain surface is rotated 90 degree with respect to x-axis. The
+shape descriptors defined in (30) are computed for both the original surface and
+the rotated surface, denoted as /115/40/108/41and /115
+/40/108/41, respectively. The relative errors
+/40/115/40/108/41/0 /115
+/40/108/41/41/61/115/40/108/41are illustrated as a function of /108. Because the first /51/48/115/40/108/41
+generate almost all the energy, the curve is truncated at/108/61/51 /48. From the curve
+it can be verified that the relative error is less than 1%, and, thus, the shape
+descriptors are rotation invariant.
+Fig. 13. Spherical conformal mapping of genus zero surfaces. Extruding parts
+(such as fingers and toes) are mapped to denser regions on the sphere.
+angles and establishes a good mapping between brains and a
+canonical space.
+Haker et al. [6], [17] built a finite element approximation
+of the conformal mapping method for brain surface parame-
+terization. They selected a point as the north pole and confor-
+mally mapped the cortical surface to the complex plane. In the
+resulting mapping, the local shape is preserved and distances
+and areas are only changed by a scaling factor. Based on Haker
+et al. [6], Joshi et al. [30] obtained a unique conformal map-
+ping by fixing three point correspondences between two brains.
+Since stereo projection is involved, there is significant distor-
+tion around the north pole areas, which brings instability to this
+approach. Compared with their work, our method is more ac-
+curate, with no regions of large area distortion. It is also more
+stable and can be readily extended to compute maps between
+two general manifolds.
+Finally, we note that Memoliet al. [31] mentioned they were
+developing implicit methods to compute harmonic maps be-
+tween general source and target manifolds. They used level sets
+to represent the brain surfaces. Due to the extensive folding of
+the human brain surface, these mappings have to be designed
+very carefully.
+IX. C
+ONCLUSION AND FUTURE WORK
+In this paper, we apply part of the algorithms [1], [2] (for
+genus zero surface) to the cortical surface matching problem.
+The algorithm finds a unique conformal mapping between genus
+zero manifolds. Our method only depends on the surface geom-
+etry and not on the mesh structure (i.e., gridding) and resolu-
+tion. Our algorithm is very fast and stable in reaching a solution.
+There are numerous applications of these mapping algorithms,
+such as providing a canonical space for automated feature iden-
+tification, brain to brain registration, brain structure segmen-
+tation, brain surface denoising, shape analysis and convenient
+surface visualization, among others. We are trying to generalize
+this approach to compute conformal mappings between nonzero
+genus surfaces.
+A
+CKNOWLEDGMENT
+The 3-D model of Head of Michelangelo's David is courtesy
+of the Digital Michelangelo Project 3D Model Repository. The
+authors thank anonymous referees for their helpful suggestions.
+R
+EFERENCES
+[1] X. Gu and S. Yau, "Computing conformal structures of surfaces, "
+Commun. Inform. Syst., vol. 2, no. 2, pp. 121-146, Dec. 2002.
+[2] , "Global conformal surface parameterization, " in Proc. ACM
+Symp. Geometry Processing, 2003, pp. 127-137.
+[3] E. Schwartz, A. Shaw, and E. Wolfson, "A numerical solution to the
+generalized mapmaker 's problem: Flattening nonconvex polyhedral
+surfaces," IEEE Trans. Pattern Anal. Machine Intell. , vol. 11, pp.
+1005-1008, Sept. 1989.
+[4] B. Fischl, M. Sereno, R. Tootell, and A. Dale, "High-resolution inter-
+subject averaging and a coordinate system for the cortical surface,"Hum.
+Brain Mapp., vol. 8, pp. 272-284, 1999.
+[5] M. Hurdal, K. Stephenson, P. Bowers, D. Sumners, and D. Rottenberg,
+"Coordinate systems for conformal cerebellar flat maps, " NeuroImage,
+vol. 11, p. S467, 2000.
+[6] S. Haker, S. Angenent, A. Tannenbaum, R. Kikinis, G. Sapiro, and M.
+Halle, "Conformal surface parameterization for texture mapping," IEEE
+Trans. Visual. Comput. Graphics, vol. 6, pp. 181-189, Apr.-June 2000.
+[7] B. Timsari and R. Leahy, "An optimization method for creating
+semi-isometric flat maps of the cerebral cortex, " Proc. SPIE (Medical
+Imaging), Feb. 2000.
+[8] P. Thompson, M. Mega, C. Vidal, J. Rapoport, and A. Toga, "Detecting
+disease-specific patterns of brain structure using cortical pattern
+matching and a population-based probabilistic brain atlas, " in Proc.
+17th Int. Conf. Information Processing in Medical Imaging (IPMI2001),
+Davis, CA, June 18-22, 2001, pp. 488-501.
+[9] P. Thompson and A. Toga, "A framework for computational anatomy,"
+in Comput. Visual. Sci., vol. 5, 2002, pp. 1-12.
+[10] R. Schoen and S. Yau, Lectures on Harmonic Maps. Cambridge, MA:
+Harvard Univ., Int. Press, 1997.
+[11] M. Eck, T. DeRose, T. Duchamp, H. Hoppe, M. Lounsbery, and W.
+Stuetzle, "Multiresolution analysis of arbitrary meshes, " Comput.
+Graphics (Proc. SIGGRAPH 95), Aug. 1995.
+[12] P. Alliez, M. Meyer, and M. Desbrun,"Interactive geometry remeshing,"
+Comput. Graphics (Proc. SIGGRAPH 02), pp. 347-354, 2002.
+[13] M. Desbrun, M. Meyer, and P. Alliez, "Intrinsic parametrizations of sur-
+face meshes," in Proc. Eurographics, 2002, pp. 210-218.
+[14] U. Pinkall and K. Polthier, "Computing discrete minimal surfaces and
+their conjugates," Exp. Math., vol. 2, no. 1, pp. 15-36, 1993.
+===== page 10 =====
+958 IEEE TRANSACTIONS ON MEDICAL IMAGING, VOL. 23, NO. 8, AUGUST 2004
+[15] T. Kanai, H. Suzuki, and F. Kimura, "Three-dimensional geometric
+metamorphosis based on harmonic maps, " Visual Comput, vol. 14, no.
+4, pp. 166-176, 1998.
+[16] B. Levy, S. Petitjean, N. Ray, and J. Maillot, "Least squares conformal
+maps for automatic texture atlas generation," Comput. Graphics (Proc.
+SIGGRAPH 02), 2002.
+[17] S. Angenent, S. Haker, A. Tannenbaum, and R. Kikinis, "Conformal
+geometry and brain flattening," in Proc. MICCAI, 1999, pp. 271-278.
+[18] A. Sheffer and E. de Sturler, "Parameterization of faceted surfaces for
+meshing using angle-based flattening," Eng. with Comput., vol. 17, pp.
+326-337, 2001.
+[19] M. Hurdal, P. Bowers, K. Stephenson, D. Sumners, K. Rehm, K.
+Schaper, and D. Rottenberg, "Quasiconformally flat mapping the
+human cerebellum, " in Lecture Notes in Computer Science . Berlin,
+Germany: Springer-Verlag, 1999, vol. 1679, Proc. MICCAI '99, pp.
+279-286.
+[20] S. Haker, S. Angenent, A. Tannenbaum, and R. Kikinis, "Nondistorting
+flattening maps and the 3-d visualization of colon CT images, " IEEE
+Trans. Med. Imag., vol. 19, pp. 665-670, July 2000.
+[21] K. Stephenson, "Approximation of conformal structures via circle
+packing," in Computational Methods and Function Theory 1997,
+Proceedings of the Third CMFT Conference . Singapore: World
+Scientific, 1999, pp. 551-582.
+[22] D. Tosun and J. Prince, "Hemispherical map for the human brain cortex,"
+Proc. SPIE (Medical Imaging),p . <Au: Page range?>, Feb. 2001.
+[23] D. Tosun, M. Rettmann, and J. Prince, "Mapping techniques for aligning
+sulci across multiple brains," presented at the 6th Annu. Int. Conf. Med-
+ical Image Computing and Computer-Assisted Interventions (MICCAI),
+Montréal, QC, Canada, Nov. 2003.
+[24] N. Vilenkin, Special Functions and the Theory of Group Representa-
+tions. Providence, RI: Amer. Math. Soc., 1968.
+[25] D. Healy, D. Rockmore, P . Kostelec, and S. Moore, "Ffts for the
+2-sphere-- Improvements and variations, " J. Fourier Anal. Applicat. ,
+vol. 9, no. 4, pp. 341 -385, 2003.
+[26] C. Brechb ühler, G. Gerig, and O. Kübler, "Surface parametrization and
+shape description, " Proc. SPIE (Visualization Biomed. Comp. 1992) ,
+vol. 1808, pp. 80-89, 1992.
+[27] S. Joshi, U. Grenander, and M. Miller, "On the geometry and shape
+of brain sub-manifolds, " Int. J. Pattern Recogn. Artif. Intell. (Special
+Issue on Processing of MR Images of the Human) , vol. 11, no. 8, pp.
+1317-1343, 1997.
+[28] G. Gerig, M. Styner, D. Jones, D. Weinberger, and J. Lieberman,
+"Shape analysis of brain ventricles using spharm, " presented at the
+IEEE Workshop on Mathematical Methods in Biomedical Image
+Analysis (MMBIA'01), Kauai, HI, Dec. 2001.
+[29] P. Thompson, K. Hayashi, G. de Zubicaray, A. Janke, S. Rose, J. Semple,
+D. Herman, M. Hong, S. Dittmer, D. Doddrell, and A. Toga,"Dynamics
+of gray matter loss in alzheimer's disease," J. Neurosci., vol. 23, no. 3,
+pp. 994-1005, 2003.
+[30] A. Joshi and R. Leahy, "Invariant conformal mapping of cortical sur-
+faces," in Image analysis and understanding data from scientific ex-
+periments. Los Alamos, NM: Los Alamos National Laboratory, Dec.
+2002.
+[31] F. Memoli, G. Sapiro, and S. Osher, "Solving Variational Problems
+and Partial Equations Mapping into General Target Manifolds," UCLA
+CAM, Tech. Rep. 02-04, Jan. 2002.
+[32] X. Gu, Y . Wang, T. Chan, P. Thompson, and S.-T. Yau,"Genus zero sur-
+face conformal mapping and its application to brain surface mapping, "
+in Lecture Notes in Computer Science, C. Taylor and J. Noble, Eds, Am-
+bleside, UK: Springer-Verlag, July 2003, vol. 2732, Proc. 18th Int. Conf.
+Information Processing in Medical Imaging, pp. 172-184.

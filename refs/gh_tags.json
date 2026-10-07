@@ -1,0 +1,232 @@
+[
+  {
+    "name": "v1.10.1",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.10.1",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.10.1",
+    "commit": {
+      "sha": "bbcacba146b357926b5524111f56cc70c42182a7",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/bbcacba146b357926b5524111f56cc70c42182a7"
+    },
+    "node_id": "REF_kwDOG5V80LFyZWZzL3RhZ3MvdjEuMTAuMQ"
+  },
+  {
+    "name": "v1.10.0",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.10.0",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.10.0",
+    "commit": {
+      "sha": "c8529bb00838186938ab31d96008a59b6a892dee",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/c8529bb00838186938ab31d96008a59b6a892dee"
+    },
+    "node_id": "REF_kwDOG5V80LFyZWZzL3RhZ3MvdjEuMTAuMA"
+  },
+  {
+    "name": "v1.9.10",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.10",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.10",
+    "commit": {
+      "sha": "c8529bb00838186938ab31d96008a59b6a892dee",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/c8529bb00838186938ab31d96008a59b6a892dee"
+    },
+    "node_id": "REF_kwDOG5V80LFyZWZzL3RhZ3MvdjEuOS4xMA"
+  },
+  {
+    "name": "v1.9.9",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.9",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.9",
+    "commit": {
+      "sha": "c40b4653e34519fffaeb82ca640bdd9c9778e324",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/c40b4653e34519fffaeb82ca640bdd9c9778e324"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS45"
+  },
+  {
+    "name": "v1.9.8",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.8",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.8",
+    "commit": {
+      "sha": "abfc9d27de1916589fbc81591ae87fc52e41608c",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/abfc9d27de1916589fbc81591ae87fc52e41608c"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS44"
+  },
+  {
+    "name": "v1.9.7",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.7",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.7",
+    "commit": {
+      "sha": "d8ad46821a3a9b207d7eaa55fc75c3b31af49a46",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/d8ad46821a3a9b207d7eaa55fc75c3b31af49a46"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS43"
+  },
+  {
+    "name": "v1.9.6",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.6",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.6",
+    "commit": {
+      "sha": "fc3eb9bf44d2ee29686592e3ef5f5f4daeda27f8",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/fc3eb9bf44d2ee29686592e3ef5f5f4daeda27f8"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS42"
+  },
+  {
+    "name": "v1.9.5",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.5",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.5",
+    "commit": {
+      "sha": "21a90166a7e8cba2f2fc577b2ea5f39ff9c68cc5",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/21a90166a7e8cba2f2fc577b2ea5f39ff9c68cc5"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS41"
+  },
+  {
+    "name": "v1.9.4",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.4",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.4",
+    "commit": {
+      "sha": "94feef870ee33ba2eead0cd3cea87afad45db5ce",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/94feef870ee33ba2eead0cd3cea87afad45db5ce"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS40"
+  },
+  {
+    "name": "v1.9.3",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.3",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.3",
+    "commit": {
+      "sha": "a398206d848a4d43f4543467993b5493859cbe17",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/a398206d848a4d43f4543467993b5493859cbe17"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS4z"
+  },
+  {
+    "name": "v1.9.2",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.2",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.2",
+    "commit": {
+      "sha": "35ec06d76e0b2a6db78301a8ad929e27a2a75971",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/35ec06d76e0b2a6db78301a8ad929e27a2a75971"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS4y"
+  },
+  {
+    "name": "v1.9.1",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.1",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.1",
+    "commit": {
+      "sha": "fd3db7f141e570ebc68585e15d01a2f2c8ddb02e",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/fd3db7f141e570ebc68585e15d01a2f2c8ddb02e"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS4x"
+  },
+  {
+    "name": "v1.9.0",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.9.0",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.9.0",
+    "commit": {
+      "sha": "7c79265b1d1e34f3e0fe75cd393e4ca4e6856b70",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/7c79265b1d1e34f3e0fe75cd393e4ca4e6856b70"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOS4w"
+  },
+  {
+    "name": "v1.8.9",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.8.9",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.8.9",
+    "commit": {
+      "sha": "4900cb142e3b804f85f973097367fb9c4b58e6d3",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/4900cb142e3b804f85f973097367fb9c4b58e6d3"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOC45"
+  },
+  {
+    "name": "v1.8.8",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.8.8",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.8.8",
+    "commit": {
+      "sha": "7ac37cebae26632755a562b242e348da9afce611",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/7ac37cebae26632755a562b242e348da9afce611"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOC44"
+  },
+  {
+    "name": "v1.8.7",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.8.7",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.8.7",
+    "commit": {
+      "sha": "74dfb16c2248c70a79d8610c5f7c13de7ca7e2a3",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/74dfb16c2248c70a79d8610c5f7c13de7ca7e2a3"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOC43"
+  },
+  {
+    "name": "v1.8.6",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.8.6",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.8.6",
+    "commit": {
+      "sha": "36e731790cf9a1c369cd94f9fc59ec1bd400bd50",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/36e731790cf9a1c369cd94f9fc59ec1bd400bd50"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOC42"
+  },
+  {
+    "name": "v1.8.5",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.8.5",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.8.5",
+    "commit": {
+      "sha": "fc92ec723f5bb679a2574425dbb14861cbafc8a0",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/fc92ec723f5bb679a2574425dbb14861cbafc8a0"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOC41"
+  },
+  {
+    "name": "v1.8.4",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.8.4",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.8.4",
+    "commit": {
+      "sha": "ddacc7013124fbb1b8e4514f8d9613bf48d2d95e",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/ddacc7013124fbb1b8e4514f8d9613bf48d2d95e"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOC40"
+  },
+  {
+    "name": "v1.8.3",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.8.3",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.8.3",
+    "commit": {
+      "sha": "527a987649b278ee02d5e688710bf38c0d62c5e8",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/527a987649b278ee02d5e688710bf38c0d62c5e8"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOC4z"
+  },
+  {
+    "name": "v1.8.2",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.8.2",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.8.2",
+    "commit": {
+      "sha": "86b6f9d5714be8d7f6340d047e71614d355c393f",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/86b6f9d5714be8d7f6340d047e71614d355c393f"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOC4y"
+  },
+  {
+    "name": "v1.8.1",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/v1.8.1",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/v1.8.1",
+    "commit": {
+      "sha": "d9c57b3ea7f7ce16dbb2f558c5700580dbb7b967",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/d9c57b3ea7f7ce16dbb2f558c5700580dbb7b967"
+    },
+    "node_id": "REF_kwDOG5V80LByZWZzL3RhZ3MvdjEuOC4x"
+  },
+  {
+    "name": "main-d018bdaa",
+    "zipball_url": "https://api.github.com/repos/BrunoLevy/geogram/zipball/refs/tags/main-d018bdaa",
+    "tarball_url": "https://api.github.com/repos/BrunoLevy/geogram/tarball/refs/tags/main-d018bdaa",
+    "commit": {
+      "sha": "d018bdaa057bbca0305a97c2631c138f5786d43e",
+      "url": "https://api.github.com/repos/BrunoLevy/geogram/commits/d018bdaa057bbca0305a97c2631c138f5786d43e"
+    },
+    "node_id": "REF_kwDOG5V80LdyZWZzL3RhZ3MvbWFpbi1kMDE4YmRhYQ"
+  }
+]
