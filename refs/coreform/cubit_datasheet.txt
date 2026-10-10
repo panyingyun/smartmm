@@ -1,0 +1,178 @@
+
+===== page 1 =====
+GEOMETRY  
+Break the geometry bottleneck 
+to  reduce modeling time  
+Preparing CAD geometry for meshing  
+consumes more time and resources than any  
+other stage of the CAE process. Cubit provides  
+powerful, user-guided automated tools to  
+make geometry cleanup and simpli
+fication fast  
+and satisfying.  
+Build solid geometry directly or import CAD 
+Create solid geometry directly in Cubit, or  
+import geometry from leading CAD platforms.  
+Modify with transform or Boolean operations.   
+Auto-heal dirty CAD  
+Geometry analysis and repair tools diagnose  
+and fix geometric and topological errors from  
+imported CAD by trimming, stitching, and  
+rebuilding.  
+Clean up and defeature with smart tools 
+User-guided, automated routines detect and  
+remove undesirable features such as 
+fillets,  
+chamfers, and sliver curves and surfaces.  
+MESHING  
+Mesh any CAD geometry with robust  
+hex and tet algorithms  
+Coreform Cubit supplies a comprehensive  
+meshing feature-set for surface and solid  
+meshing with a wide variety of element types  
+and methods for automating and streamlin ing 
+mesh creation.  
+Battle-tested algorithms  
+Deep stock of mesh generation algorithms  
+including paving, mapping, sub-mapping,  
+sweeping and multi-sweeping.  
+MINIMUM REQUIREMENTS OS Windows 7 or newer, 64-bit; Red Hat 7, 64-bit (or similar  
+system with at least glibc 2.5 and libstdc++ 4.4); SUSE 12; Debian 6; Ubuntu 10.4 or  
+newer; Mac 10.11+, 64 bit only. Hardware 4GB RAM (8GB or more recommended),  
+1GB disk space. Graphics card and driver capable of supporting OpenGL 3.2.   
+ 
+A comprehensive toolset for  
+streamlined geometry cleanup  and 
+mesh generation  
+Coreform Cubit includes everything needed  for 
+streamlined progress from CAD to analysis,  with 
+full-featured capabilities for geometry  
+preparation and mesh generation, analysis,  and 
+fine-tuning.  
+Key Features & Capabilities  
+Comprehensive toolset  
+Everything you need for fast geometry  
+cleanup, meshing, and export.  
+Semi-automated hex meshing  
+Rich set of tools for streamlining the   
+creation of analysis-ready models  
+Expert-level mesh control  
+Industry-leading mesh analysis and   
+improvement tools for complete   
+control from Jacobians to vertices.  
+Scripting & automation  
+Python integration and scripting tools  
+to increase simulation speed and   
+throughput  
+Smart workflow wizard  
+Step-by-step guidance through geome 
+try preparation and mesh generation.  
+Smart controls  
+User-guided adaptive or fully automatic  
+interval sizing and scheme selection.  
+Unrivaled hex meshing  
+State-of-the-art structured and unstructured  
+quad- and hex-dominant meshing with  
+powerful, smart automation options.  
+Multi-scheme tet meshing  
+Multi-scheme automatic tri/tet meshing  
+schemes with Distene MeshGems, Delaunay,  
+and advancing front algorithms.  
+www.coreform.com 
+
+===== page 2 =====
+AUTOMATION  
+Semi-automated hex meshing with  
+interactive smart tools  
+Smart workflow wizard  
+Step-by-step guidance through geometry  
+preparation and mesh generation, with user 
+interactive diagnostics and smart   
+suggestions.  
+Smart sweep suggestion & forcing 
+Automatic recognition of nearly sweepable  
+topologies and identi
+fication of potential  
+source-target pairs. Automatic surface 
+compositing to force a sweep topology.  
+Smart decomposition  
+Smart detection/suggestion of decomposition  
+operations needed to enable mapping,  
+sub-mapping or sweeping schemes.  
+Autoscheme hex meshing  
+Automatic meshing scheme selection based  
+on user-adjustable topological and geometric  
+criteria.  
+Imprint & merge   
+Unique suite of interactive, automated tools  
+to enable efficient and robust conformal  
+meshing of multi-volume assemblies.  
+CONTROL  
+Expert-level mesh controls for  
+superior quality and precision  
+Industry-leading capabilities for specifying  
+mesh properties, analyzing mesh quality, and  
+performing precise local or global mesh  
+modi
+fications.  
+Mesh quality analysis and visualization  
+Quality analysis with general and   
+element-type-specific metrics for quad, tri,  
+tet, hex, and wedge elements, including  
+aspect ratio, area/volume, min/max angle,  
+Jacobians, condition number, distortion, and  
+approximate maximum timestep (for explicit  
+transient dynamics).  
+Mesh property controls   
+Adaptivity and sizing function options for  
+controlling mesh density in response to  
+geometric or user-de
+fined properties,  including 
+local field variable solution values  from 
+previous analyses. User-specified fixed or  
+variable-firmness interval sizing, including arc  
+span and curve biasing.  
+Mesh smoothing and optimization  
+Smoothing algorithms: equipotential,  
+condition-number optimizing, length 
+weighted and smart Laplacian, Winslow   
+elliptic. Mean ratio and edge length   
+smoothing provided by MESQUITE, a mesh  
+optimization toolkit by Argonne National  
+Laboratory and Sandia National Laboratories.  
+Mesh refinement and scaling  
+Multiple methods for global or local conformal  
+refinement with automatically generated  
+transition elements per user specification,  
+including pillowing and directional sheet  
+operations to reduce or create anisotropy.  
+SCRIPTING  
+Powerful scripting & process  
+automation for maximum   
+simulation throughput  
+Replayable journal files  
+All GUI input is automatically echoed to the  
+command line and saved as an editable,  
+replayable journal 
+file.  
+Python scripting  
+Scripting functionality is available directly via  
+the command line with a built-in Python  
+interpreter, or via 
+file input for batch mode  
+operation.  
+GUI and tool customization  
+Journaled command sequences and Python  
+scripts can be launched with user-created,  
+importable custom command buttons and  
+toolbars.  
+Integration via SDK  
+Available SDK allows deep customization for  
+seamless custom workflow integration via  
+Python or C++.  
+
+===== page 3 =====
+© 2021 Coreform LLC  
+1427 South 550 East  
+Orem UT 84097 USA  
+Telephone +1 801 717 2296 www.coreform.com 

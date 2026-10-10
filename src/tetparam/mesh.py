@@ -283,6 +283,57 @@ class TetMesh:
         """Number of negatively oriented tetrahedra (should be 0)."""
         return int((self.signed_volumes() <= 0).sum())
 
+    def boundary_topology(self) -> dict:
+        """Euler characteristic and genus of the boundary surface.
+
+        The pipeline needs the solid to be a **topological 3-ball**: the boundary must be a
+        single closed surface of genus 0 (a sphere).  A wheel with a central bore or with
+        lightening holes has genus >= 1 and cannot be mapped to a ball as it is -- it must
+        first be cut into simply-connected pieces, or handled as a solid torus / with the
+        genus-one variant of the algorithm.
+
+        Returns ``{'components', 'genus', 'euler', 'n_boundary_vertices',
+        'n_boundary_edges', 'n_boundary_faces', 'is_ball'}``.
+        """
+        import scipy.sparse as sp
+        from scipy.sparse.csgraph import connected_components
+
+        faces = self.boundary_faces
+        if len(faces) == 0:
+            return {
+                "components": 0, "genus": 0.0, "euler": 0, "n_boundary_vertices": 0,
+                "n_boundary_edges": 0, "n_boundary_faces": 0, "is_ball": False,
+            }
+        edges = np.unique(
+            np.vstack(
+                [
+                    np.sort(faces[:, [0, 1]], axis=1),
+                    np.sort(faces[:, [1, 2]], axis=1),
+                    np.sort(faces[:, [2, 0]], axis=1),
+                ]
+            ),
+            axis=0,
+        )
+        n = self.n_vertices
+        rows = np.concatenate([edges[:, 0], edges[:, 1]])
+        cols = np.concatenate([edges[:, 1], edges[:, 0]])
+        A = sp.coo_matrix((np.ones(len(rows)), (rows, cols)), shape=(n, n)).tocsr()
+        _, labels = connected_components(A, directed=False)
+        used = np.unique(faces)
+        components = int(len(np.unique(labels[used])))
+        V, E, F = int(len(used)), int(len(edges)), int(len(faces))
+        euler = V - E + F
+        genus = (2 * components - euler) / 2.0
+        return {
+            "components": components,
+            "genus": float(genus),
+            "euler": int(euler),
+            "n_boundary_vertices": V,
+            "n_boundary_edges": E,
+            "n_boundary_faces": F,
+            "is_ball": bool(components == 1 and abs(genus) < 1e-9),
+        }
+
     def fix_orientation(self) -> "TetMesh":
         s = self.signed_volumes()
         bad = s < 0

@@ -1,0 +1,2281 @@
+
+===== page 1 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Coreform
+ 
+Cubit
+ 
+Decomposition
+ 
+Tutorial
+ 
+Creating  Sweepable  Volumes  Through  Webcutting  
+Most  volumes  require  some  measure  of  decomposition  before  they  can  be  meshed  with  a  hexahedral  
+meshing
+ 
+scheme.
+ 
+The
+ 
+most
+ 
+common
+ 
+hexahedral
+ 
+meshing
+ 
+tool
+ 
+is
+ 
+the
+ 
+sweeping
+ 
+algorithm.
+ 
+Sweeping
+ 
+is
+ 
+the
+ 
+process
+ 
+of
+ 
+creating
+ 
+a
+ 
+hexahedral
+ 
+mesh
+ 
+by
+ 
+extruding
+ 
+a
+ 
+quadrilateral
+ 
+surface
+ 
+mesh
+ 
+from
+ 
+a
+ 
+source
+ 
+surface
+ 
+onto
+ 
+a
+ 
+topologically
+ 
+similar
+ 
+target
+ 
+surface
+ 
+by
+ 
+way
+ 
+of
+ 
+a
+ 
+linking
+ 
+surface.
+ 
+The
+ 
+surface
+ 
+mesh
+ 
+can
+ 
+be
+ 
+meshed
+ 
+with
+ 
+any
+ 
+surface
+ 
+meshing
+ 
+scheme
+ 
+(i.e.
+ 
+structured
+ 
+or
+ 
+unstructured
+ 
+mesh),
+ 
+but
+ 
+the
+ 
+most
+ 
+common
+ 
+surface
+ 
+meshing
+ 
+scheme
+ 
+for
+ 
+the
+ 
+sweeping
+ 
+algorithm
+ 
+is
+ 
+the
+ 
+pave
+ 
+scheme.
+ 
+In
+ 
+fact,
+ 
+the
+ 
+sweeping
+ 
+algorithm
+ 
+is
+ 
+sometimes
+ 
+called
+ 
+the
+ 
+"pave-sweep"
+ 
+algorithm.
+ 
+Most
+ 
+volumes
+ 
+aren't
+ 
+automatically
+ 
+sweepable,
+ 
+which
+ 
+is
+ 
+why
+ 
+geometry
+ 
+decomposition
+ 
+is
+ 
+so
+ 
+important
+ 
+to
+ 
+the
+ 
+meshing
+ 
+process.
+ 
+Decomposition
+ 
+usually
+ 
+involves
+ 
+a
+ 
+series
+ 
+of
+ 
+webcutting,
+ 
+boolean,
+ 
+and
+ 
+virtual
+ 
+geometry
+ 
+operations
+ 
+that
+ 
+break
+ 
+up
+ 
+a
+ 
+larger
+ 
+model
+ 
+into
+ 
+sweepable
+ 
+regions.
+ 
+Studies
+ 
+have
+ 
+shown
+ 
+that
+ 
+this
+ 
+step
+ 
+in
+ 
+the
+ 
+meshing
+ 
+process
+ 
+is
+ 
+the
+ 
+most
+ 
+time
+ 
+consuming
+ 
+for
+ 
+the
+ 
+analyst.
+ 
+ 
+By  completing  this  tutorial  you  will  learn  how  to:  
+1.  Recognize  sweepable  volumes  2.  Recognize  how  to  decompose  a  model  into  sweepable  parts  3.  Gain  proficiency  with  webcutting  and  other  decomposition  techniques  4.  Avoid  common  pitfalls  with  decomposition  and  sweeping  
+Why  use  sweeping?  Of  all  the  hexahedral  meshing  schemes  in  the  Coreform  Cubit  toolkit,  sweeping  is  considered  the  most  
+reliable
+ 
+at
+ 
+producing
+ 
+high
+ 
+quality
+ 
+elements.
+ 
+Although
+ 
+decomposing
+ 
+a
+ 
+model
+ 
+into
+ 
+sweepable
+ 
+volumes
+ 
+can
+ 
+be
+ 
+time-consuming,
+ 
+and
+ 
+sometimes
+ 
+falls
+ 
+into
+ 
+the
+ 
+realm
+ 
+of
+ 
+trying
+ 
+to
+ 
+fit
+ 
+a
+ 
+square
+ 
+peg
+ 
+into
+ 
+a
+ 
+round
+ 
+hole,
+ 
+the
+ 
+pave-sweep
+ 
+algorithm
+ 
+has
+ 
+a
+ 
+high
+ 
+rate
+ 
+of
+ 
+success,
+ 
+and
+ 
+it
+ 
+sometimes
+ 
+the
+ 
+only
+ 
+way
+ 
+to
+ 
+get
+ 
+a
+ 
+hexahedral
+ 
+mesh
+ 
+on
+ 
+a
+ 
+model.
+ 
+What  makes  a  volume  sweepable?  Recognizing  sweepable  topologies  can  be  an  art  form.  Sweepable  volumes  can  be  comprised  of  many  
+different
+ 
+topologies.
+ 
+We
+ 
+typically
+ 
+classify
+ 
+sweeping
+ 
+problems
+ 
+into
+ 
+three
+ 
+groups,
+ 
+based
+ 
+on
+ 
+the
+ 
+number
+ 
+of
+ 
+source/target
+ 
+surfaces.
+ 
+ 
+Revised  August  2025 1  |  Page  
+===== page 2 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Basic  Sweep  Groups  One-to-one:  A  volume  with  a  one  source  surface  and  one  target  surface.  
+ 
+ 
+Many-to-one:  A  volume  with  multiple  source  surfaces  and  one  target  surface  
+ 
+Multisweep  (or  Many-to-Many):  A  volume  with  multiple  target  surfaces  
+ 
+Revised  August  2025 2  |  Page  
+
+===== page 3 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Points  to  consider  when  determining  whether  a  volume  is  sweepable  ●  Swept  surface  meshes  can  be  extruded  through  a  volume  which  is  rotated  or  translated.  
+However,
+ 
+if
+ 
+the
+ 
+translation/rotation
+ 
+is
+ 
+severe
+ 
+then
+ 
+the
+ 
+quality
+ 
+of
+ 
+the
+ 
+resulting
+ 
+mesh
+ 
+may
+ 
+be
+ 
+poor.
+ ●  A  volume  with  multiple  target  surfaces  and  a  single  source  surface  can  sometimes  be  inverted  
+and
+ 
+handled
+ 
+as
+ 
+a
+ 
+many-to-one
+ 
+sweepable
+ 
+volume.
+ 
+Otherwise,
+ 
+it
+ 
+is
+ 
+treated
+ 
+as
+ 
+a
+ 
+multisweep
+ 
+problem.
+ ●  Imprinting  introduces  new  topology  onto  surfaces.  Sweepable  volumes  may  not  be  sweepable  
+after
+ 
+imprinting
+ 
+and
+ 
+merging
+ 
+adjacent
+ 
+surfaces
+ ●  Multisweep  is  still  under  development,  and  has  limitations,  so  if  you  are  having  difficulty  with  
+the
+ 
+multisweep
+ 
+algorithm,
+ 
+it
+ 
+is
+ 
+usually
+ 
+a
+ 
+good
+ 
+idea
+ 
+to
+ 
+decompose
+ 
+it
+ 
+into
+ 
+many-to-one
+ 
+or
+ 
+one-to-one
+ 
+sweepable
+ 
+regions.
+ ●  Coreform  Cubit  won't  always  automatically  recognize  your  volume  as  a  sweepable  volume,  even  
+if
+ 
+it
+ 
+is.
+ 
+Sometimes,
+ 
+you
+ 
+have
+ 
+to
+ 
+give
+ 
+it
+ 
+a
+ 
+list
+ 
+of
+ 
+source/target
+ 
+surfaces
+ 
+explicitly.
+ 
+Basic  Sweep  Paths  In  addition  to  the  different  topologies,  sweepable  volumes  can  be  classified  by  the  sweep  direction.  
+These
+ 
+include:
+ 
+top-to-bottom,
+ 
+inside-to-outside,
+ 
+and
+ 
+around
+ 
+(rotational).
+ 
+Be
+ 
+sure
+ 
+to
+ 
+consider
+ 
+all
+ 
+the
+ 
+possibilities
+ 
+for
+ 
+sweep
+ 
+directions
+ 
+when
+ 
+you
+ 
+begin
+ 
+decomposing
+ 
+a
+ 
+model.
+ 
+And
+ 
+keep
+ 
+in
+ 
+mind
+ 
+that
+ 
+sweep
+ 
+paths
+ 
+must
+ 
+be
+ 
+compatible
+ 
+with
+ 
+adjacent
+ 
+volumes.
+ 
+To
+ 
+be
+ 
+compatible,
+ 
+overlapping
+ 
+surfaces
+ 
+must
+ 
+have
+ 
+the
+ 
+same
+ 
+scheme
+ 
+(i.e.
+ 
+both
+ 
+must
+ 
+be
+ 
+a
+ 
+linking
+ 
+surface
+ 
+or
+ 
+a
+ 
+paved
+ 
+surface).
+ 
+The
+ 
+volume
+ 
+below
+ 
+is
+ 
+meshed
+ 
+three
+ 
+different
+ 
+times
+ 
+with
+ 
+the
+ 
+three
+ 
+different
+ 
+sweep
+ 
+directions.
+ 
+Notice
+ 
+the
+ 
+difference
+ 
+in
+ 
+element
+ 
+sizes
+ 
+and
+ 
+orientations
+ 
+between
+ 
+the
+ 
+meshes.
+ 
+See
+ 
+if
+ 
+you
+ 
+can
+ 
+pick
+ 
+out
+ 
+the
+ 
+different
+ 
+source
+ 
+and
+ 
+target
+ 
+surfaces
+ 
+in
+ 
+each
+ 
+example.
+ 
+As
+ 
+an
+ 
+exercise,
+ 
+try
+ 
+to
+ 
+mesh
+ 
+this
+ 
+model
+ 
+with
+ 
+each
+ 
+of
+ 
+the
+ 
+different
+ 
+sweep
+ 
+paths.
+ 
+ 
+  
+ 
+Top-to-Bottom  Inside-to-Outside  Around  (Rotational)  
+Many-to-one  Many-to-one  
+One-to-one  (this  is  the  default  sweep  direction  for  this  model)  
+Revised  August  2025 3  |  Page  
+
+===== page 4 =====
+Coreform  Cubit  Decomposition  Tutorial   
+What  are  some  good  strategies  for  decomposing  my  model?  Recognizing  when  a  volume  is  sweepable  is  a  difficult  task,  but  being  able  to  come  up  with  viable  
+webcutting,
+ 
+compositing,
+ 
+and
+ 
+boolean
+ 
+strategies
+ 
+to
+ 
+make
+ 
+a
+ 
+volume
+ 
+sweepable
+ 
+is
+ 
+even
+ 
+more
+ 
+difficult,
+ 
+and
+ 
+can
+ 
+only
+ 
+be
+ 
+achieved
+ 
+through
+ 
+practice.
+ 
+ 
+General  Principles  to  follow  when  decomposing  a  mode  ●  Select  your  Sweeppath  ●  Use  as  few  webcuts  as  possible  ●  Set  your  own  source  and  target  surfaces  if  Coreform  Cubitdoes  not  pick  them  automatically  ●  If  one  of  your  volumes  does  not  mesh,  or  has  an  undesirable  mesh,  try  changing  the  order  in  
+which
+ 
+you
+ 
+mesh
+ 
+volumes.
+ 
+This
+ 
+will
+ 
+hard
+ 
+set
+ 
+the
+ 
+intervals
+ 
+on
+ 
+the
+ 
+volumes.
+ ●  The  Reset  Volume  command  will  remove  all  schemes  and  interval  settings  from  volumes.   ●  If  changing  the  mesh  order  or  resetting  the  volumes  does  not  work  and  you  continue  to  get  
+"Matching
+ 
+Intervals
+ 
+Failed"
+ 
+errors,
+ 
+set
+ 
+explicit
+ 
+intervals
+ 
+on
+ 
+some
+ 
+or
+ 
+all
+ 
+curves.
+ 
+ ●  Make  additional  webcuts  if  necessary.   ●  Check  for  sliver  surfaces  or  curves  that  may  have  been  introduced  during  decomposition  and  
+remove
+ 
+these
+ 
+through
+ 
+tweaking,
+ 
+collapsing,
+ 
+or
+ 
+compositing.
+ 
+ ●  Change  surface  vertex  types  on  mapped  or  submapped  surfaces  if  you  need  to  force  a  certain  
+configuration
+ ●  Use  partitioning  to  introduce  virtual  geometry  constraints  without  affecting  the  underlying  
+geometry.
+ 
+ ●  Composite  surfaces  to  remove  constraints  without  affecting  the  underlying  geometry  ●  Save  your  work  often.  For  a  complex  model,  the  meshing  process  can  be  very  iterative.  You  may  
+need
+ 
+to
+ 
+start
+ 
+over
+ 
+many
+ 
+times
+ 
+until
+ 
+you
+ 
+find
+ 
+an
+ 
+acceptable
+ 
+solution.
+ 
+ 
+Revised  August  2025 4  |  Page  
+===== page 5 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Decomposition  Examples  
+The  following  is  a  compilation  of  several  different  decomposition  problems  of  varying  difficulty.  If  you  
+accessed
+ 
+this
+ 
+help
+ 
+from
+ 
+the
+ 
+Coreform
+ 
+Cubit
+ 
+Program
+ 
+(as
+ 
+opposed
+ 
+to
+ 
+the
+ 
+web
+ 
+documentation),
+ 
+you
+ 
+will
+ 
+need
+ 
+to
+ 
+browse
+ 
+for
+ 
+the
+ 
+geometry
+ 
+files.
+ 
+ 
+ 
+Beginner  Decomposition  Examples
+ 
+Example  Image  File  
+Sweeping  through  multiple  adjacent  volumes 
+ 
+example01.sat  
+Interlocking  rings 
+ 
+example02.sat  
+Webcutting  using  the  "sweep"  option 
+ 
+example03.sat  
+Revised  August  2025 5  |  Page  
+
+===== page 6 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Using  the  loft  command 
+ 
+example04.sat  
+Multiple  sweep  directions 
+ 
+example05.sat  
+   
+ 
+Revised  August  2025 6  |  Page  
+
+===== page 7 =====
+Coreform  Cubit  Decomposition  Tutorial   
+ 
+Advanced  Decomposition  Examples  
+Example  Image  File  
+Employing  symmetry  and  controlling  skew 
+ 
+example06.sat  
+Using  virtual  geometry 
+ 
+example07.sat  
+Sweeping  volumes  with  narrow  angles  and  surfaces 
+ 
+example08.sat  
+Revised  August  2025 7  |  Page  
+
+===== page 8 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Beginner  Decomposition  Examples  
+Example  1.  Sweeping  multiple  adjacent  volumes  The  following  model  has  several  interior  volumes  that  share  surfaces.  This  example  may  at  first  seem  
+complex,
+ 
+but
+ 
+it
+ 
+actually
+ 
+requires
+ 
+very
+ 
+little
+ 
+decomposition.
+ 
+The
+ 
+key
+ 
+to
+ 
+this
+ 
+example
+ 
+is
+ 
+that
+ 
+each
+ 
+of
+ 
+the
+ 
+interior
+ 
+volumes
+ 
+is
+ 
+already
+ 
+sweepable,
+ 
+oriented
+ 
+along
+ 
+the
+ 
+same
+ 
+sweep
+ 
+axis,
+ 
+and
+ 
+that
+ 
+none
+ 
+of
+ 
+the
+ 
+linking
+ 
+surfaces
+ 
+have
+ 
+additional
+ 
+topology
+ 
+introduced
+ 
+through
+ 
+imprint/merge.
+ 
+In
+ 
+fact,
+ 
+there
+ 
+is
+ 
+only
+ 
+one
+ 
+required
+ 
+webcut
+ 
+to
+ 
+make
+ 
+this
+ 
+model
+ 
+automatically
+ 
+sweepable.
+ 
+ 
+ 
+Figure  1.  Exterior  view  
+ 
+ 
+Figure  2.  Interior  view  
+ 
+ 
+Revised  August  2025 8  |  Page  
+
+===== page 9 =====
+Coreform  Cubit  Decomposition  Tutorial   
+ 
+We  examine  several  of  the  volumes  below.  
+Source  Surface(s)  Target  Surface(s)  Sweep  type  
+  
+Many-to-one  Sweepable  
+Imprinting  and  merging  adjacent  volumes  creates  additional  partitions  on  the  source  surface,  but  the  target  surface  does  not  contain  imprints.  
+  
+Many-to-one  Sweepable  
+Multiple  source  surfaces  due  to  interior  void  
+  
+One-to-One  Sweepable  
+Source  and  target  surfaces  are  single  surfaces,  and  there  are  no  imprints  on  the  linking  surfaces  
+ 
+ 
+Many-to-one  Sweepable  
+Interior  void  causes  multiple  source  surfaces.  
+Revised  August  2025 9  |  Page  
+
+===== page 10 =====
+Coreform  Cubit  Decomposition  Tutorial   
+  
+Multisweep  
+Imprinting  causes  multiple  source  surfaces  and  interior  void  causes  multiple  target  surfaces.  This  volume  requires  decomposition  
+Suggested  Webcuts  
+Begin  by  Webcutting  the  Volume      1.   On  the  Command  Panel,  click  on  Geometry   and  then  
+Operation
+ 
+-
+ 
+Decompose
+ 
+Geometry.
+.
+ 2.  Click  on  the  Volume  Entity. .  3.  Select  Sheet  Extended  From  Surface  from  the  
+drop-down
+ 
+bar.
+ 4.  With  your  cursor  in  the  Volume  ID(s)  field,  Click  on  
+Volume
+ 
+5
+ 
+in
+ 
+the
+ 
+Graphics
+ 
+Window.
+ 5.  Enter  70  in  the  Surface  ID  field.  6.  Click  Preview  to  preview  the  webcut.  7.  Click  Apply  to  cut  the  volume.   
+Next   Imprint  and  Merge   
+1.  On  the  Command  Panel,  click  on  the  Geometry  button  
+and
+ 
+then
+ 
+Operation
+ 
+-
+ 
+Imprint
+ 
+and
+ 
+Merge..
+ 2.  Click  on  the  Volume  Entity. .  3.  Select  Imprint/Merge  from  the  drop-down  bar.   4.  Enter  all  in  the  Volume  ID(s)  field.   5.  Click  Apply.  
+Finish  by  Meshing  the  Geometry  
+1.  On  the  Command  Panel,  click  on  Mesh  and  then  
+Volumes.
+ 2.  Click  the  Intervals  action  button.  3.  Select  Approximate  Size  from  the  drop-down  menu  and  enter  0.15  in  the  Approximate  Size  
+field.
+ 4.  Enter  all  in  the  Select  Volumes  field.  5.  Click  Apply  Size .   6.  Click  the  Mesh  action  button.   Final  mesh  -  The  final  mesh  is  created  at  a  size  of  0.15  for  all  volumes.  
+Revised  August  2025 10  |  Page  
+
+===== page 11 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Example  2.  Interlocking  rings  The  following  example  is  composed  of  two  rings  of  constant  cross-section  that  can  be  swept  along  their  
+axes.
+ 
+The
+ 
+problem
+ 
+here
+ 
+is
+ 
+that
+ 
+the
+ 
+rings
+ 
+overlap,
+ 
+forming
+ 
+a
+ 
+tetrahedral
+ 
+shape
+ 
+that
+ 
+cannot
+ 
+be
+ 
+swept.
+ 
+The
+ 
+key
+ 
+to
+ 
+solving
+ 
+this
+ 
+problem
+ 
+is
+ 
+separating
+ 
+out
+ 
+the
+ 
+region
+ 
+of
+ 
+overlap,
+ 
+explicitly
+ 
+setting
+ 
+the
+ 
+source
+ 
+and
+ 
+target
+ 
+surfaces,
+ 
+and
+ 
+using
+ 
+the
+ 
+tetprimitive
+ 
+scheme
+ 
+on
+ 
+the
+ 
+tetrahedral
+ 
+region.
+ 
+  
+Suggested  webcuts  
+Begin  by  performing  a  series  of  Webcuts   1.  On  the  Command  Panel,  click  on  the  Geometry  button  and  then  Operation  -  Decompose  
+Geometry
+.
+ 2.  Click   the  Entity  -  Volumes  button.  3.  Select  Plane  From  Surface,  from  the  drop-down  bar.   4.  Enter  1  in  the  Volume  ID(s)  field.   5.  Enter  5  in  the  Surface  ID  field.   6.  Click  Preview  7.  Click  Apply  
+Second  Webcut  
+1.   With  the  same  setting  on  the  Command  Panel,  select  Sheet  
+Extended
+ 
+From
+ 
+Surface
+ 
+from
+ 
+the
+ 
+drop-down
+ 
+bar.
+ 2.  Enter  2  in  the  Volume  ID(s)  field.   3.  Enter  4  in  the  Surface  ID   field.   4.  Click  Preview.  5.  Click  Apply.  
+Third  Webcut   
+1.  With  the  same  setting  on  the  Command  Panel,  select  Plane  
+From
+ 
+Surface
+ 
+from
+ 
+the
+ 
+drop-down
+ 
+bar.
+ 2.   Enter  3  in  the  Volume  ID(s)  field.   
+Revised  August  2025 11  |  Page  
+
+===== page 12 =====
+Coreform  Cubit  Decomposition  Tutorial   
+3.  Enter  12  in  the  Surface  ID  field.   4.  Click  Preview.  5.  Click  Apply.   
+ Fourth  Webcut  
+   
+1.  With  the  same  setting  on  the  Command  Panel,  select  Sheet  
+Extended
+ 
+From
+ 
+Surface.
+ 2.  Enter  4  in  the  Volume  ID(s)  field.   3.  Enter  10  in  the  Surface  ID  field.   4.  Click  Preview.  5.  Click  Apply.  
+Next,  you  need  to  Imprint  and  Merge  the  Volumes   
+1.  On  the  Command  Panel,  click  on  the  Geometry  button  and  then  Operation  -  Imprint  and  Merge .  2.  Click  Entity  -  Volumes.  3.  Select  Imprint/Merge  from  the  drop-down  bar.   4.  Enter  all  in  the  Volume  ID(s)  field.    5.  Click  Apply .  
+Note:  There  are  five  volumes  that  result  from  the  webcutting.  Two  of  them  are  automatically  sweepable.  
+Two
+ 
+of
+ 
+them
+ 
+must
+ 
+have
+ 
+their
+ 
+schemes
+ 
+set
+ 
+explicitly,
+ 
+and
+ 
+one
+ 
+of
+ 
+them
+ 
+is
+ 
+meshed
+ 
+using
+ 
+the
+ 
+tetprimitive
+ 
+scheme.
+ 
+Next  set  schemes  and  mesh  the  volumes  
+One-to-one  Sweepable  
+1.   From  the  Command  Panel,  select  the  Mesh  button  and  
+then
+ 
+Volume.
+ 
+ 2.  Click  on  the  Mesh  action  button.   3.  Select  Automatically  Calculate  from  the  drop-down  bar.   4.  Enter  Volume  1  and  3  in  the  Select  Volumes  field.   5.  Click  Apply  Scheme  
+ One-to-one  Sweepable  
+1.  With  the  same  settings  on  the  Command  Panel,  
+Select
+ 
+Sweep
+ 
+from
+ 
+the
+ 
+drop-down
+ 
+bar
+ 
+and
+ 
+enter
+ 
+2
+ 
+in
+ 
+the
+ 
+Select
+ 
+Volumes
+ 
+field.
+ 
+ 2.  Enter  17  in  the  Source  Surface  ID(s)  field.  3.  Enter  7  in  the  Target  Surface  ID  field.   4.  Click  Apply  Scheme.   
+Revised  August  2025 12  |  Page  
+
+===== page 13 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Next,  Specify  the  Meshing  Schemes  
+1.  With  the  same  setting  on  the  Command  Panel,  enter  Volume  4  in  the  Select  Volumes  field.   2.  Enter  29  in  the  Source  Surface  ID(s)  field.  3.  Enter  18  in  the  Target  Surface  ID  field.   4.  Click  Apply  Scheme .   
+Non-sweepable  
+1.  With  the  same  setting  on  the  Command  Panel,  click  on  the  Intervals  action  button.   2.  Select  Approximate  Interval  Count  from  the  drop-down  bar.  3.  Enter  5  in  the  Select  Volumes  field.   4.  Enter  6  in  the  Interval  field.   5.  Click  Apply   6.  With  the  same  setting  on  the  Command  Panel,  select  the  Mesh   action  button.   7.  Select  Tetprimitive  from  the  drop-down  bar.   8.  Enter  5  in  the  Select  Volumes  field.   9.  Click  Apply  Scheme .   
+Finish  by  Meshing  the  Geometry  
+1.  With  the  same  setting  on  the  Command  Panel,  select  the  Intervals  action  button.  2.  Select  Approximate  Size  from  the  drop-down  bar.  3.  Enter  all  in  the  Select  Volumes  field.   4.  Enter  0.5  in  the  Approximate  Size  field.  This  sets  the  final  mesh  to  be  created  at  a  size  of  0.5  for  
+all
+ 
+volumes
+ 5.  Click  Apply  Size.  6.  Click  Mesh.   
+ 
+Revised  August  2025 13  |  Page  
+
+===== page 14 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Example  3.  Webcutting  using  the  sweep  option  This  example  introduces  additional  webcutting  options.  This  example  would  be  a  simple  many-to-one  
+sweep
+ 
+except
+ 
+for
+ 
+the
+ 
+overhanging
+ 
+lip
+ 
+and
+ 
+the
+ 
+protrusions
+ 
+on
+ 
+the
+ 
+bottom
+ 
+surface.
+ 
+To
+ 
+a
+ 
+beginner
+ 
+user,
+ 
+it
+ 
+may
+ 
+at
+ 
+first
+ 
+seem
+ 
+reasonable
+ 
+to
+ 
+use
+ 
+the
+ 
+bottom
+ 
+surface
+ 
+as
+ 
+a
+ 
+webcutting
+ 
+plane.
+ 
+However,
+ 
+this
+ 
+will
+ 
+not
+ 
+create
+ 
+a
+ 
+many-to-one
+ 
+sweepable
+ 
+volume.
+ 
+Instead,
+ 
+you
+ 
+need
+ 
+to
+ 
+use
+ 
+the
+ 
+protruding
+ 
+surfaces
+ 
+as
+ 
+cutting
+ 
+planes,
+ 
+and
+ 
+extend
+ 
+them
+ 
+through
+ 
+the
+ 
+entire
+ 
+volume.
+ 
+  
+ 
+Suggested  webcuts  
+ Begin  by  performing  a  series  of  Webcuts  
+1.  On  the  Command  Panel,  click  on  the  Geometry  button  
+and
+ 
+then
+ 
+Operation
+ 
+-
+ 
+Decompose
+ 
+Geometry
+.
+ 2.  Click  Entity  -  Volumes.  3.  Select  Sheet  Extended  From  Surface  from  the  drop-down  
+bar.
+ 4.  Enter  1  in  the  Volume  ID(s)  field.   5.  Enter  23  in  the  Surface  ID  field.   6.  Click  Preview.  7.  Click  Apply.  
+Next   
+1.  With  the  same  settings  on  the  Command  Panel,  select  
+Plane
+ 
+From
+ 
+Surface
+ 
+from
+ 
+the
+ 
+drop-down
+ 
+bar.
+ 
+ 2.  Enter  1  in  the  Volume  ID(s)  field.   3.  Enter  30  in  the  Surface  ID  field.   4.  Click  Preview.  5.  Click  Apply   Next  
+Revised  August  2025 14  |  Page  
+
+===== page 15 =====
+Coreform  Cubit  Decomposition  Tutorial   
+1.  With  the  same  setting  on  the  Command  Panel,  select  
+Sweep
+ 
+Surface
+ 
+from
+ 
+the
+ 
+drop-down
+ 
+bar.
+ 
+ 2.  Enter  all  in  the  Volume  ID(s)  field.   3.  Enter  28  in  the  Sweep  Surface  ID  field.   4.  Select  Vector  under  the  Sweep  Direction  menu.  5.  Enter  the  -1  for  X,  enter  0  for  Y  and  enter  0  for  Z.   6.  Select  Through  All.  7.  Click  Preview.  8.  Click  Apply.  
+Next,  you  need  to  Imprint  and  Merge  the  Volumes.  
+1.  With  the  same  setting  on  the  Command  Panel,  click   Operation  -  Imprint  and  Merge.   2.  Click  Entity  -  Volumes  3.  Select  Imprint/Merge  from  the  drop-down  bar.  4.  Enter  all  in  the  Volume  ID(s)  field.   5.  Click  Apply.  
+Finish  by  Meshing  the  Geometry  
+1.  From  the  Command  Panel,  select  the  Mesh  button  and  then  Volume.   2.  Click  on  the  Intervals  action  button.  3.  Select  Approximate  Size  from  the  drop-down  bar.   4.  Enter  all  in  the  Select  Volumes  field.   5.  Enter  0.05  in  the  Approximate  Size  field.  This  sets  the  final  mesh  to  be  created  at  a  size  of  0.05  
+for
+ 
+all
+ 
+volumes.
+ 
+ 6.  Click  Apply  Size.  7.  Click  Mesh.   
+ 
+Revised  August  2025 15  |  Page  
+
+===== page 16 =====
+Coreform  Cubit  Decomposition  Tutorial   
+ 
+Example  4.  Using  the  Loft  command  In  the  next  example,  the  loft  command  significantly  decreases  the  number  of  required  webcuts.  This  
+model
+ 
+also
+ 
+demonstrates
+ 
+using
+ 
+2
+ 
+separate
+ 
+sweep
+ 
+paths
+ 
+(top-to-bottom
+ 
+and
+ 
+rotational)
+ 
+on
+ 
+adjacent
+ 
+volumes.
+ 
+ 
+  
+Original  Volume  
+Webcuts  created  from  sweeping  surfaces  (not  recommended)  
+Webcuts  using  loft  command  (recommended)  
+Suggested  webcuts  
+Begin  by  performing  a  series  of  Webcuts  
+1.   On  the  Command  Panel,  click  on  the  Geometry  button  and  then  
+Operation
+ 
+-
+ 
+Decompose
+ 
+Geometry.
+ 2.  Click  on  the  Entity  -  Volume  button.   3.  Select  Loop  from  the  drop-down  bar.   4.  With  your  cursor  in  the  Volume  ID(s)  field,  click  on  Volume  2  in  the  
+graphics
+ 
+window.
+ 
+ 5.  With  your  cursor  in  the  With  Curve  ID(s)  field,  click  on  Curve  8  in  the  
+graphics
+ 
+window.
+ 
+Click
+ 
+Preview.
+ 6.  Click  Apply.   
+Note:  Once  an  ID  is  selected  in  the  graphics  window,  you  can  press  the  tab  button  to  select  other  
+identities
+ 
+from
+ 
+that
+ 
+same
+ 
+ID.
+ 
+ 
+ 
+ 
+Revised  August  2025 16  |  Page  
+
+===== page 17 =====
+Coreform  Cubit  Decomposition  Tutorial   
+ 
+1.  With  the  same  settings  on  the  Command  Panel,  select  Sheet  Extended  
+from
+ 
+Surface
+ 
+from
+ 
+the
+ 
+drop-down
+ 
+bar.
+ 
+ 2.  With  your  cursor  in  the  Volume  ID(s)  field,  click  on  Volume  2  in  the  
+graphics
+ 
+window.
+ 
+ 3.  With  your  cursor  in  the  Surface  ID(s)  field,  click  on  Surface  15  in  the  
+graphics
+ 
+window.
+ 
+ 4.  Click  Preview.  5.  Click  Apply.  
+Next,  you  will  create  surfaces  that,  in  the  next  step,  will  help  create  a  volume   
+1.  On  the  Command  panel,  click  on  Geometry  and  then  Operation  -  Create  
+Geometry
+.
+ 
+ 2.  Click  the  Entity  -  Surfaces  button.  3.  Select  Copy  and  Transform  from  the  drop-down  menu.  4.  With  your  cursor  in  the  Surface  ID(s)  field,  click  on  Surface   1  and  7  in  the  
+graphics
+ 
+window.
+ 5.  Uncheck  the  Transform  Copied  Surfaces  box.  6.  Click  Apply .   
+Next,  create  a  lofted  volume  to  connect  the  two  surfaces  just  created  
+1.  Now  select  Entity  -  Volume  and  select  Lofted  Volume  from  the  
+drop-down
+ 
+bar.
+ 
+ 2.   3.  With  your  cursor  in  the  Surface  ID(s)  field,  click  on  Surface  19  and  
+Surface
+ 
+20.
+ 
+These
+ 
+are
+ 
+the
+ 
+two
+ 
+surfaces
+ 
+that
+ 
+will
+ 
+be
+ 
+connected
+ 
+by
+ 
+a
+ 
+volume.
+ 
+Note:  You  can  press  the  Control  Key  to  select  more  than  one  ID  in  the  graphics  
+window.
+ 
+ 
+4.  Click  Preview .  The  preview  will  show  a  blue  line  in  the  path  that  connects  
+the
+ 
+two
+ 
+surfaces.
+ 
+ 5.  Click  Apply.   
+Next  
+1.  With  the  same  settings  on  the  command  panel,  click  the  Operation  -  
+Decompose
+ 
+Geometry
+ 
+button.
+ 2.  Select  Tool  from  the  drop-down  menu.   3.  Enter  3  in  the  Volume  ID(s)  field.  
+Revised  August  2025 17  |  Page  
+
+===== page 18 =====
+Coreform  Cubit  Decomposition  Tutorial   
+4.  Enter  7  in  the  Tool  -  Body  ID  field.  Volume  7  is  the  new  body  that  was  created  in  the  last  step.   5.  Click  Preview.  6.  Click  Apply.   
+Next  
+1.  With  the  same  settings  on  the  Command  panel,  click  the  Operation  -  Delete  Geometry  -  Entity  
+Volumes
+ 
+button.
+ 2.  Enter  5  6  7  in  the  Volume  ID(s)  field.  3.  Click  Apply.  
+Next  
+1.  With  the  same  settings  on  the  Command  panel,  click  the  Operation  -  
+Delete
+ 
+Geometry
+ 
+button,
+ 
+click
+ 
+the
+ 
+Operation
+ 
+-
+ 
+Decompose
+ 
+Geometry
+ 
+button.
+ 2.  Select  General  Plane  from  the  drop-down  menu.   3.  With  your  cursor  in  the  Volume  ID(s)  field.  Click  on  Volume  2  and   3  in  the  
+graphics
+ 
+window.
+ 
+ 4.  Select  YZ  5.  Click  Preview.  6.  Click  Apply.   
+Next,  you  need  to  Imprint  and  Merge  the  volumes  
+1.  With  the  same  setting  on  the  Command  Panel,  click  on  the  Operation  -  Imprint  and  Merge   
+button.
+ 2.  Select  Imprint/  Merge  from  the  drop-down  menu.   3.  Enter  all  in  the  Volume  ID(s)  field.   4.  Click  Apply.   
+Finish  by  Meshing  the  Geometry  
+1.  On  the  Command  Panel,  click  on  Mesh  and  then  Volume.   2.  Click  on  the  Intervals  action  button.   3.  Select  Approximate  Size  from  the  drop-down  menu.  4.  Enter  all  in  the  Select  Volumes  field.   5.   6.  Enter  0.15  in  the  Approximate  Size  field.   7.  Click  Apply.  8.  Click  Mesh.    
+Final  mesh  
+Revised  August  2025 18  |  Page  
+
+===== page 19 =====
+Coreform  Cubit  Decomposition  Tutorial   
+The  final  webcut  model  consists  of  a  central  shaft  that  can  be  swept  top  to  bottom,  and  a  surrounding  
+casing
+ 
+that
+ 
+can
+ 
+be
+ 
+swept
+ 
+around.
+ 
+This
+ 
+is
+ 
+possible
+ 
+because
+ 
+the
+ 
+shared
+ 
+surface
+ 
+is
+ 
+a
+ 
+linking
+ 
+surface
+ 
+for
+ 
+both
+ 
+types
+ 
+of
+ 
+sweeps.
+ 
+The
+ 
+final
+ 
+mesh
+ 
+is
+ 
+created
+ 
+with
+ 
+a
+ 
+size
+ 
+of
+ 
+0.15
+ 
+Example  5.  Multiple  sweep  directions  The  next  example  gives  another  example  of  using  different  sweep  directions  on  the  same  model.  The  
+following
+ 
+model
+ 
+shows
+ 
+a
+ 
+brick
+ 
+that
+ 
+is
+ 
+perforated
+ 
+by
+ 
+several
+ 
+cylindrical
+ 
+shafts.
+ 
+The
+ 
+shafts
+ 
+do
+ 
+not
+ 
+intersect
+ 
+each
+ 
+other.
+ 
+ 
+ 
+Suggested  webcuts  
+Begin  by  performing  a  series  of  Webcuts  
+1.   On  the  Command  Panel,  click  on  the  Geometry  button  and  then  Operation  -  Decompose  Geometry.  2.  Click  on  the  Entity  -  Volume  button.   3.  Select  Coordinate  Plane  from  the  drop-down  menu.   4.  Enter  all  in  the  Volume  ID(s)  field.   5.  Click  on  ZX  6.  Enter  20  in  the  Offset  Value  field.   7.  Click  Preview.  8.  Click  Apply.  
+ 
+ 
+Revised  August  2025 19  |  Page  
+
+===== page 20 =====
+Coreform  Cubit  Decomposition  Tutorial   
+1.  With  Coordinate  Plane  still  selected   from  the  drop-down  menu  enter  all  in  the  Volume  ID(s)  field.   2.  Click  on  ZX  3.  Enter  -20  in  the  Offset  Value  field.   4.  Click  Preview.  5.  Click  Apply.   
+ 
+Next,  Imprint  and  Merge  the  Volumes   
+1.  With  the  same  settings  on  the  Command  Panel,  click  on  the  Operation  -  Imprint  and  Merge  
+button.
+ 2.  Select  Imprint/  Merge  from  the  drop-down  menu.   3.  Enter  all  in  the  Volume  ID(s)  field.   4.  Click  Apply.   
+Note:  All  of  the  volumes  in  this  model  are  now  one-to-one  sweepable.  However,  the  source  and  target  
+surfaces
+ 
+for
+ 
+the
+ 
+main
+ 
+block
+ 
+portions
+ 
+must
+ 
+be
+ 
+set
+ 
+explicitly
+ 
+Next,  set  the  Meshing  Schemes  to  prepare  the  geometry  to  be  meshed   
+1.  On  the  Command  Panel,  click  on  Mesh  and  then  Volume.  2.  Click  on  the  Mesh  action  button.   3.  Select  Sweep  from  the  drop-down  menu.   4.  With  your  cursor  in  the  Select  Volumes  field,  click  on  Volume  8  in  the  graphics  window.   5.   6.  Click  on  Specify  Source  and  Target  7.  With  your  cursor  in  the  Source  Surface  ID(s)  field,  click  on  Surface  94  in  the  graphics  window.   8.  With  your  cursor  in  the  Target  Surface  ID  field,  click  on  Surface  90  in  the  graphics  window.   9.  Click  Apply  Scheme.   
+Next  
+1.  Enter  10  in  the  Select  Volumes  field.  2.  Click  on  Specify  Source  and  Target.   3.  With  your  cursor  in  the  Source  Surface  ID(s)  field,  click  on  Surface  71  in  the  graphics  window.   4.  With  your  cursor  in  the  Target  Surface  ID  field,  select  Surface  73  in  the  graphics  window.   5.  Click  Apply  Scheme.   
+Next  
+Revised  August  2025 20  |  Page  
+
+===== page 21 =====
+Coreform  Cubit  Decomposition  Tutorial   
+1.  Enter  12  in  the  Select  Entities  to  Mesh  field.  2.   3.  Click  on  Specify  Source  and  Target.   4.  With  your  cursor  in  the  Source  Surface  ID(s)  field,  click  on  Surface  97  in  the  graphics  window.   5.  With  your  cursor  in  the  Target  Surface  ID  field,  select  Surface  100  in  the  graphics  window.   6.  Click  Apply  Scheme.   
+Finish  by  Meshing  the  Geometry  
+1.  On  the  Command  Panel,  click  on  Mesh  and  then  
+Volume.
+ 
+ 2.  Click  on  the  Intervals  action  button.   3.  Select  Approximate  Size  from  the  drop-down  menu.  4.  Enter  all  in  the  Select  Volumes  field.   5.   6.  Enter  2  in  the  Approximate  Size  field.   7.  Click  Apply.  8.  Click  Mesh.   
+ 
+ 
+Revised  August  2025 21  |  Page  
+
+===== page 22 =====
+Coreform  Cubit  Decomposition  Tutorial   
+Advanced  Decomposition  Examples  
+Example  6.  Employing  Symmetry  One  technique  for  creating  a  symmetric  mesh  on  a  symmetric  model  is  to  mesh  only  half  of  the  volume,  
+then
+ 
+copy
+ 
+the
+ 
+mesh
+ 
+onto
+ 
+the
+ 
+other
+ 
+half.
+ 
+The
+ 
+following
+ 
+example
+ 
+employs
+ 
+this
+ 
+technique.
+ 
+This
+ 
+model
+ 
+at
+ 
+first
+ 
+appears
+ 
+quite
+ 
+simple,
+ 
+but
+ 
+it
+ 
+actually
+ 
+requires
+ 
+a
+ 
+good
+ 
+deal
+ 
+of
+ 
+webcutting
+ 
+to
+ 
+get
+ 
+a
+ 
+reasonable
+ 
+mesh
+ 
+that
+ 
+is
+ 
+not
+ 
+highly
+ 
+skewed.
+ 
+  
+Suggested  webcuts  
+Begin  by  performing  a  series  of  Webcuts  
+1.   On  the  Command  Panel,  click  on  the  Geometry  button  and  then  Operation  -  Decompose  Geometry.  2.  Click  on  the  Entity  -  Volume  button.  3.  Select  General  Plane  from  the  drop-down  menu.   4.  With  your  cursor  in  the  Volume  ID(s)  field,  select  the  entity  in  the  graphics  window.  1  should  appear.   5.  Enter  YZ  in  the  With  Plane  field  6.   7.  Click  Preview .  8.  Click  Apply .   
+Next  
+1.  With  the  same  settings  on  the  Command  Panel,  click  on  the  Operation  -  Delete  Geometry  button.   
+ 
+Revised  August  2025 22  |  Page  
+
+===== page 23 =====
+Coreform  Cubit  Decomposition  Tutorial   
+2.  With  your  cursor  in  the  Volume  ID(s)  field,  click  on  the  new  volume  created  from  the  webcut  in  the  last  step.  2  should  appear.  3.  Click  Apply .   Next  
+1.  With  the  same  settings  on  the  Command  Panel,  click  on  the  Operation  -  Decompose  Geometry  button.   2.  Select  Cylinder  Radius  from  the  drop-down  menu.   3.  With  your  cursor  in  the  Volume  ID(s)  field,  select  the  entity  in  the  graphics  window.   4.  Enter  2.75  for  the  Radius .  5.  Select  the  Y  Axis .  6.  Click  Preview .  7.  Click  Apply .   
+Next  
+ 
+1.  With  the  same  setting  on  the  Command  Panel,  select  General  Plane  from  the  drop-down  menu.   2.  With  your  cursor  in  the  Volume  ID(s)  field,  click  on  the  two  volumes  in  the  graphics  window,  volumes  1  3 .  Note :  you  can  hold  the  Control  key  on  your  keyboard  to  select  multiple  volumes.   3.  Enter  ZX  in  the  With  Plane  field  4.  Click  Preview .  5.  Click  Apply .   
+Next   
+1.  With  the  same  settings  on  the  Command  Panel,  select  General  Plane  from  the  drop-down  menu.   2.  With  your  cursor  in  the  Volume  ID(s)  field,  click  on  Volume  4  (the  original  body)  in  the  graphics  window.   3.  Click  the  …  button  to  select  ZX  in  the  top  box  and  click  on  the  advanced  settings  4.  Enter  -15  in  the  Offset  Value  field.   5.  Click  Preview .  6.  Click  Apply .    Next  
+ 
+Revised  August  2025 23  |  Page  
+
+===== page 24 =====
+Coreform  Cubit  Decomposition  Tutorial   
+1.  With  the  same  settings  on  the  Command  Panel,  select  Sheet  Extended  From  Surface  from  the  drop-down  menu.   2.  With  your  cursor  in  the  Volume  ID(s)  field,  click  on  Volume  1 ,  Volume  4 ,  and  Volume  6  in  the  graphics  window.   3.  Enter  64  in  the  Surface  ID  field.   4.  Click  Preview .  5.  Click  Apply .   
+Next  
+ 
+1.  With  the  same  settings  on  the  Command  Panel  ,  with  your  cursor  in  the  Volume  ID(s)  field,  click  on  Volume  6  in  the  graphics  window.   2.  With  your  cursor  in  the  Surface  ID  field,  click  on  surface  67  in  the  graphics  window.  (Surface  67  is  at  the  base  of  the  new  volume  created  from  the  previous  step)   3.  Click  Preview .  4.  Click  Apply .   
+Next   
+1.  With  the  same  settings  on  the  Command  Panel,  select  General  Plane  from  the  drop-down  menu.   2.  With  your  cursor  in  the  Volume  ID(s)  field,  click  on  Volume  3  in  the  graphics  window.   3.  Click  the  …  button  to  select  XY  in  the  top  box  and  select  advanced  options  4.  Enter  1.5  in  the  Offset  Value  field.   5.  Click  Apply  on  the  window  6.  Click  Preview .   7.  Click  Apply .            
+ 
+Revised  August  2025 24  |  Page  
+
+===== page 25 =====
+Coreform  Cubit  Decomposition  Tutorial   
+ 
+1.  With  the  same  settings  on  the  Command  Panel  ,  with  your  cursor  in  the  Volume  ID(s)  field,  click  on  Volume  11 ,  which  is  the  new  volume  created  from  the  previous  step.   2.  Click  the  …  button  to  select  Z  in  the  top  box  and  select  advanced  options  3.  Enter  -1.5  in  the  Offset  Value  field.   4.  Click  Preview .  5.  Click  Apply .  
+ 
+ 
+ 
+ 
+Next   
+1.  On  the  Command  Panel,  click  on  Geometry  and  then  Operation  -  Create  Geometry .  2.  Click  on  the  Entity  -  Vertices  button  and  select  On  Curve  from  the  drop-down  menu.  3.  Enter  538  in  the  Curve  ID(s)  field.  4.  Click  the  Distance  radio  button  and  enter  in  a  value  of  2 .  5.  Click  the  Vertex  button  below  and  enter  368  in  the  Vertex  ID  field.  6.  Click  Apply  
+Next  
+1.  On  the  Command  Panel,  click  on  Geometry  and  then  Operation  -  Decompose  Geometry .  2.  Click  the  Entity  -  Volume  button  and  select  Plane  From  Vertex  from  the  drop-down  menu.  3.  Enter  1   in  the  Volume  ID(s)  field  and  478  477  330  in  the  three  Vertex  ID  fields.  4.  Click  Preview  and  Apply .   Next   
+Revised  August  2025 25  |  Page  
+
+===== page 26 =====
+Coreform  Cubit  Decomposition  Tutorial   
+ 
+1.  On  the  Command  Panel,  click  on  Geometry  and  then  Operation  -  Create  Geometry.  2.  Click  the  Entity  -  Vertices  button.  3.  Select  On  Curve  from  the  drop-down  menu.  4.  Enter  1098  in  the  Curve  ID(s)  field.  5.  Select  the  Distance  radio  button  and  enter  3  in  the  Distance  field.  6.  Select  the  Vertex  radio  button  below  and  enter  636  in  the  Vertex  ID  field.  7.  Click  Apply .    
+ 
+Next  
+1.  On  the  Command  Panel,  click  on  Geometry  and  then  Operation  -  Decompose  Geometry .  2.  Click  the  Entity  -  Volume  button  and  select  Plane  from  Vertex  from  the  drop-down  menu.  3.  Enter  14  in  the  Volume  ID(s)  field  and  507  567  647  in  the  Vertex  ID  fields.  4.  Click  Preview  and  Apply .   
+Note:  This  wedge  shape  webcut  is  a  method  of  controlling  skew  in  the  final  mesh.   
+  
+1.  With  the  same  settings  on  the  Command  Panel,   click  the  Operation  -  Boolean  Operations  button.  2.  Select  Unite  from  the  drop-down  menu.  3.  Enter   3  11  12  in  the  Volume  ID(s)  field.  4.  Click  Apply .  
+  
+Revised  August  2025 26  |  Page  
+
+===== page 27 =====
+Coreform  Cubit  Decomposition  Tutorial   
+        
+1.  With  the  same  settings  on  the  Command  Panel  enter  volumes  13  and  1  in  the  Volume  ID(s)  field.  2.  Click  Apply .  
+Next  
+1.  On  the  Command  Panel,  click  on  Geometry  and  then  Operation  -  Delete  Geometry .  2.  Click  the  Entity  -  Vertex  button.  3.  Enter  all  in  the  Vertex  ID(s)  field  and  click  Apply .  
+Next,  Imprint  and  Merge  the  Volumes  
+1.  Click  on  Geometry  and  then  Operation  -  Imprint  and  Merge .  2.  Click  the  Entity  -  Volume  button.  3.  Select  Imprint / Merge  from  the  drop-down  menu  and  enter  all  in  the  Volume  ID(s)  field.  4.  Click  Apply .  
+Next,  Set  schemes  and  begin  meshing  individual  volumes  
+1.  On  the  Command  Panel,  click  on   Mesh  and  then  Entity  -  Volume .  2.  Click  the  Intervals  action  button.  3.  Select  Approximate  Size  from  the  drop-down  menu  and  enter  all  in  the  Select  Volumes  field.  4.  Enter  0.5  in  the  Approximate  Size  field.  5.  Click  Apply  Size .   Next  
+Revised  August  2025 27  |  Page  
+
+===== page 28 =====
+Coreform  Cubit  Decomposition  Tutorial   
+ 
+1.  With  the  same  settings  on  the  Command  Panel,  Click   Entity  -  Surface  and  then  the  Intervals  action  button.  2.  Select  Approximate  Size  from  the  drop-down  menu  and  enter  225  in  the  Select  Surfaces  field.  3.  Enter  0.25  in  the  Approximate  Size  field.  4.  Click  Apply  and  then  Mesh .  
+Next  
+1.  With  the  same  settings  on  the  Command  Panel,   click  Entity  -  Volume   and  then  the  Mesh  action  button.  2.  Select  Sweep  from  the  drop-down  menu,  and  enter  3  in  the  Select  Entities  to  Mesh  field.  3.  Enter  225  in  the  Source  Surface  ID(s)  field  and  227  in  the  Target  Surface  ID  field.  4.  Click  Apply  Scheme  and  then  Mesh .  
+Next   
+ 
+1.  With  the  same  setting  on  the  Command  Panel,  enter  13  in  the  Select  Entities  to  Mesh  field.  2.  Enter  534  in  the  Source  Surface  ID(s)  field  and  528  in  the  Target  Surface  ID  field.  3.  Click  Apply  Scheme  and  then  Mesh .  
+Next  
+Revised  August  2025 28  |  Page  
+
+===== page 29 =====
+Coreform  Cubit  Decomposition  Tutorial   
+ 
+1.  With  the  same  settings  on  the  Command  Panel,  enter  15  in  the  Select  Entities  to  Mesh  field.  2.  Enter  547  in  the  Source  Surface  ID(s)  field  and  enter  545  in  the  Target  Surface  ID  field.  3.  Click  Apply  Scheme  and  then  Mesh .  
+Next  
+1.  On  the  Command  Panel,  click  Mesh  and  then  Volume .  2.  Click  the  Delete  action  button.  3.  Enter  all  in  the  Volume  ID(s)  field  and  click  Apply .  Next  
+1.  On  the  Command  Panel,  click  on  Geometry   and  then  Operation  -  Imprint  and  Merge. .  2.  Click  the  Entity  -  Volume  button.  3.  Select  Unmerge  Volumes  from  the  drop-down  menu.  4.  Enter  all  in  the  Volume  ID(s)  field.  5.  Click  Apply .  
+Next  
+ 
+1.  With  the  same  settings  on  the  Command  Panel,  click  Operation  -  Decompose  Geometry  button.  2.   Select  Sheet  Extended  From  Suface  from  the  drop-down  menu.  3.  Enter  6  in  the  Volume  ID(s)  field  and  524  in  the  Surface  ID  field.  4.  Click  Preview  and  then  Apply .  
+ 
+Revised  August  2025 29  |  Page  
+
+===== page 30 =====
+Coreform  Cubit  Decomposition  Tutorial   
+ 
+1.  With  the  same  settings  on  the  Command  Panel,  click  the  Operation  -  Boolean  Operations  action  button.  2.  Select  Unite  from  the  drop-down  menu.  3.  Enter  16  17  in  the  Volume  ID(s)  field.  4.  Click  Apply .  
+Next  
+ 
+1.  With  the  same  settings  on  the  Command  Panel,  click  the  Operations  -  Decompose  Geometry  button.  2.  Select  Sheet  Extended  From  Surface  from  the  drop-down  menu.  3.  Enter  8  in  the  Volume  ID(s)  field  and  524  in  the  With  Surface  ID  field.  4.  Click  Preview  and  then  Apply .  
+Next  
+ 
+1.  With  the  same  settings  on  the  Command  Panel,  enter  17  in  the  Volume  ID(s)  field  and  540  in  the  Surface  ID  field.  2.  Click  Preview  and  then  Apply .  
+Next  
+   
+1.  With  the  same  settings  on  the  Command  Panel,  select  General  Plane  from  the  drop-down  menu.  2.  Enter  7  in  the  Volume  ID(s)  field.  3.  Click  the  XY  Plane  radio  button  and  enter  -3  in  the  Offset  Value  field.  4.  Check  the  Rotate  Cutting  Plane  box  and  enter  5  in  the  Angle  field.  5.  Click  the  X  Axis  radio  button.  6.  Click  Preview  and  Apply .   
+ 
+Revised  August  2025 30  |  Page  

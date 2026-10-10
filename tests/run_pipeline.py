@@ -65,6 +65,7 @@ def tetrahedralize_geometry(path: Path, mesh_size: float | None, out: Path) -> P
         ) from exc
 
     msh = out / (path.stem + ".msh")
+    out.mkdir(parents=True, exist_ok=True)
     gmsh.initialize()
     gmsh.option.setNumber("General.Terminal", 0)
     gmsh.option.setNumber("Geometry.OCCImportLabels", 1)
@@ -129,6 +130,21 @@ def load_mesh(path: Path, ele: Path | None, mesh_size: float | None, out: Path) 
         print(f"[0] fixing {n_bad} inverted tetrahedra")
         m.fix_orientation()
     print(f"[0] {m.summary()}")
+
+    topo = m.boundary_topology()
+    print(f"[0] boundary topology: {topo['components']} component(s), "
+          f"genus {topo['genus']:.0f}, Euler {topo['euler']}  "
+          f"({topo['n_boundary_vertices']} v / {topo['n_boundary_edges']} e / "
+          f"{topo['n_boundary_faces']} f)")
+    if not topo["is_ball"]:
+        print(
+            "[0] !! WARNING: this solid is NOT a topological 3-ball "
+            f"(boundary components {topo['components']}, genus {topo['genus']:.0f}).\n"
+            "      Stage 1 maps a topological ball onto the unit ball; with handles or\n"
+            "      several boundary shells the harmonic map is not a homeomorphism, so the\n"
+            "      numbers below are not meaningful.  Cut the solid into simply-connected\n"
+            "      pieces first, or use the genus-one variant (see docs/, section 6)."
+        )
     return m
 
 
@@ -252,6 +268,9 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--mesh-size", type=float, default=None,
                     help="target element size when tetrahedralising a geometry")
     ap.add_argument("--no-remesh", action="store_true", help="skip stage 3")
+    ap.add_argument("--mesh-only", action="store_true",
+                    help="stop after tetrahedralising: write input.vtk (+ .msh) and exit "
+                         "(use this for solids that are not topological 3-balls)")
     args = ap.parse_args(argv)
 
     if not args.mesh.exists():
@@ -260,6 +279,10 @@ def main(argv: list[str] | None = None) -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     m = load_mesh(args.mesh, args.ele, args.mesh_size, out)
+    if args.mesh_only:
+        m.write_vtk(out / "input.vtk")
+        print(f"[out] {out / 'input.vtk'}")
+        return 0
     run(m, out, remesh=not args.no_remesh)
     return 0
 

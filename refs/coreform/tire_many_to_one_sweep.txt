@@ -1,0 +1,172 @@
+
+===== page 1 =====
+Preparing Tire Tread 
+Models in 
+Coreform Cubit
+===== page 2 =====
+Many-to-one Sweep
+===== page 3 =====
+• Coreform Cubit is a semi-
+automated hex-mesher
+• Means that Cubit can recognize 
+certain topologies as meshable 
+without further decomposition by the 
+user
+• A "many-to-one sweep" (N:1) is 
+one of the techniques that can 
+recognize topologies as meshable
+• Importantly, whenever an N:1 
+sweep is used, you could have done 
+additional decompositions to make 
+multiple 1:1 sweeps
+Many-to-one Sweep
+S
+w
+e
+e
+p
+===== page 4 =====
+Many-to-one Sweep
+Can result in relatively 
+poor elements through 
+the sweep
+===== page 5 =====
+Manual decomposition
+Webcuts result in "firm" 
+element boundaries 
+that can improve 
+element quality
+===== page 6 =====
+Single "unit" of tread with symmetry Full tread pattern
+Tire tread geometry
+
+===== page 7 =====
+• When dealing with complex 
+models, it's often helpful to cut 
+the model into simpler subunits 
+and process individually
+• Export each subunit to unique 
+ACIS file
+• Process each model to obtain 
+mesh, save as CUB5
+• Import all CUB5 and apply final 
+operations for global meshability
+Separating into subunits
+===== page 8 =====
+Meshing Section 1
+===== page 9 =====
+• This section doesn't require any 
+cleanup to produce an N:1 mesh
+Overview
+===== page 10 =====
+Meshing Section 1
+===== page 11 =====
+Meshing Section 1
+
+===== page 12 =====
+Mesh quality
+Note that the poor elements 
+tend to be caused by "linking" 
+between sweep layers
+===== page 13 =====
+Group assingments
+• When meshing using this "by-section" 
+approach, it can be useful to add any 
+sweep assignments to groups
+• This will allow for easily reassigning 
+mesh commands when recombining 
+all the sections together
+• When finished save as a CUB5
+• Do this process for each section
+
+===== page 14 =====
+Meshing Section 2
+===== page 15 =====
+• This section will require a few 
+composite operations, to 
+convert challenging-to-mesh 
+surfaces into simpler topology
+Overview
+===== page 16 =====
+• Many sipes have rounded 
+features such as shown on the 
+right
+• These pose a challenge for 
+meshing as the linking curves for 
+our eventual sweep become 
+perpendicular to the sweep 
+direction and form a singularity 
+between three surfaces
+Meshing Section 2
+===== page 17 =====
+• Compositing the three surfaces 
+into a single curve allows Cubit 
+to ignore the troublesome 
+topology.
+• When placing elements & nodes, 
+Cubit will still evaluate the 
+underlying surface geometries 
+(i.e., shape), just has the 
+freedom to ignore the topology
+Meshing Section 2
+===== page 18 =====
+Meshing Section 2
+
+===== page 19 =====
+Meshing Section 2
+
+===== page 20 =====
+
+===== page 21 =====
+Smoothing
+
+===== page 22 =====
+
+===== page 23 =====
+• Note that the sloped surface 
+results in relatively poorly 
+shaped elements, but this 
+element quality isn't too bad
+• The less perpendicular the 
+surface, the more elements 
+need to deform to conform, 
+resulting in worse element 
+quality
+
+===== page 24 =====
+Meshing Section 3
+===== page 25 =====
+• This section is nearly identical to 
+the second section, requires 
+similar processing to produce an 
+N:1 mesh
+Overview
+
+===== page 26 =====
+
+===== page 27 =====
+Meshing Section 4
+===== page 28 =====
+Overview
+• This model has a sliver that was 
+made to ensure vertical surfaces on 
+the symmetry surfaces
+• This sliver would enforce poor 
+element quality but we can move 
+the geometry back to the other 
+side and make a better "symmetry 
+cut"
+• This, combined with some other 
+cleanup will then allow us to make 
+an N:1 sweep
+
+===== page 29 =====
+Initial Cleanup
+
+===== page 30 =====
+Overview of the new cut
+• Goal: 
+• We want a curve that will allow us 
+to sweep in the -Z  direction, 
+approximately in-between the two 
+nearly-vertical surfaces 
